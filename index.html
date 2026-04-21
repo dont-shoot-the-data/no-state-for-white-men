@@ -104,46 +104,35 @@ body {
 }
 .fog-layer:nth-child(2) { animation-duration: 45s; animation-direction: reverse; opacity: 0.7; }
 
-/* Hero title stamp — angled, split-color "No State" + red "for white men" */
-.hero-title-stamp {
-  font-family: 'DM Sans', sans-serif;
-  font-weight: 800;
-  letter-spacing: -0.035em;
-  text-align: center;
-  transform: rotate(-2.5deg);
+/* Hero title badge — hollow red outline, red text (Manhattan-Institute stamp style, scaled up) */
+.hero-title-badge {
+  display: inline-block;
+  font-family: 'Source Code Pro', monospace;
+  font-weight: 700;
+  font-size: clamp(14px, 2.2vw, 28px);
+  letter-spacing: 3.8px;
   text-transform: uppercase;
-  margin-bottom: 18px;
+  color: var(--accent-red);
+  background: transparent;
+  border: 2.5px solid rgba(230,57,70,0.65);
+  padding: 12px 24px;
+  margin-bottom: 22px;
+  transform: rotate(-2.5deg);
+  text-shadow: 0 0 22px rgba(230,57,70,0.45);
+  box-shadow: 0 0 40px rgba(230,57,70,0.18), inset 0 0 26px rgba(230,57,70,0.06);
   animation: stampSlam 0.5s cubic-bezier(0.22, 0.68, 0.35, 1.2) 0.3s both;
-  filter: drop-shadow(0 0 24px rgba(230,57,70,0.28)) drop-shadow(0 4px 10px rgba(0,0,0,0.5));
   position: relative; z-index: 3;
   flex-shrink: 0;
-  line-height: 0.92;
-}
-.hero-title-stamp .ts-top {
-  display: block;
-  font-size: clamp(44px, 8vw, 108px);
-  background: linear-gradient(95deg,
-    #ffffff 0%,
-    #ffffff 44%,
-    var(--accent-red) 56%,
-    var(--accent-red) 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  text-shadow: 0 0 40px rgba(255,255,255,0.04);
-}
-.hero-title-stamp .ts-bot {
-  display: block;
-  font-size: clamp(26px, 5vw, 64px);
-  color: var(--accent-red);
-  font-style: italic;
-  font-weight: 500;
-  letter-spacing: -0.02em;
-  text-shadow: 0 0 28px rgba(230,57,70,0.4);
-  margin-top: 2px;
+  white-space: nowrap;
 }
 @media (max-width: 540px) {
-  .hero-title-stamp { transform: rotate(-2deg); margin-bottom: 12px; }
+  .hero-title-badge {
+    letter-spacing: 2.2px;
+    padding: 10px 16px;
+    transform: rotate(-2deg);
+    white-space: normal;
+    text-align: center;
+  }
 }
 
 .hero-ca-wrap {
@@ -211,7 +200,7 @@ body {
   50%  { transform: translate(3px, -20px) scaleY(1.8) scaleX(0.7); opacity: 0.2; }
   100% { transform: translate(1px, -52px) scaleY(3.6) scaleX(1.15); opacity: 0; }
 }
-.bh-smoke { pointer-events: none; }
+.bh-smoke { display: none; }
 .smoke-wisp {
   fill: #d8d8e0;
   opacity: 0;
@@ -1519,10 +1508,7 @@ footer a { color: var(--accent-red); text-decoration: none; }
 <section class="hero">
   <div class="hero-fog"><div class="fog-layer"></div><div class="fog-layer"></div></div>
 
-  <div class="hero-title-stamp">
-    <span class="ts-top">No&nbsp;State</span>
-    <span class="ts-bot">for white men</span>
-  </div>
+  <div class="hero-title-badge">No State for White Men</div>
 
   <div class="hero-ca-wrap">
     <svg class="hero-ca-svg" viewBox="0 120 500 540" xmlns="http://www.w3.org/2000/svg" overflow="visible">
@@ -1941,11 +1927,11 @@ footer a { color: var(--accent-red); text-decoration: none; }
       <div class="case-body vertical">
         <div class="case-photos">
           <div class="case-photo-slot">
-            <img src="emma-roark.jpg" alt="Emma Roark" onerror="this.parentElement.innerHTML='[photo: Emma Roark, 20]<div class=&quot;label-under&quot;>Victim</div>'">
+            <img src="emma-roark.png" alt="Emma Roark" onerror="this.parentElement.innerHTML='[photo: Emma Roark, 20]<div class=&quot;label-under&quot;>Victim</div>'">
             <div class="label-under">Emma Roark, 20 &middot; Victim</div>
           </div>
           <div class="case-photo-slot">
-            <img src="mikilo-rawls.jpg" alt="Mikilo Rawls" onerror="this.parentElement.innerHTML='[photo: Mikilo Rawls, 37]<div class=&quot;label-under&quot;>Suspect</div>'">
+            <img src="mikilo-rawls.png" alt="Mikilo Rawls" onerror="this.parentElement.innerHTML='[photo: Mikilo Rawls, 37]<div class=&quot;label-under&quot;>Suspect</div>'">
             <div class="label-under">Mikilo Rawls, 37 &middot; Suspect</div>
           </div>
         </div>

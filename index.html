@@ -16,6 +16,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;600;700&family=DM+Sans:wght@400;500;600;700;800&family=Playfair+Display:wght@400;500;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
 <style>
 :root {
   --bg-primary: #0a0a0f;
@@ -43,6 +44,20 @@ body {
   line-height: 1.65;
   overflow-x: hidden;
 }
+html {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+*, *::before, *::after {
+  max-width: 100%;
+}
+img, svg, video, iframe, canvas {
+  max-width: 100%;
+  height: auto;
+}
+iframe {
+  height: unset;  /* iframes with explicit height keep it */
+}
 @keyframes typewriterReveal {
   from { max-width: 0; }
   to { max-width: 520px; }
@@ -60,8 +75,14 @@ body {
   padding-right: 4px;
   overflow: hidden;
   white-space: nowrap;
-  max-width: 520px;
+  max-width: min(520px, calc(100vw - 56px));
   opacity: 0.95;
+}
+@media (max-width: 480px) {
+  .city-date-duration {
+    font-size: 11px;
+    letter-spacing: 0.8px;
+  }
 }
 .city-date-duration.typing {
   border-right: 2px solid #ffffff;
@@ -99,8 +120,14 @@ body {
 }
 @keyframes fogDrift { from { transform: translateX(-50%); } to { transform: translateX(0%); } }
 @keyframes arrowBob {
-  0%, 100% { transform: translateY(0); opacity: 0.7; }
-  50%      { transform: translateY(6px); opacity: 1; }
+  0%, 100% { transform: translate(-50%, 0);   opacity: 0.7; }
+  50%      { transform: translate(-50%, 6px); opacity: 1;   }
+}
+/* For arrows that are statically positioned (e.g. #loop-top) rather than
+   absolute+left:50%, bob without the horizontal shift */
+@keyframes arrowBobStatic {
+  0%, 100% { transform: translateY(0);   opacity: 0.7; }
+  50%      { transform: translateY(6px); opacity: 1;   }
 }
 @keyframes heroFadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes bulletFire {
@@ -115,7 +142,7 @@ body {
   100% { opacity: 0; transform: scale(3.5); }
 }
 
-.wrap { max-width: 920px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 2; }
+.wrap { max-width: 920px; width: 100%; margin: 0 auto; padding: 0 24px; position: relative; z-index: 2; box-sizing: border-box; }
 
 /* ============ HERO ============ */
 .hero {
@@ -567,6 +594,12 @@ body {
 .ce-table .ce-final td { background: rgba(230, 57, 70, 0.1); padding-top: 18px; padding-bottom: 18px; border-top: 1px solid rgba(230,57,70,0.35); }
 .ce-table .rate-high { color: #e63946; font-size: 18px; }
 .ce-table .rate-low  { color: #e63946; font-size: 18px; }
+@media (max-width: 520px) {
+  .ce-table th, .ce-table td { padding: 10px 8px; font-size: 12px; letter-spacing: 1.2px; }
+  .ce-table td { font-size: 12.5px; }
+  .ce-table .rate-high, .ce-table .rate-low { font-size: 15px; }
+  .ce-table th { font-size: 9.5px; letter-spacing: 1px; }
+}
 .ce-footnote {
   font-family: 'Source Code Pro', monospace;
   font-size: 11.5px;
@@ -696,7 +729,18 @@ body {
   line-height: 1.55;
 }
 
-.section { padding: 80px 0 60px; border-bottom: 1px solid var(--border); position: relative; }
+.section {
+  padding: 80px 0 60px;
+  border-bottom: 1px solid var(--border);
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+/* Tall sections where content exceeds the viewport lay out naturally;
+   flex center just gives short sections breathing room and keeps arrow at bottom. */
 .section-kicker {
   display: inline-block;
   font-family: 'Source Code Pro', monospace;
@@ -736,10 +780,12 @@ body {
 .section-body a { color: var(--accent-red); text-decoration: none; border-bottom: 1px dotted currentColor; }
 .section-body a:hover { color: var(--text-primary); border-color: var(--text-primary); }
 
-/* Click arrow between sections */
+/* Click arrow between sections. Default positions the arrow INSIDE the
+   section's visible frame — every .section is min-height:100vh, so an
+   arrow that hangs below would require scrolling to see. */
 .section-nav-arrow {
   position: absolute;
-  bottom: -22px;
+  bottom: 28px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 5;
@@ -763,9 +809,16 @@ body {
   transform: scale(1.1);
 }
 .section-nav-arrow svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; }
-/* Intro section fills the viewport (min-height:100dvh) so its arrow can't dangle
-   below the fold like other sections — bring it up inside the visible frame. */
-.intro .section-nav-arrow { bottom: 28px; }
+/* Top spiral: arrow sits inline right below the spiral card instead of pinned to the viewport bottom */
+#loop-top .section-nav-arrow {
+  position: static;
+  bottom: auto;
+  left: auto;
+  transform: none;
+  margin-top: 24px;
+  align-self: center;
+  animation: arrowBobStatic 1.8s ease-in-out infinite;
+}
 
 /* ============ CHART CARD ============ */
 .chart-card {
@@ -819,67 +872,104 @@ body {
 /* ============ TABS ============ */
 .chart-tabs {
   display: flex;
-  flex-wrap: wrap;
-  gap: 0;
+  flex-wrap: nowrap;
+  gap: 6px;
   justify-content: center;
   margin: 0 auto 14px;
-  border: 1px solid var(--border);
-  background: var(--bg-primary);
-  width: fit-content;
-  max-width: 100%;
+  background: transparent;
+  width: 100%;
+  max-width: 680px;
 }
 .chart-tabs button {
-  background: transparent;
-  border: none;
-  border-right: 1px solid var(--border);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
   color: var(--text-secondary);
   font-family: 'Source Code Pro', monospace;
   font-size: 10.5px;
   font-weight: 700;
-  letter-spacing: 2px;
+  letter-spacing: 1.4px;
   text-transform: uppercase;
-  padding: 10px 18px;
+  padding: 9px 8px;
   cursor: pointer;
   transition: all 0.15s;
   white-space: nowrap;
+  flex: 1 1 0;
+  min-width: 0;
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
-.chart-tabs button:last-child { border-right: none; }
 .chart-tabs button.active {
   background: var(--accent-red);
+  border-color: var(--accent-red);
   color: #fff;
+  box-shadow: 0 0 16px rgba(230,57,70,0.25);
 }
 .chart-tabs button:hover:not(.active) {
   color: var(--text-primary);
-  background: rgba(230,57,70,0.08);
+  border-color: rgba(230,57,70,0.4);
 }
 .sub-toggle {
   display: flex;
   justify-content: center;
-  gap: 1px;
-  background: var(--border);
-  border: 1px solid var(--border);
-  width: fit-content;
+  gap: 6px;
+  background: transparent;
+  border: none;
+  width: 100%;
+  max-width: 320px;
   margin: 0 auto 16px;
 }
 .sub-toggle button {
   background: var(--bg-card);
-  border: none;
+  border: 1px solid var(--border);
+  border-radius: 8px;
   color: var(--text-secondary);
   font-family: 'Source Code Pro', monospace;
   font-size: 10px;
   font-weight: 700;
-  letter-spacing: 2px;
+  letter-spacing: 1.4px;
   text-transform: uppercase;
-  padding: 7px 16px;
+  padding: 7px 12px;
   cursor: pointer;
   transition: all 0.15s;
+  flex: 1 1 0;
 }
 .sub-toggle button.active {
   background: var(--accent-red);
+  border-color: var(--accent-red);
   color: #fff;
 }
-.sub-toggle button:hover:not(.active) { color: var(--text-primary); }
+.sub-toggle button:hover:not(.active) { color: var(--text-primary); border-color: rgba(230,57,70,0.4); }
+@media (max-width: 520px) {
+  .chart-tabs { gap: 5px; }
+  .chart-tabs button { padding: 7px 4px; font-size: 9px; letter-spacing: 0.6px; }
+  .sub-toggle button { padding: 6px 10px; font-size: 9.5px; letter-spacing: 1px; }
+}
 
+/* Disproportionality rows: force distinct-square look on all instances */
+.disp-row > div:nth-child(2) {
+  gap: 12px !important;
+}
+.disp-row > div:nth-child(2) > div {
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border) !important;
+  padding: 14px 12px !important;
+  flex-direction: column;
+  gap: 6px !important;
+}
+.disp-row > div:nth-child(2) > div > span:first-child {
+  font-size: 12px !important;
+  opacity: 0.85;
+}
+.disp-row > div:nth-child(2) > div > span:last-child {
+  font-size: 16px !important;
+  padding: 4px 10px !important;
+}
+@media (max-width: 520px) {
+  .disp-row > div:nth-child(2) {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
 /* Summary box below bar charts */
 .summary-box {
   margin-top: 14px;
@@ -1422,6 +1512,101 @@ body {
   height: 2px;
   background: linear-gradient(90deg, var(--accent-red), var(--accent-gold), var(--accent-red));
 }
+.loop-card.no-topbar::before { display: none; }
+/* Red end-of-article marker bar */
+.interracial-ribbons {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+  margin: 10px 0 16px;
+}
+.interracial-ribbon {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 10px 14px;
+  border: 1.5px solid;
+  border-radius: 4px;
+  font-family: 'Source Code Pro', monospace;
+  font-size: 11px;
+  letter-spacing: 1.6px;
+  text-transform: uppercase;
+}
+.interracial-ribbon.ribbon-target {
+  border-color: rgba(230,57,70,0.55);
+  background: rgba(230,57,70,0.07);
+}
+.interracial-ribbon.ribbon-cause {
+  border-color: rgba(232,133,58,0.55);
+  background: rgba(232,133,58,0.06);
+}
+.interracial-ribbon .rb-label {
+  color: var(--accent-red);
+  font-weight: 700;
+  flex: 0 0 auto;
+}
+.interracial-ribbon.ribbon-cause .rb-label { color: var(--accent-gold); }
+.interracial-ribbon .rb-rank {
+  font-weight: 700;
+  color: #fff;
+  background: rgba(230,57,70,0.85);
+  padding: 3px 7px;
+  border-radius: 2px;
+  margin-right: 4px;
+  font-size: 10px;
+}
+.interracial-ribbon.ribbon-cause .rb-rank { background: rgba(232,133,58,0.85); }
+.interracial-ribbon .rb-race {
+  font-weight: 700;
+  padding: 2px 6px;
+  background: rgba(255,255,255,0.06);
+}
+.interracial-ribbon .rb-race.race-black    { color: #c840e9; }
+.interracial-ribbon .rb-race.race-white    { color: #4ea8de; }
+.interracial-ribbon .rb-race.race-hispanic { color: #e8853a; }
+.interracial-ribbon .rb-race.race-asian    { color: #e8d44d; }
+.interracial-ribbon .rb-count {
+  color: var(--text-secondary);
+  font-weight: 600;
+  font-size: 10.5px;
+  letter-spacing: 0.8px;
+  text-transform: none;
+}
+@media (max-width: 600px) {
+  .interracial-ribbon { font-size: 10px; padding: 8px 10px; gap: 6px; }
+  .interracial-ribbon .rb-label { width: 100%; margin-bottom: 2px; }
+}
+
+.tclear-view-btn {
+  padding: 6px 14px;
+  border: 1.5px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all 0.2s;
+  border-radius: 3px;
+}
+.tclear-view-btn:hover {
+  border-color: var(--accent-gold);
+  color: var(--text-primary);
+}
+.tclear-view-btn.tclear-view-active {
+  background: var(--accent-gold);
+  color: #0d0d14;
+  border-color: var(--accent-gold);
+}
+.article-end-bar {
+  height: 4px;
+  width: 100%;
+  background: linear-gradient(90deg, var(--accent-red) 0%, var(--accent-gold) 50%, var(--accent-red) 100%);
+  box-shadow: 0 0 18px rgba(230,57,70,0.35);
+  margin: 0;
+}
 .loop-card h3 {
   font-family: 'Source Code Pro', monospace;
   font-size: 11px;
@@ -1513,6 +1698,7 @@ body {
   text-align: center;
   background: linear-gradient(180deg, transparent, rgba(230,57,70,0.05));
   border-top: 1px solid var(--border);
+  position: relative;
 }
 .close-line {
   font-family: 'DM Sans', sans-serif;
@@ -1545,6 +1731,112 @@ footer {
   border-top: 1px solid var(--border);
 }
 footer a { color: var(--accent-red); text-decoration: none; }
+
+/* ============================================================ */
+/* MOBILE FIXES — comprehensive responsive cleanup for narrow viewports */
+/* Audited at 390px iPhone width. Companion-site swipe-hint pattern ported. */
+/* ============================================================ */
+
+/* Scroll-hint badge — pulsing red badge auto-injected below
+   horizontally-scrollable elements on mobile. Ported from california-crime-data. */
+.scroll-hint-badge {
+  display: none;
+  text-align: center;
+  font-family: 'Source Code Pro', monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--accent-red);
+  margin: 10px 0 4px;
+  padding: 7px 12px;
+  background: rgba(230, 57, 70, 0.08);
+  border: 1px dashed rgba(230, 57, 70, 0.45);
+  border-radius: 4px;
+  animation: scrollHintPulse 1.8s ease-in-out infinite;
+}
+.scroll-hint-badge .arrow {
+  display: inline-block;
+  margin: 0 4px;
+  animation: scrollHintArrow 1.4s ease-in-out infinite;
+}
+@keyframes scrollHintPulse {
+  0%, 100% { background: rgba(230, 57, 70, 0.08); border-color: rgba(230, 57, 70, 0.45); }
+  50%      { background: rgba(230, 57, 70, 0.16); border-color: rgba(230, 57, 70, 0.75); }
+}
+@keyframes scrollHintArrow {
+  0%, 100% { transform: translateX(0); }
+  50%      { transform: translateX(4px); }
+}
+@media (max-width: 680px) {
+  .scroll-hint-badge { display: block; }
+}
+
+/* Mobile breakpoint — narrow phones */
+@media (max-width: 520px) {
+  /* TCLEAR race multiplier cards: 4-across is too cramped, break to 2x2 */
+  .tclear-mult-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  /* Chart ribbons (Sacramento "Biggest Disparity", Cross-cities) — let the
+     three-cell layout scroll horizontally instead of overflowing */
+  .chart-ribbon {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Crime/city tabs — instead of ellipsis-truncating names like "SAN FRAN..."
+     and "LOS ANGE...", let the row scroll horizontally so full names show */
+  .chart-tabs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    justify-content: flex-start;
+    padding-bottom: 4px;
+  }
+  .chart-tabs button {
+    flex: 0 0 auto;            /* don't shrink to fit; use natural width */
+    min-width: max-content;    /* don't truncate "San Francisco" or "Los Angeles" */
+    padding: 8px 14px;
+    text-overflow: clip;
+    overflow: visible;
+  }
+
+  /* Image frames — constrain to fit container with a small inner margin */
+  .intro-media, .img-frame {
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+  .img-frame {
+    margin-left: 4px;
+    margin-right: 4px;
+  }
+
+  /* TCLEAR callout — reduce inner padding so it fits */
+  .tclear-callout {
+    margin-left: -4px;
+    margin-right: -4px;
+  }
+  .tclear-image {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  /* Section padding: tighten on narrow screens so content has room */
+  .section { padding-left: 0; padding-right: 0; }
+  .wrap { padding-left: 18px; padding-right: 18px; }
+
+  /* Image placeholder: drop min-width so the dev placeholder fits mobile.
+     (Once a real screenshot is uploaded, the <img> replaces this and uses
+     its natural responsive sizing.) */
+  .img-placeholder {
+    min-width: 0;
+    padding: 40px 20px;
+    font-size: 9px;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -1552,8 +1844,6 @@ footer a { color: var(--accent-red); text-decoration: none; }
 <!-- ============ HERO ============ -->
 <section class="hero">
   <div class="hero-fog"><div class="fog-layer"></div><div class="fog-layer"></div></div>
-
-  <div class="hero-title-badge">No State for White Men</div>
 
   <div class="hero-ca-wrap">
     <svg class="hero-ca-svg" viewBox="0 120 500 540" xmlns="http://www.w3.org/2000/svg" overflow="visible">
@@ -1651,10 +1941,12 @@ footer a { color: var(--accent-red); text-decoration: none; }
     </svg>
   </div>
 
+  <div class="hero-title-badge">No State for White Men</div>
+
   <div class="hero-companion">A companion investigation to <a href="https://dont-shoot-the-data.github.io/california-crime-data/" target="_blank">California Race Crime Investigation</a></div>
 
   <div class="hero-arrow">
-    <a onclick="document.getElementById('stage-1').scrollIntoView({behavior:'smooth'})" aria-label="Scroll to introduction">
+    <a onclick="document.getElementById('loop-top').scrollIntoView({behavior:'smooth'})" aria-label="Scroll to four-stage pattern">
       <svg viewBox="0 0 24 24"><path d="M12 5v14M19 12l-7 7-7-7"/></svg>
     </a>
   </div>
@@ -1664,12 +1956,75 @@ footer a { color: var(--accent-red); text-decoration: none; }
 <!-- Intro removed: hero now leads directly into Stage 1 banner.
      Sacramento County declaration moved inside Stage 1 (below). -->
 
+<!-- ============ TOP SPIRAL · Four-stage orientation ============ -->
+<section class="section" id="loop-top" style="padding:34px 0 18px; border-bottom:none">
+  <div class="wrap">
+    <div style="text-align:center; margin-bottom:0">
+      <div class="section-kicker" style="margin-bottom:0">The Scheme</div>
+    </div>
+    <div class="loop-card no-topbar" style="padding:18px 14px 14px; margin:14px auto 0; max-width:560px;">
+      <div class="loop-svg-wrap" style="max-width:490px;">
+        <svg viewBox="30 30 500 500" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:auto; display:block;">
+          <defs>
+            <marker id="arr-top" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+              <polygon points="0 0, 10 3, 0 6" fill="#e63946" />
+            </marker>
+            <filter id="glow-top">
+              <feGaussianBlur stdDeviation="2" result="b"/>
+              <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+
+          <!-- Node 1 TOP · Claim racism -->
+          <g transform="translate(280, 100)">
+            <circle r="62" fill="#12121a" stroke="#e63946" stroke-width="3" filter="url(#glow-top)"/>
+            <text text-anchor="middle" y="-14" font-family="DM Sans" font-size="32" font-weight="800" fill="#e63946">1</text>
+            <text text-anchor="middle" y="14" font-family="DM Sans" font-size="14" font-weight="700" fill="#e8e8ec">Claim</text>
+            <text text-anchor="middle" y="32" font-family="DM Sans" font-size="14" font-weight="700" fill="#e8e8ec">racism</text>
+          </g>
+
+          <!-- Node 2 RIGHT · Data says opposite -->
+          <g transform="translate(460, 280)">
+            <circle r="62" fill="#12121a" stroke="#e8d44d" stroke-width="3" filter="url(#glow-top)"/>
+            <text text-anchor="middle" y="-14" font-family="DM Sans" font-size="32" font-weight="800" fill="#e8d44d">2</text>
+            <text text-anchor="middle" y="14" font-family="DM Sans" font-size="14" font-weight="700" fill="#e8e8ec">Data says</text>
+            <text text-anchor="middle" y="32" font-family="DM Sans" font-size="14" font-weight="700" fill="#e8e8ec">opposite</text>
+          </g>
+
+          <!-- Node 3 BOTTOM · Pay us or else -->
+          <g transform="translate(280, 460)">
+            <circle r="62" fill="#12121a" stroke="#4ea8de" stroke-width="3" filter="url(#glow-top)"/>
+            <text text-anchor="middle" y="-14" font-family="DM Sans" font-size="32" font-weight="800" fill="#4ea8de">3</text>
+            <text text-anchor="middle" y="14" font-family="DM Sans" font-size="14" font-weight="700" fill="#e8e8ec">Pay us</text>
+            <text text-anchor="middle" y="32" font-family="DM Sans" font-size="14" font-weight="700" fill="#e8e8ec">or else</text>
+          </g>
+
+          <!-- Node 4 LEFT · Punish dissent -->
+          <g transform="translate(100, 280)">
+            <circle r="62" fill="#12121a" stroke="#4ade80" stroke-width="3" filter="url(#glow-top)"/>
+            <text text-anchor="middle" y="-14" font-family="DM Sans" font-size="32" font-weight="800" fill="#4ade80">4</text>
+            <text text-anchor="middle" y="14" font-family="DM Sans" font-size="14" font-weight="700" fill="#e8e8ec">Punish</text>
+            <text text-anchor="middle" y="32" font-family="DM Sans" font-size="14" font-weight="700" fill="#e8e8ec">dissent</text>
+          </g>
+
+          <!-- Connecting arrows 1→2→3→4→1 -->
+          <path d="M 332 120 Q 430 170 440 240" stroke="#e63946" stroke-width="2.5" fill="none" marker-end="url(#arr-top)" opacity="0.75"/>
+          <path d="M 440 320 Q 430 410 332 440" stroke="#e63946" stroke-width="2.5" fill="none" marker-end="url(#arr-top)" opacity="0.75"/>
+          <path d="M 228 440 Q 130 410 120 320" stroke="#e63946" stroke-width="2.5" fill="none" marker-end="url(#arr-top)" opacity="0.75"/>
+          <path d="M 120 240 Q 130 170 228 120" stroke="#e63946" stroke-width="2.5" fill="none" marker-end="url(#arr-top)" opacity="0.75"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+  <div class="section-nav-arrow"><a onclick="document.getElementById('stage-1').scrollIntoView({behavior:'smooth'})" aria-label="Begin the investigation"><svg viewBox="0 0 24 24"><path d="M12 5v14M19 12l-7 7-7-7"/></svg></a></div>
+</section>
+
 <!-- ============ STAGE 1 BANNER ============ -->
 <section class="stage-banner stage-1" id="stage-1">
   <div class="section-nav-arrow"><a onclick="document.getElementById('post-stage-1').scrollIntoView({behavior:'smooth'})" aria-label="Next section"><svg viewBox="0 0 24 24"><path d="M12 5v14M19 12l-7 7-7-7"/></svg></a></div>
   <div class="wrap">
     <div class="stage-num">Stage 1 of 4</div>
-    <div class="stage-label">Fake racism</div>
+    <div class="stage-label">Claim racism</div>
     <div class="stage-sub">The institutions declare a crisis, teach the theory, and paint it on the walls.</div>
   </div>
 </section>
@@ -1678,17 +2033,17 @@ footer a { color: var(--accent-red); text-decoration: none; }
 <!-- ============ DECLARATION · Stage 1 opener ============ -->
 <section class="section" id="declaration">
   <div class="wrap">
-    <div class="section-kicker">November 2020 &middot; Sacramento County declares racism a public health crisis</div>
+    <div class="section-kicker">11/20/2020 &middot; Sacramento County</div>
     <h2 class="section-title">In the capital of California, the county government issued this statement <em>about its own residents</em></h2>
-
-    <div class="section-body">
-      <p>Published in full by <a href="https://www.abc10.com/article/news/politics/racism-declared-public-health-issue-in-sacramento-county/103-facca787-cf68-4b34-9444-1f8e2ce8d266" target="_blank">ABC10</a> at the time of the declaration.</p>
-    </div>
 
     <div class="intro-media">
       <div class="img-frame">
-        <div class="img-placeholder">image slot &middot; CNN / ABC10 public-health-emergency headline<br>[drop screenshot here]</div>
+        <div class="img-placeholder">image slot &middot; Sacramento County public-health-crisis headline<br>[drop screenshot here]</div>
       </div>
+    </div>
+
+    <div class="img-caption">
+      Published in full by <a href="https://www.abc10.com/article/news/politics/racism-declared-public-health-issue-in-sacramento-county/103-facca787-cf68-4b34-9444-1f8e2ce8d266" target="_blank">ABC10</a> at the time of the declaration.
     </div>
   </div>
   <div class="section-nav-arrow"><a onclick="document.getElementById('racelighting').scrollIntoView({behavior:'smooth'})" aria-label="Next section"><svg viewBox="0 0 24 24"><path d="M12 5v14M19 12l-7 7-7-7"/></svg></a></div>
@@ -1715,6 +2070,28 @@ footer a { color: var(--accent-red); text-decoration: none; }
       <div class="tweet-foot">
         <span>Coined with Dr. Frank Harris III</span>
         <a href="https://en.wikipedia.org/wiki/J._Luke_Wood" target="_blank">Source</a>
+      </div>
+    </div>
+
+    <!-- Wood video: "racism causes cancer" — same pattern as Prop 36 / Griff embeds -->
+    <div class="section-body" style="margin-top:34px">
+      <p>Here is the president of Sac State claiming racism causes cancer.</p>
+    </div>
+
+    <div style="text-align:center; margin:20px 0 14px;">
+      <div style="display:inline-block; font-family:'Source Code Pro',monospace; font-size:11px; font-weight:700; letter-spacing:3.5px; text-transform:uppercase; color:var(--accent-red); background:transparent; border:2px solid rgba(230,57,70,0.6); padding:9px 20px; transform:rotate(-2deg); text-shadow:0 0 20px rgba(230,57,70,0.4); box-shadow:0 0 30px rgba(230,57,70,0.15), inset 0 0 20px rgba(230,57,70,0.05);">See for yourself</div>
+    </div>
+    <div style="margin:12px auto 0; max-width:720px;">
+      <div style="position:relative; padding-bottom:56.25%; height:0; overflow:hidden; background:#000; border:1px solid var(--border);">
+        <iframe
+          src="https://www.youtube.com/embed/PASTE_WOOD_VIDEO_ID_HERE"
+          style="position:absolute; top:0; left:0; width:100%; height:100%; border:0;"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen
+          title="Dr. Luke Wood on racial battle fatigue and cancer risk"></iframe>
+      </div>
+      <div style="font-family:'Source Code Pro',monospace; font-size:10px; letter-spacing:1.5px; text-transform:uppercase; color:var(--text-muted); text-align:center; margin-top:10px;">
+        Dr. J. Luke Wood &middot; Sacramento State &middot; CSUS Juneteenth Symposium 2024
       </div>
     </div>
   </div>
@@ -1745,10 +2122,6 @@ footer a { color: var(--accent-red); text-decoration: none; }
     <div class="pullquote">
       "Black and brown, our indigenous brothers and sisters, when they go missing there&rsquo;s very rarely the type of media attention, let alone Amber alerts and police resources that we see..."
       <cite>&mdash; Sen. Steven Bradford, at the Ebony Alert signing &middot; October 2023</cite>
-    </div>
-
-    <div class="section-body">
-      <p>The premise is that Black Californians are disproportionately missing and disproportionately ignored. Hold that premise. <strong>We answer it in Stage 2.</strong></p>
     </div>
   </div>
   <div class="section-nav-arrow"><a onclick="document.getElementById('mural').scrollIntoView({behavior:'smooth'})" aria-label="Next section"><svg viewBox="0 0 24 24"><path d="M12 5v14M19 12l-7 7-7-7"/></svg></a></div>
@@ -1792,9 +2165,13 @@ footer a { color: var(--accent-red); text-decoration: none; }
     <h2 class="section-title">A Black man was shot by Sacramento police in his own backyard. <em>Every major news outlet ran the same headline.</em></h2>
 
     <div class="headline-stack" style="margin:0 0 26px; display:grid; gap:14px;">
+      <a href="https://www.kcra.com/article/police-shoot-kill-man-in-backyard-of-south-sacramento-home/19486439" target="_blank" class="headline-card" style="display:block; background:var(--bg-card); border:1px solid var(--border); border-left:3px solid var(--accent-red); padding:16px 20px; text-decoration:none; transition:border-color 0.2s, transform 0.2s;">
+        <div style="font-family:'Source Code Pro',monospace; font-size:10px; letter-spacing:2px; text-transform:uppercase; color:var(--accent-red); margin-bottom:6px; font-weight:700;">KCRA (NBC Sacramento) &middot; March 19, 2018</div>
+        <div style="font-family:'DM Sans',sans-serif; font-size:17px; font-weight:700; color:var(--text-primary); line-height:1.35; letter-spacing:-0.01em;">Police shoot, kill man in backyard of south Sacramento home</div>
+      </a>
       <a href="https://www.cnn.com/2018/03/22/us/sacramento-police-shooting" target="_blank" class="headline-card" style="display:block; background:var(--bg-card); border:1px solid var(--border); border-left:3px solid var(--accent-red); padding:16px 20px; text-decoration:none; transition:border-color 0.2s, transform 0.2s;">
         <div style="font-family:'Source Code Pro',monospace; font-size:10px; letter-spacing:2px; text-transform:uppercase; color:var(--accent-red); margin-bottom:6px; font-weight:700;">CNN &middot; March 22, 2018</div>
-        <div style="font-family:'DM Sans',sans-serif; font-size:17px; font-weight:700; color:var(--text-primary); line-height:1.35; letter-spacing:-0.01em;">Sacramento police shot man holding cellphone in his grandmother&rsquo;s yard</div>
+        <div style="font-family:'DM Sans',sans-serif; font-size:17px; font-weight:700; color:var(--text-primary); line-height:1.35; letter-spacing:-0.01em;">Sacramento police shot man holding cell phone in his grandmother&rsquo;s yard</div>
       </a>
       <a href="https://www.sacbee.com/news/local/crime/article206055609.html" target="_blank" class="headline-card" style="display:block; background:var(--bg-card); border:1px solid var(--border); border-left:3px solid var(--accent-red); padding:16px 20px; text-decoration:none; transition:border-color 0.2s, transform 0.2s;">
         <div style="font-family:'Source Code Pro',monospace; font-size:10px; letter-spacing:2px; text-transform:uppercase; color:var(--accent-red); margin-bottom:6px; font-weight:700;">Sacramento Bee &middot; March 20, 2018</div>
@@ -1808,19 +2185,18 @@ footer a { color: var(--accent-red); text-decoration: none; }
       <div class="case-body text-only">
         <ul style="line-height:1.75; font-size:16px; color:var(--text-primary); padding-left:22px; margin:0">
           <li><strong>March 18, 2018.</strong> Stephon Clark, 22, shot and killed by Sacramento police in his grandmother's South Sacramento backyard. <span style="color:var(--accent-red); font-weight:700">Unarmed. Only a cell phone was recovered.</span></li>
-          <li>On the one-year anniversary, <strong>Rev. Al Sharpton</strong> stood on the steps of the California State Capitol and called it <a href="https://www.fox35orlando.com/news/marking-the-one-year-anniversary-of-stephon-clarks-death-in-sacramento.amp" target="_blank"><em>"a national disgrace."</em></a></li>
           <li>The <a href="https://www.aclunorcal.org/press-releases/aclu-northern-california-statement-sacramento-pd-fatal-shooting-stephon-clark/" target="_blank">ACLU of Northern California</a> declared the killing racist. The NAACP and Black Lives Matter led weeks of Sacramento protests.</li>
           <li>Protests shut down Interstate 5. Blocked entry to Sacramento Kings games. A year later, after the DA declined charges, <strong>84 protesters were arrested</strong> after <a href="https://www.capradio.org/articles/2019/03/08/district-attorney-drops-charges-against-84-people-arrested-in-east-sacramento-stephon-clark-protest" target="_blank">keying cars</a> in the Fab 40s, East Sacramento's wealthiest and whitest neighborhood.</li>
         </ul>
       </div>
       <div class="case-source">
-        Sources: <a href="https://www.aclunorcal.org/press-releases/aclu-northern-california-statement-sacramento-pd-fatal-shooting-stephon-clark/" target="_blank">ACLU NorCal</a> &middot; <a href="https://www.fox35orlando.com/news/marking-the-one-year-anniversary-of-stephon-clarks-death-in-sacramento.amp" target="_blank">KTVU/AP (Sharpton, March 2019)</a> &middot; <a href="https://en.wikipedia.org/wiki/Shooting_of_Stephon_Clark" target="_blank">Wikipedia</a> &middot; <a href="https://www.capradio.org/articles/2019/03/08/district-attorney-drops-charges-against-84-people-arrested-in-east-sacramento-stephon-clark-protest" target="_blank">CapRadio</a>
+        Sources: <a href="https://www.aclunorcal.org/press-releases/aclu-northern-california-statement-sacramento-pd-fatal-shooting-stephon-clark/" target="_blank">ACLU NorCal</a> &middot; <a href="https://en.wikipedia.org/wiki/Shooting_of_Stephon_Clark" target="_blank">Wikipedia</a> &middot; <a href="https://www.capradio.org/articles/2019/03/08/district-attorney-drops-charges-against-84-people-arrested-in-east-sacramento-stephon-clark-protest" target="_blank">CapRadio</a>
       </div>
     </div>
 
     <div class="pullquote">
       "Racist policing is a systemic problem, not a series of isolated incidents."
-      <cite>&mdash; <a href="https://www.aclunorcal.org/press-releases/aclu-northern-california-statement-sacramento-pd-fatal-shooting-stephon-clark/" target="_blank">ACLU of Northern California</a>, March 2018</cite>
+      <cite>&mdash; <a href="https://www.aclunorcal.org/press-releases/aclu-northern-california-statement-sacramento-pd-fatal-shooting-stephon-clark/" target="_blank">ACLU of Northern California</a>, official statement on the Clark shooting, March 2018</cite>
     </div>
   </div>
   <div class="section-nav-arrow"><a onclick="document.getElementById('stage-2').scrollIntoView({behavior:'smooth'})" aria-label="Next section"><svg viewBox="0 0 24 24"><path d="M12 5v14M19 12l-7 7-7-7"/></svg></a></div>
@@ -1895,11 +2271,22 @@ footer a { color: var(--accent-red); text-decoration: none; }
       <div style="color:var(--accent-red); font-size:28px; line-height:1">&darr;</div>
     </div>
 
-    <!-- Bold rally callout — the part nobody talks about -->
-    <div style="margin:0 auto 28px; max-width:820px; text-align:center; padding:28px 22px; border:2px solid var(--accent-red); background:linear-gradient(180deg, rgba(230,57,70,0.08), rgba(230,57,70,0.02)); border-radius:6px; position:relative">
-      <div style="font-family:'Source Code Pro',monospace; font-size:10px; letter-spacing:2.8px; text-transform:uppercase; color:var(--accent-red); font-weight:700; margin-bottom:12px">And then &mdash; wait for it</div>
-      <div style="font-family:'DM Sans',sans-serif; font-size:clamp(22px,3.4vw,32px); font-weight:800; line-height:1.2; letter-spacing:-0.02em; color:var(--text-primary); margin-bottom:10px">They held a <span style="color:var(--accent-red); text-decoration:underline; text-underline-offset:6px; text-decoration-thickness:3px">rally</span>. For him.</div>
-      <div style="font-family:'DM Sans',sans-serif; font-size:clamp(15px,2vw,17px); font-weight:500; color:var(--text-secondary); max-width:640px; margin:0 auto; line-height:1.5">Four days after the killings, activists rallied in East Oakland in support of the cop killer. Signs read <strong style="color:var(--accent-red)">&ldquo;genocide.&rdquo;</strong> A self-described National Black Newspaper called the four officers&rsquo; deaths a <strong style="color:var(--accent-red)">victory for &ldquo;the people&rdquo;</strong> and called Mixon&rsquo;s death a <strong style="color:var(--accent-red)">murder</strong>.</div>
+    <!-- UNIFIED rally block: kicker + headline + photo + explanation — one card -->
+    <div style="margin:0 auto 28px; max-width:820px; border:2px solid var(--accent-red); background:linear-gradient(180deg, rgba(230,57,70,0.08), rgba(230,57,70,0.02)); border-radius:6px; overflow:hidden;">
+      <!-- Headline block -->
+      <div style="text-align:center; padding:28px 22px 22px;">
+        <div style="font-family:'Source Code Pro',monospace; font-size:10px; letter-spacing:2.8px; text-transform:uppercase; color:var(--accent-red); font-weight:700; margin-bottom:12px">And then &mdash; wait for it</div>
+        <div style="font-family:'DM Sans',sans-serif; font-size:clamp(22px,3.4vw,32px); font-weight:800; line-height:1.2; letter-spacing:-0.02em; color:var(--text-primary);">Oaklanders held a <span style="color:var(--accent-red); text-decoration:underline; text-underline-offset:6px; text-decoration-thickness:3px">rally for the cop killer</span>.</div>
+      </div>
+      <!-- Rally photo · awaiting upload from Vincent -->
+      <div style="background:#12121a; border-top:1px solid rgba(230,57,70,0.25); border-bottom:1px solid rgba(230,57,70,0.25);">
+        <img src="oakland-rally.png" alt="~60 people rallied in East Oakland in support of Lovelle Mixon, March 2009" style="width:100%; height:auto; display:block" onerror="this.outerHTML='<div style=&quot;padding:60px 20px; text-align:center; font-family:Source Code Pro,monospace; font-size:11px; letter-spacing:2px; color:var(--text-muted); text-transform:uppercase; line-height:1.8&quot;>image slot &middot; oakland-rally.png<br>[Rally in support of the cop killer &middot; East Oakland &middot; March 2009]</div>'">
+        <div style="padding:10px 14px; font-family:'Source Code Pro',monospace; font-size:10px; letter-spacing:1.8px; text-transform:uppercase; color:var(--text-muted); text-align:center;">The rally in support of the cop killer &middot; East Oakland &middot; March 2009</div>
+      </div>
+      <!-- Explanation paragraph -->
+      <div style="padding:22px 26px 24px; font-family:'DM Sans',sans-serif; font-size:clamp(15px,2vw,17px); font-weight:500; color:var(--text-secondary); line-height:1.6; text-align:center;">
+        Four days after the killings, activists rallied in East Oakland in support of the cop killer. Signs read <strong style="color:var(--accent-red)">&ldquo;genocide.&rdquo;</strong> A self-described National Black Newspaper called the four officers&rsquo; deaths a <strong style="color:var(--accent-red)">victory for &ldquo;the people&rdquo;</strong> and called Mixon&rsquo;s death a <strong style="color:var(--accent-red)">murder</strong>.
+      </div>
     </div>
 
     <!-- Mixon — the buried counter-case, with photo slots -->
@@ -1945,8 +2332,32 @@ footer a { color: var(--accent-red); text-decoration: none; }
       <p>The <a href="https://www.washingtonpost.com/graphics/investigations/police-shootings-database/" target="_blank">Washington Post Fatal Force database</a> has tracked every fatal U.S. police shooting since 2015. We pulled the unarmed subset, by race, and set it against the number of American police officers killed by gunfire across the same decade.</p>
     </div>
 
+    <!-- Annual averages · reordered Officers, White, Black, Hispanic, Asian · now ABOVE the chart -->
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(120px, 1fr)); gap:12px; max-width:900px; margin:0 auto 22px;">
+      <div style="background:var(--bg-card); border:1px solid rgba(74,222,128,0.4); border-top:3px solid #4ade80; padding:18px 12px; text-align:center;">
+        <div style="font-family:'Source Code Pro',monospace; font-size:30px; font-weight:800; color:#4ade80; line-height:1; text-shadow:0 0 18px rgba(74,222,128,0.4)">52.4</div>
+        <div style="font-family:'Source Code Pro',monospace; font-size:9.5px; letter-spacing:1.5px; color:var(--text-muted); margin-top:8px; text-transform:uppercase">Officers killed/yr</div>
+      </div>
+      <div style="background:var(--bg-card); border:1px solid var(--border); border-top:3px solid #4ea8de; padding:18px 12px; text-align:center;">
+        <div style="font-family:'Source Code Pro',monospace; font-size:30px; font-weight:800; color:#4ea8de; line-height:1; text-shadow:0 0 18px rgba(78,168,222,0.35)">22.2</div>
+        <div style="font-family:'Source Code Pro',monospace; font-size:9.5px; letter-spacing:1.5px; color:var(--text-muted); margin-top:8px; text-transform:uppercase">White/yr</div>
+      </div>
+      <div style="background:var(--bg-card); border:1px solid var(--border); border-top:3px solid #c840e9; padding:18px 12px; text-align:center;">
+        <div style="font-family:'Source Code Pro',monospace; font-size:30px; font-weight:800; color:#c840e9; line-height:1; text-shadow:0 0 18px rgba(200,64,233,0.35)">18.0</div>
+        <div style="font-family:'Source Code Pro',monospace; font-size:9.5px; letter-spacing:1.5px; color:var(--text-muted); margin-top:8px; text-transform:uppercase">Black/yr</div>
+      </div>
+      <div style="background:var(--bg-card); border:1px solid var(--border); border-top:3px solid #e8853a; padding:18px 12px; text-align:center;">
+        <div style="font-family:'Source Code Pro',monospace; font-size:30px; font-weight:800; color:#e8853a; line-height:1; text-shadow:0 0 18px rgba(232,133,58,0.35)">11.2</div>
+        <div style="font-family:'Source Code Pro',monospace; font-size:9.5px; letter-spacing:1.5px; color:var(--text-muted); margin-top:8px; text-transform:uppercase">Hispanic/yr</div>
+      </div>
+      <div style="background:var(--bg-card); border:1px solid var(--border); border-top:3px solid #e8d44d; padding:18px 12px; text-align:center;">
+        <div style="font-family:'Source Code Pro',monospace; font-size:30px; font-weight:800; color:#e8d44d; line-height:1; text-shadow:0 0 18px rgba(232,212,77,0.35)">0.9</div>
+        <div style="font-family:'Source Code Pro',monospace; font-size:9.5px; letter-spacing:1.5px; color:var(--text-muted); margin-top:8px; text-transform:uppercase">Asian/yr</div>
+      </div>
+    </div>
+
     <div class="chart-card">
-      <div class="chart-title">Unarmed Fatal Police Shootings by Race vs. Officers Killed by Gunfire</div>
+      <div class="chart-title">Unarmed Fatal Police Shootings &middot; Average per Year</div>
       <div class="chart-sub"><span class="city-date-duration">2015 &ndash; 2024 &middot; 10 years</span></div>
       <div class="chart-wrap tall"><canvas id="chartPolice"></canvas></div>
       <div class="chart-caption">
@@ -1959,37 +2370,10 @@ footer a { color: var(--accent-red); text-decoration: none; }
       <strong>Every year 2015&ndash;2024, more American police officers were killed by gunfire than unarmed Black people were killed by police.</strong> Ten-year totals: <strong style="color:#4ade80">524 officers killed</strong> vs. <strong style="color:#c840e9">180 unarmed Black fatalities</strong> vs. <strong style="color:#4ea8de">222 unarmed White fatalities</strong>.
     </div>
 
-    <!-- 10-year averages row -->
-    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(120px, 1fr)); gap:12px; max-width:900px; margin:22px auto 0;">
-      <div style="background:var(--bg-card); border:1px solid var(--border); border-top:3px solid #c840e9; padding:18px 12px; text-align:center;">
-        <div style="font-family:'Source Code Pro',monospace; font-size:30px; font-weight:800; color:#c840e9; line-height:1; text-shadow:0 0 18px rgba(200,64,233,0.35)">18.0</div>
-        <div style="font-family:'Source Code Pro',monospace; font-size:9.5px; letter-spacing:1.5px; color:var(--text-muted); margin-top:8px; text-transform:uppercase">Black/yr</div>
-      </div>
-      <div style="background:var(--bg-card); border:1px solid var(--border); border-top:3px solid #4ea8de; padding:18px 12px; text-align:center;">
-        <div style="font-family:'Source Code Pro',monospace; font-size:30px; font-weight:800; color:#4ea8de; line-height:1; text-shadow:0 0 18px rgba(78,168,222,0.35)">22.2</div>
-        <div style="font-family:'Source Code Pro',monospace; font-size:9.5px; letter-spacing:1.5px; color:var(--text-muted); margin-top:8px; text-transform:uppercase">White/yr</div>
-      </div>
-      <div style="background:var(--bg-card); border:1px solid var(--border); border-top:3px solid #e8853a; padding:18px 12px; text-align:center;">
-        <div style="font-family:'Source Code Pro',monospace; font-size:30px; font-weight:800; color:#e8853a; line-height:1; text-shadow:0 0 18px rgba(232,133,58,0.35)">11.2</div>
-        <div style="font-family:'Source Code Pro',monospace; font-size:9.5px; letter-spacing:1.5px; color:var(--text-muted); margin-top:8px; text-transform:uppercase">Hispanic/yr</div>
-      </div>
-      <div style="background:var(--bg-card); border:1px solid var(--border); border-top:3px solid #e8d44d; padding:18px 12px; text-align:center;">
-        <div style="font-family:'Source Code Pro',monospace; font-size:30px; font-weight:800; color:#e8d44d; line-height:1; text-shadow:0 0 18px rgba(232,212,77,0.35)">0.9</div>
-        <div style="font-family:'Source Code Pro',monospace; font-size:9.5px; letter-spacing:1.5px; color:var(--text-muted); margin-top:8px; text-transform:uppercase">Asian/yr</div>
-      </div>
-      <div style="background:var(--bg-card); border:1px solid rgba(74,222,128,0.4); border-top:3px solid #4ade80; padding:18px 12px; text-align:center;">
-        <div style="font-family:'Source Code Pro',monospace; font-size:30px; font-weight:800; color:#4ade80; line-height:1; text-shadow:0 0 18px rgba(74,222,128,0.4)">52.4</div>
-        <div style="font-family:'Source Code Pro',monospace; font-size:9.5px; letter-spacing:1.5px; color:var(--text-muted); margin-top:8px; text-transform:uppercase">Officers killed/yr</div>
-      </div>
-    </div>
-
     <div class="section-body" style="margin-top:30px">
-      <p><a href="https://www.skeptic.com/research-center/reports/Research-Report-CUPES-007.pdf" target="_blank">The Skeptic Research Center asked 980 U.S. adults</a> to estimate the number of unarmed Black people killed by police in a year. Over half of self-described &ldquo;very liberal&rdquo; respondents guessed <strong>1,000 or more</strong>. One in five guessed <strong>10,000 or more</strong>. The actual number for 2019, per the Washington Post Fatal Force database, was <strong style="color:var(--accent-red)">13</strong>. The 10,000-a-year claim overstates reality by a factor of roughly <strong style="color:var(--accent-red)">769&times;</strong>.</p>
+      <p><a href="https://www.skeptic.com/research-center/reports/Research-Report-CUPES-007.pdf" target="_blank">The Skeptic Research Center asked 980 U.S. adults</a> to estimate the number of unarmed Black people killed by police in a year. Over half of self-described &ldquo;very liberal&rdquo; respondents guessed <strong>1,000 or more</strong>. One in five guessed <strong>10,000 or more</strong>. The actual number for 2019, per the Washington Post Fatal Force database, was <strong style="color:var(--accent-red)">11</strong>. The 10,000-a-year claim overstates reality by a factor of roughly <strong style="color:var(--accent-red)">909&times;</strong>.</p>
     </div>
 
-    <div class="pullquote">
-      Oakland knew this in 2009. The country still doesn&rsquo;t.
-    </div>
   </div>
   <div class="section-nav-arrow"><a onclick="document.getElementById('tclear').scrollIntoView({behavior:'smooth'})" aria-label="Next section"><svg viewBox="0 0 24 24"><path d="M12 5v14M19 12l-7 7-7-7"/></svg></a></div>
 </section>
@@ -2005,9 +2389,60 @@ footer a { color: var(--accent-red); text-decoration: none; }
         <div class="tclear-kicker">The data behind the mural &middot; T-CLEAR Study</div>
         <div class="tclear-title">Ten years of fatal violence against trans Americans, 2015&ndash;2024.</div>
       </div>
-      <div class="tclear-image">
-        <img src="tclear-chart-a.png" alt="T-CLEAR Chart A: Racial Disproportionality of Suspects and Victims, 2015-2024. Black suspects 4.79x overrepresented, White suspects 70% underrepresented."
-             onerror="this.outerHTML='&lt;div class=\'fallback tall\'&gt;image slot &middot; tclear-chart-a.png&lt;br&gt;[T-CLEAR Chart A &middot; Racial Disproportionality]&lt;/div&gt;'">
+      <!-- NEW: Study scope + key findings stated at the top -->
+      <div style="padding:18px 22px 2px; font-family:'DM Sans',sans-serif; font-size:16px; line-height:1.65; color:var(--text-secondary); border-bottom:1px solid var(--border)">
+        <p style="margin:0 0 10px">A decade-long study cataloged <strong style="color:var(--text-primary)">every fatal transgender killing in the United States between 2015 and 2024</strong>. Every case, every year, primary-source verified.</p>
+        <p style="margin:0 0 14px"><strong style="color:var(--text-primary)">Of 189 identified suspects, 65.1% were Black and 18.0% were White.</strong> The Black share is nearly 5&times; the Black U.S. population share; the White share is less than a third of the White population share.</p>
+      </div>
+      <div class="tclear-image" style="padding:16px 20px 20px;">
+        <div class="chart-title" id="tclearChartTitle" style="font-size:15px; margin-bottom:4px; text-align:center">Racial Disproportionality of Identified Suspects</div>
+        <div class="chart-sub" style="text-align:center; margin-bottom:12px"><span id="tclearChartDate" class="city-date-duration">2015 &ndash; 2024 &middot; 10 years &middot; N = 189</span></div>
+
+        <!-- Toggle row: Suspect / Victim on the left, % / # slider on the right -->
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin:4px 0 12px;">
+          <div style="display:flex; gap:6px;">
+            <button id="tclearBtnSuspect" class="tclear-view-btn tclear-view-active" onclick="setTclearView('suspect')">Suspect</button>
+            <button id="tclearBtnVictim"  class="tclear-view-btn"                    onclick="setTclearView('victim')">Victim</button>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px; font-family:'Source Code Pro',monospace; font-size:11px; font-weight:700; letter-spacing:1.5px;">
+            <span id="tclear-lbl-pct" style="color:var(--accent-gold)">%</span>
+            <label style="position:relative; display:inline-block; width:34px; height:18px; margin:0; cursor:pointer">
+              <input type="checkbox" id="tclear-unit-toggle" onchange="toggleTclearUnits(this.checked)" style="opacity:0; width:0; height:0">
+              <span id="tclear-track" style="position:absolute; top:0; left:0; right:0; bottom:0; background:var(--accent-gold); border-radius:9px; transition:.25s"></span>
+              <span id="tclear-dot" style="position:absolute; top:2px; left:2px; width:14px; height:14px; background:#fff; border-radius:50%; transition:.25s; box-shadow:0 1px 3px rgba(0,0,0,.4)"></span>
+            </label>
+            <span id="tclear-lbl-hash" style="color:var(--text-muted)">#</span>
+          </div>
+        </div>
+
+        <!-- Chart canvas · taller to match source doc proportions -->
+        <div style="position:relative; height:420px;">
+          <canvas id="chartTclear"></canvas>
+        </div>
+
+        <!-- Multiplier cards · now BELOW chart (ids so JS can swap values) -->
+        <div class="tclear-mult-grid" style="display:grid; grid-template-columns:repeat(4, 1fr); gap:8px; margin:22px 0 6px;">
+          <div style="background:rgba(200,64,233,0.1); border:1px solid rgba(200,64,233,0.4); border-top:3px solid #c840e9; padding:12px 6px; text-align:center">
+            <div id="tclearMultBlack" style="font-family:'Source Code Pro',monospace; font-size:22px; font-weight:800; color:#c840e9; line-height:1">4.79&times;</div>
+            <div style="font-family:'Source Code Pro',monospace; font-size:9px; letter-spacing:1.2px; color:var(--text-muted); margin-top:6px; text-transform:uppercase">Black</div>
+          </div>
+          <div style="background:rgba(78,168,222,0.08); border:1px solid rgba(78,168,222,0.35); border-top:3px solid #4ea8de; padding:12px 6px; text-align:center">
+            <div id="tclearMultWhite" style="font-family:'Source Code Pro',monospace; font-size:22px; font-weight:800; color:#4ea8de; line-height:1">0.30&times;</div>
+            <div style="font-family:'Source Code Pro',monospace; font-size:9px; letter-spacing:1.2px; color:var(--text-muted); margin-top:6px; text-transform:uppercase">White</div>
+          </div>
+          <div style="background:rgba(232,133,58,0.1); border:1px solid rgba(232,133,58,0.4); border-top:3px solid #e8853a; padding:12px 6px; text-align:center">
+            <div id="tclearMultHispanic" style="font-family:'Source Code Pro',monospace; font-size:22px; font-weight:800; color:#e8853a; line-height:1">0.86&times;</div>
+            <div style="font-family:'Source Code Pro',monospace; font-size:9px; letter-spacing:1.2px; color:var(--text-muted); margin-top:6px; text-transform:uppercase">Hispanic</div>
+          </div>
+          <div style="background:rgba(232,212,77,0.08); border:1px solid rgba(232,212,77,0.35); border-top:3px solid #e8d44d; padding:12px 6px; text-align:center">
+            <div id="tclearMultOther" style="font-family:'Source Code Pro',monospace; font-size:22px; font-weight:800; color:#e8d44d; line-height:1">0.14&times;</div>
+            <div style="font-family:'Source Code Pro',monospace; font-size:9px; letter-spacing:1.2px; color:var(--text-muted); margin-top:6px; text-transform:uppercase">Asian/Other</div>
+          </div>
+        </div>
+
+        <div style="font-family:'Source Code Pro',monospace; font-size:9.5px; color:var(--text-muted); letter-spacing:0.5px; text-align:center; margin-top:16px; line-height:1.6">
+          Dashed bars: U.S. population share (Census ACS 2020&ndash;2023) &middot; <a href="https://dont-shoot-the-data.github.io/TCLEAR/" target="_blank" style="color:var(--accent-gold); border-bottom:1px dotted currentColor; text-decoration:none">Full T-CLEAR report &rarr;</a>
+        </div>
       </div>
       <div class="tclear-body">
         <p>The mural says white silence is violence. The study built to examine exactly that question says the opposite. <strong>Black perpetrators account for 65.1% of identified suspects in fatal violence against trans Americans &mdash; nearly five times the Black share of the U.S. population. White perpetrators are 70% underrepresented.</strong> The mural pretends the demographic least responsible is the one killing trans women. It also pretends the demographic most responsible is a victim.</p>
@@ -2052,6 +2487,10 @@ footer a { color: var(--accent-red); text-decoration: none; }
 
       <div class="chart-title" id="sacTitle">Robbery Incidents in Sacramento</div>
       <div class="chart-sub" id="sacSub"><span class="city-date-duration">Jan 2016 – Mar 2024 · 8 years, 3 months</span></div>
+      <div class="interracial-ribbons" id="sacTopRibbons">
+        <div class="interracial-ribbon ribbon-target" id="sacTargetRibbon"></div>
+        <div class="interracial-ribbon ribbon-cause"  id="sacCauseRibbon"></div>
+      </div>
       <div class="chart-wrap tall"><canvas id="chartSac"></canvas></div>
       <div class="chart-ribbon" id="sacRibbon">
         <div class="ribbon-heading">BIGGEST INTERRACIAL DISPARITY</div>
@@ -2070,8 +2509,8 @@ footer a { color: var(--accent-red); text-decoration: none; }
           </div>
         </div>
       </div>
-      <div class="disp-row" id="sacDispRow" style="margin:14px 0 0; padding:20px 18px; border:1px solid var(--border); background:rgba(18,18,26,0.4)">
-        <div style="font-family:'Source Code Pro',monospace; font-size:10.5px; letter-spacing:2.8px; text-transform:uppercase; color:var(--text-muted); text-align:center; font-weight:700; margin-bottom:14px">DISPROPORTIONALITY</div>
+      <div class="disp-row" id="sacDispRow" style="margin:14px 0 0; padding:14px 0 0;">
+        <div id="sacDispLabel" style="font-family:'Source Code Pro',monospace; font-size:10.5px; letter-spacing:2.8px; text-transform:uppercase; color:var(--text-muted); text-align:center; font-weight:700; margin-bottom:14px">HOMICIDE DISPROPORTIONALITY</div>
         <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:10px;">
           <div style="display:flex; align-items:center; justify-content:center; gap:10px; padding:10px 12px; border:1px solid var(--border); background:rgba(200,64,233,0.05)">
             <span style="font-family:'DM Sans',sans-serif; font-size:13px; font-weight:700; color:var(--black-race)">Black</span>
@@ -2101,7 +2540,7 @@ footer a { color: var(--accent-red); text-decoration: none; }
 
     <div class="highlight" style="margin-top:18px; border-left-color: var(--accent-gold)">
       <div style="font-family:'Source Code Pro', monospace; font-size:10.5px; letter-spacing:2.8px; text-transform:uppercase; color:var(--accent-gold); margin-bottom:10px; font-weight:700">Cross-City &middot; The Pattern Holds</div>
-      <p style="margin:0">Sacramento is not alone. We filed the same public records request with California's ten most populous cities. Five responded with usable data. <strong>In every city, across every crime released, the same result:</strong> whites the most interracially attacked, Black suspects the number-one interracial perpetrator group. <a href="https://dont-shoot-the-data.github.io/california-crime-data/" target="_blank">Full city-by-city breakdown &middot; Transparency Scorecard</a>.</p>
+      <p style="margin:0">Sacramento is not alone. We filed the same public records request with California's ten most populous cities. Five responded with usable data. <strong>Across the five cities, white victims accounted for 5,891 interracial attacks &mdash; more than any other group &mdash; and Black suspects were in the top two interracial perpetrator groups in every city/crime combination released.</strong> <a href="https://dont-shoot-the-data.github.io/california-crime-data/" target="_blank">Full city-by-city breakdown &middot; Transparency Scorecard</a>.</p>
     </div>
   </div>
   <div class="section-nav-arrow"><a onclick="document.getElementById('cross-cities').scrollIntoView({behavior:'smooth'})" aria-label="Check the other cities"><svg viewBox="0 0 24 24"><path d="M12 5v14M19 12l-7 7-7-7"/></svg></a></div>
@@ -2114,7 +2553,7 @@ footer a { color: var(--accent-red); text-decoration: none; }
     <h2 class="section-title">Sacramento is not an outlier. <em>The same pattern holds everywhere we looked.</em></h2>
 
     <div class="section-body">
-      <p>We filed the same public records request with California&rsquo;s ten most populous cities. <strong>San Jos&eacute; released all four violent-crime categories.</strong> San Francisco, Oakland, San Diego County, and LAPD restricted their responses to homicide. Across every city and every crime released, the rank order is the same.</p>
+      <p>We filed the same public records request with California&rsquo;s ten most populous cities. <strong>San Jos&eacute; released all four violent-crime categories.</strong> San Francisco, Oakland, San Diego County, and LAPD restricted their responses to homicide. Across the five cities, Black suspects were in the top two interracial perpetrator groups in every combination released. White victims were the most interracially attacked group in aggregate.</p>
     </div>
 
     <!-- City selector tabs -->
@@ -2129,17 +2568,20 @@ footer a { color: var(--accent-red); text-decoration: none; }
       <span id="laPublicSourceBadge" style="display:none; font-family:'Source Code Pro',monospace; font-size:10px; font-weight:700; letter-spacing:2.5px; text-transform:uppercase; color:var(--accent-gold); background:transparent; border:1.5px solid rgba(232,133,58,0.55); padding:6px 14px; transform:rotate(-1.5deg); text-shadow:0 0 12px rgba(232,133,58,0.3); box-shadow:0 0 20px rgba(232,133,58,0.12), inset 0 0 12px rgba(232,133,58,0.04);">Public Reports &middot; LAPD PRR denied</span>
     </div>
 
-    <!-- Crime sub-tabs (auto-hide based on city availability) -->
-    <div class="chart-tabs" id="cityCrimeTabs" style="margin-top:8px; margin-bottom:18px; opacity:0.85">
-      <button class="active" data-crime="homicide">Homicide</button>
-      <button data-crime="rape">Rape</button>
-      <button data-crime="kidnap">Kidnapping</button>
-      <button data-crime="robbery">Robbery</button>
-    </div>
-
     <div class="chart-card">
+      <!-- Crime sub-tabs (auto-hide based on city availability) moved INSIDE chart-card -->
+      <div class="chart-tabs" id="cityCrimeTabs">
+        <button class="active" data-crime="homicide">Homicide</button>
+        <button data-crime="rape">Rape</button>
+        <button data-crime="kidnap">Kidnapping</button>
+        <button data-crime="robbery">Robbery</button>
+      </div>
       <div class="chart-title" id="cityTitle">&nbsp;</div>
       <div class="chart-sub" id="citySub">&nbsp;</div>
+      <div class="interracial-ribbons" id="cityTopRibbons">
+        <div class="interracial-ribbon ribbon-target" id="cityTargetRibbon"></div>
+        <div class="interracial-ribbon ribbon-cause"  id="cityCauseRibbon"></div>
+      </div>
       <div class="chart-wrap tall"><canvas id="chartCity"></canvas></div>
       <div class="chart-ribbon" id="cityRibbon">
         <div class="ribbon-heading">BIGGEST INTERRACIAL DISPARITY</div>
@@ -2160,7 +2602,7 @@ footer a { color: var(--accent-red); text-decoration: none; }
       </div>
       <!-- LA-only disproportionality row (hidden unless LA is active) -->
       <div class="disp-row" id="cityDispRow" style="display:none; margin:18px 0 0; padding:22px 18px; border:1px solid var(--border); background:rgba(18,18,26,0.4)">
-        <div style="font-family:'Source Code Pro',monospace; font-size:10.5px; letter-spacing:2.8px; text-transform:uppercase; color:var(--text-muted); text-align:center; font-weight:700; margin-bottom:14px">DISPROPORTIONALITY</div>
+        <div id="cityDispLabel" style="font-family:'Source Code Pro',monospace; font-size:10.5px; letter-spacing:2.8px; text-transform:uppercase; color:var(--text-muted); text-align:center; font-weight:700; margin-bottom:14px">HOMICIDE DISPROPORTIONALITY</div>
         <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:10px;">
           <div style="display:flex; align-items:center; justify-content:center; gap:10px; padding:10px 12px; border:1px solid var(--border); background:rgba(200,64,233,0.05)">
             <span style="font-family:'DM Sans',sans-serif; font-size:13px; font-weight:700; color:var(--black-race)">Black</span>
@@ -2184,7 +2626,7 @@ footer a { color: var(--accent-red); text-decoration: none; }
     </div>
 
     <div class="highlight" style="margin-top:22px">
-      Five cities. Five different law-enforcement agencies. Five different mayors. Five different police chiefs. Populations ranging from 5% Black to 65% Hispanic. <strong>The rank order of interracial violence does not change.</strong>
+      Five cities. Five different law-enforcement agencies. Five different mayors. Five different police chiefs. Populations ranging from 5% Black to 65% Hispanic. <strong>Black suspects are in the top two interracial perpetrator groups in every city/crime combination released. In aggregate, white victims are the most interracially attacked group across all five cities.</strong>
     </div>
   </div>
   <div class="section-nav-arrow"><a onclick="document.getElementById('kidnap-counter').scrollIntoView({behavior:'smooth'})" aria-label="The counter to the Ebony Alert"><svg viewBox="0 0 24 24"><path d="M12 5v14M19 12l-7 7-7-7"/></svg></a></div>
@@ -2194,20 +2636,33 @@ footer a { color: var(--accent-red); text-decoration: none; }
 <section class="section" id="kidnap-counter">
   <div class="wrap">
     <div class="section-kicker">The Counter to the Ebony Alert</div>
-    <h2 class="section-title">The state built an alert for missing Black youth. <em>Whose alert would answer the data?</em></h2>
+    <h2 class="section-title">The state built an alert for missing Black youth.</h2>
 
-    <!-- Time-period disclosure up top, typewriter style -->
-    <div style="text-align:center; margin:22px 0 18px">
-      <div class="chart-sub" style="margin:0"><span class="city-date-duration">Sacramento PD: Jan 2016 &ndash; Mar 2024 &middot; 8 yrs 3 mo</span></div>
-      <div class="chart-sub" style="margin:6px 0 0"><span class="city-date-duration">San Jos&eacute; PD: Jan 2020 &ndash; Dec 2024 &middot; 5 yrs</span></div>
+    <!-- What prompted it &mdash; short, hard origin callout (moved from Stage 1) -->
+    <div style="margin:18px auto 22px; max-width:820px; padding:24px 26px; border:1px solid rgba(230,57,70,0.45); background:linear-gradient(180deg, rgba(230,57,70,0.05), rgba(230,57,70,0.01)); border-radius:6px;">
+      <div style="font-family:'Source Code Pro',monospace; font-size:10px; letter-spacing:2.8px; text-transform:uppercase; color:var(--accent-red); font-weight:700; margin-bottom:12px; text-align:center">What prompted it</div>
+      <p style="font-family:'DM Sans',sans-serif; font-size:clamp(18px,2.4vw,22px); line-height:1.4; color:var(--text-primary); margin:0 0 18px; font-weight:800; letter-spacing:-0.01em; text-align:center">A white woman went missing. Black activists sociopathically made it about themselves.</p>
+      <p style="font-family:'DM Sans',sans-serif; font-size:15px; line-height:1.7; color:var(--text-secondary); margin:0 0 14px"><a href="https://abcnews.go.com/GMA/News/gabby-petito-case-missing-white-woman-syndrome-experts/story?id=80144611" target="_blank" style="color:var(--text-secondary); text-decoration:underline; text-decoration-color:rgba(230,57,70,0.5)">Gabby Petito</a> disappeared in September 2021. She and her fianc&eacute; <strong>Brian Laundrie</strong> were van-life YouTube streamers who built a brand around their perfect relationship. Behind the camera, there was obvious turmoil. He killed her. <strong style="color:var(--text-primary)">The story was the mismatch &mdash; not her race.</strong></p>
+      <p style="font-family:'DM Sans',sans-serif; font-size:15px; line-height:1.7; color:var(--text-secondary); margin:0 0 18px">Of course, within days, <a href="https://www.deseret.com/2021/9/21/22686285/gabby-petito-news-coverage-brian-laundrie-missing-white-woman-syndrome/" target="_blank" style="color:var(--text-secondary); text-decoration:underline; text-decoration-color:rgba(230,57,70,0.5)">MSNBC&rsquo;s Joy Reid</a> reframed it as &ldquo;missing white woman syndrome.&rdquo; Sen. Steven Bradford <a href="https://www.ms.now/the-reidout/reidout-blog/ebony-alerts-missing-black-youth-california-rcna131960" target="_blank" style="color:var(--text-secondary); text-decoration:underline; text-decoration-color:rgba(230,57,70,0.5)">cited that exact framing</a> when he introduced SB 673.</p>
+      <p style="font-family:'DM Sans',sans-serif; font-size:16px; line-height:1.6; color:var(--text-primary); margin:0; padding:16px 18px; background:rgba(230,57,70,0.08); border-left:3px solid var(--accent-red); border-radius:3px"><strong>Now flip it.</strong> A Black person is killed by an intimate partner. White commentators turn it into <em>&ldquo;what about us?&rdquo;</em> That would end careers. <strong style="color:var(--accent-red)">The reverse passed unanimously and became state law.</strong></p>
     </div>
 
-    <div class="section-body">
-      <p>Two of the five compliant California police departments released kidnapping records on our public-records request: Sacramento PD and San Jos&eacute; PD. The other three (SFPD, OPD, LAPD) denied or delayed the kidnapping PRR. Across the data that the state did release:</p>
+    <!-- "Meanwhile" callout — pivots from state alert to the inverse data -->
+    <div style="margin:20px auto 22px; max-width:820px; text-align:center; padding:22px 24px; border:2px solid var(--accent-red); background:rgba(230,57,70,0.06); border-radius:6px;">
+      <div style="font-family:'Source Code Pro',monospace; font-size:10px; letter-spacing:2.8px; text-transform:uppercase; color:var(--accent-red); font-weight:700; margin-bottom:10px">Meanwhile</div>
+      <div style="font-family:'DM Sans',sans-serif; font-size:clamp(19px,2.8vw,26px); font-weight:800; line-height:1.3; letter-spacing:-0.02em; color:var(--text-primary)">Blacks kidnap Whites <strong style="color:var(--accent-red); text-decoration:underline; text-underline-offset:5px; text-decoration-thickness:3px">5&times;</strong> more than Whites kidnap Blacks.</div>
     </div>
 
-    <!-- Side-by-side big numbers — Black-on-White vs White-on-Black kidnap -->
-    <div style="display:grid; grid-template-columns:1fr 1fr; gap:18px; max-width:760px; margin:28px auto 22px;">
+    <!-- 13 years 3 months label · directly above the two boxes -->
+    <div style="text-align:center; margin:14px 0 10px">
+      <div class="chart-sub" style="margin:0; font-family:'Source Code Pro',monospace; font-size:12px; color:var(--text-secondary); line-height:1.6;">
+        <strong style="color:#fff">13 years 3 months</strong> of kidnap data
+        <span style="opacity:0.7">&middot; Sacramento (Jan 2016 &ndash; Mar 2024) + San Jos&eacute; (Jan 2020 &ndash; Dec 2024)</span>
+      </div>
+    </div>
+
+    <!-- Side-by-side big numbers — Black-on-White vs White-on-Black kidnap (MOVED UP per Vincent) -->
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:18px; max-width:760px; margin:6px auto 22px;">
       <div style="background:var(--bg-card); border:1px solid var(--border); border-top:3px solid #c840e9; padding:28px 20px; text-align:center;">
         <div style="font-family:'Source Code Pro',monospace; font-size:9px; font-weight:700; letter-spacing:2.8px; text-transform:uppercase; color:var(--text-muted); margin-bottom:10px">Black suspect &rarr; White victim</div>
         <div style="font-family:'Source Code Pro',monospace; font-size:54px; font-weight:800; color:#c840e9; line-height:1; text-shadow:0 0 24px rgba(200,64,233,0.4)">103</div>
@@ -2220,21 +2675,26 @@ footer a { color: var(--accent-red); text-decoration: none; }
       </div>
     </div>
 
-    <div style="text-align:center; margin:0 auto 24px; max-width:760px;">
+    <!-- Bold counter-alert callout: what the inverse alert would look like (RIGHT AFTER boxes per Vincent) -->
+    <div style="margin:12px auto 28px; max-width:820px; text-align:center; padding:26px 22px; border:2px solid var(--accent-red); background:linear-gradient(180deg, rgba(230,57,70,0.08), rgba(230,57,70,0.02)); border-radius:6px;">
+      <div style="font-family:'Source Code Pro',monospace; font-size:10px; letter-spacing:2.8px; text-transform:uppercase; color:var(--accent-red); font-weight:700; margin-bottom:12px">If this were about data</div>
+      <div style="font-family:'DM Sans',sans-serif; font-size:clamp(20px,3vw,28px); font-weight:800; line-height:1.25; letter-spacing:-0.02em; color:var(--text-primary); max-width:680px; margin:0 auto 10px">California should be rolling out a <span style="color:var(--accent-red); text-decoration:underline; text-underline-offset:6px; text-decoration-thickness:3px">White Alert</span>.</div>
+      <div style="font-family:'DM Sans',sans-serif; font-size:clamp(14px,1.9vw,16px); font-weight:500; color:var(--text-secondary); max-width:640px; margin:0 auto; line-height:1.55">Instead the state is <strong style="color:var(--accent-red)">actively considering reparations</strong> for the demographic committing most of these kidnappings. <strong>Reward, not restraint.</strong></div>
+    </div>
+
+    <!-- Supporting data / context, now below the headline + boxes + callout -->
+    <div class="highlight">
+      The premise for the Ebony Alert is that Black victims get less attention. The state&rsquo;s own police-records data says White Californians are being kidnapped by Black suspects at five times the reverse rate. <strong>Neither direction has an alert named for it. One direction has a reparations program named for it.</strong>
+    </div>
+
+    <div style="text-align:center; margin:22px auto 0; max-width:760px;">
       <div style="font-family:'Source Code Pro',monospace; font-size:10px; letter-spacing:2.5px; text-transform:uppercase; color:var(--text-muted); margin-bottom:6px">Ratio</div>
       <div style="font-family:'Source Code Pro',monospace; font-size:44px; font-weight:800; color:var(--accent-red); line-height:1; text-shadow:0 0 24px rgba(230,57,70,0.4)">5.15&times;</div>
       <div style="font-family:'Source Code Pro',monospace; font-size:11px; color:var(--text-secondary); margin-top:10px">White Californians are kidnapped by Black suspects at <strong>five times</strong> the reverse rate.</div>
     </div>
 
-    <!-- Bold counter-alert callout: what the inverse alert would look like -->
-    <div style="margin:28px auto; max-width:820px; text-align:center; padding:26px 22px; border:2px solid var(--accent-red); background:linear-gradient(180deg, rgba(230,57,70,0.08), rgba(230,57,70,0.02)); border-radius:6px;">
-      <div style="font-family:'Source Code Pro',monospace; font-size:10px; letter-spacing:2.8px; text-transform:uppercase; color:var(--accent-red); font-weight:700; margin-bottom:12px">If this were about data</div>
-      <div style="font-family:'DM Sans',sans-serif; font-size:clamp(20px,3vw,28px); font-weight:800; line-height:1.25; letter-spacing:-0.02em; color:var(--text-primary); max-width:680px; margin:0 auto 10px">California would be rolling out a <span style="color:var(--accent-red); text-decoration:underline; text-underline-offset:6px; text-decoration-thickness:3px">White Alert</span>.</div>
-      <div style="font-family:'DM Sans',sans-serif; font-size:clamp(14px,1.9vw,16px); font-weight:500; color:var(--text-secondary); max-width:640px; margin:0 auto; line-height:1.55">Instead the state is <strong style="color:var(--accent-red)">actively considering reparations</strong> for the demographic committing most of these kidnappings. <strong>Reward, not restraint.</strong></div>
-    </div>
-
-    <div class="highlight">
-      The premise for the Ebony Alert is that Black victims get less attention. The state&rsquo;s own police-records data says White Californians are being kidnapped by Black suspects at five times the reverse rate. <strong>Neither direction has an alert named for it. One direction has a reparations program named for it.</strong>
+    <div class="section-body" style="margin-top:22px">
+      <p>Two of the five compliant California police departments released kidnapping records on our public-records request: Sacramento PD and San Jos&eacute; PD. The other three (SFPD, OPD, LAPD) denied or delayed the kidnapping PRR.</p>
     </div>
 
     <div style="text-align:center; font-family:'Source Code Pro',monospace; font-size:10px; color:var(--text-muted); line-height:1.8; max-width:700px; margin:22px auto 0; padding:16px 0">
@@ -2303,7 +2763,7 @@ footer a { color: var(--accent-red); text-decoration: none; }
         <button data-mode="count">Count</button>
       </div>
       <div class="chart-title" id="stTitle">California Homicide Arrests by Race</div>
-      <div class="chart-sub"><span class="city-date-duration">2000 &ndash; 2024 &middot; 24 years &middot; CA DOJ Table 31</span></div>
+      <div class="chart-sub"><span class="city-date-duration">2000 &ndash; 2024 &middot; 24 years</span></div>
       <div class="chart-wrap"><canvas id="chartStmt"></canvas></div>
 
       <!-- Population share chips — so Count view doesn't mislead -->
@@ -2350,114 +2810,419 @@ footer a { color: var(--accent-red); text-decoration: none; }
 <!-- ============ WHITES ARE THE MOST ATTACKED (NEW FLIP VIEW) ============ -->
 <section class="section" id="whites-attacked">
   <div class="wrap">
-    <div class="section-kicker">Cross-City Analysis</div>
+    <div style="text-align:center">
+      <div class="section-kicker">Cross-City Analysis</div>
+    </div>
     <h2 class="section-title" style="text-align:center">Putting This All Together</h2>
     <p style="text-align:center; font-family:'DM Sans',sans-serif; font-size:16px; color:var(--text-secondary); max-width:640px; margin:8px auto 36px; line-height:1.5">Aggregated across every city that provided case-level suspect-to-victim data. Five departments. Eleven crime/city combinations.</p>
 
-    <!-- Card 1: White Californians -->
+    <!-- =========== Card 1: WHITE = #1 TARGET =========== -->
     <div class="pattern-card" style="background:var(--bg-card); border:1px solid var(--border); border-radius:12px; padding:32px 24px; margin:0 auto 28px; max-width:860px; position:relative; overflow:hidden">
       <div style="position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg, transparent, #ffffff, transparent)"></div>
       <div style="text-align:center">
         <div style="font-family:'Source Code Pro',monospace; font-size:9px; font-weight:700; letter-spacing:3px; text-transform:uppercase; color:var(--accent-red); margin-bottom:6px">Finding</div>
-        <div style="font-family:'Source Code Pro',monospace; font-size:12px; letter-spacing:2px; text-transform:uppercase; color:var(--text-secondary); margin-bottom:4px">#1 target of interracial violence in California</div>
+        <div style="font-family:'Source Code Pro',monospace; font-size:clamp(15px,1.8vw,20px); font-weight:700; letter-spacing:2.5px; text-transform:uppercase; color:var(--text-primary); margin-bottom:6px">#1 target of interracial violence in California</div>
+        <div style="font-family:'Source Code Pro',monospace; font-size:9px; color:var(--text-muted); letter-spacing:0.5px; margin-bottom:4px; font-style:italic; opacity:0.8">(of the cities that responded to our public records requests)</div>
         <div style="font-family:'Playfair Display',serif; font-size:clamp(32px,5vw,48px); color:#ffffff; letter-spacing:2px; text-shadow:0 0 30px rgba(78,168,222,0.3)">White Californians</div>
       </div>
       <div style="display:flex; justify-content:center; gap:28px; flex-wrap:wrap; margin:24px 0 8px">
         <div style="text-align:center">
           <div class="pattern-big-num" style="font-family:'Source Code Pro',monospace; font-size:44px; font-weight:800; color:#ffffff; text-shadow:0 0 24px rgba(78,168,222,0.4)">5,891</div>
-          <div style="font-family:'Source Code Pro',monospace; font-size:10px; color:var(--text-muted); letter-spacing:1px; margin-top:2px">INTERRACIAL ATTACKS</div>
+          <div style="font-family:'Source Code Pro',monospace; font-size:10px; color:var(--text-muted); letter-spacing:1px; margin-top:2px">INTERRACIAL ATTACKS ON WHITE</div>
         </div>
         <div style="text-align:center">
-          <div class="pattern-big-num" style="font-family:'Source Code Pro',monospace; font-size:44px; font-weight:800; color:var(--accent-red); text-shadow:0 0 24px rgba(230,57,70,0.4)">76.4%</div>
-          <div style="font-family:'Source Code Pro',monospace; font-size:10px; color:var(--text-muted); letter-spacing:1px; margin-top:2px">BY NON-WHITE SUSPECT</div>
-        </div>
-        <div style="text-align:center">
-          <div class="pattern-big-num" style="font-family:'Source Code Pro',monospace; font-size:44px; font-weight:800; color:#ffd60a; text-shadow:0 0 24px rgba(255,214,10,0.4)">+43%</div>
+          <div class="pattern-big-num" style="font-family:'Source Code Pro',monospace; font-size:44px; font-weight:800; color:#ffd60a; text-shadow:0 0 24px rgba(255,214,10,0.4)">+1,768</div>
           <div style="font-family:'Source Code Pro',monospace; font-size:10px; color:var(--text-muted); letter-spacing:1px; margin-top:2px">MORE THAN #2 (HISPANIC)</div>
         </div>
+        <div style="text-align:center">
+          <div class="pattern-big-num" style="font-family:'Source Code Pro',monospace; font-size:44px; font-weight:800; color:var(--accent-red); text-shadow:0 0 24px rgba(230,57,70,0.4)">45.7%</div>
+          <div style="font-family:'Source Code Pro',monospace; font-size:10px; color:var(--text-muted); letter-spacing:1px; margin-top:2px">OF INTERRACIAL ATTACKS TARGETED WHITE</div>
+          <div style="font-family:'Source Code Pro',monospace; font-size:8.5px; color:var(--text-muted); letter-spacing:0.5px; margin-top:3px; font-style:italic; opacity:0.75">(excluding White interracial crime, obviously)</div>
+        </div>
       </div>
-      <div style="display:flex; justify-content:center; gap:10px; flex-wrap:wrap; margin:18px 0 22px">
+      <div style="text-align:center; font-family:'Source Code Pro',monospace; font-size:10px; font-weight:700; letter-spacing:3px; color:var(--text-secondary); margin:22px 0 10px">INTERRACIALLY</div>
+      <div style="display:flex; justify-content:center; gap:10px; flex-wrap:wrap; margin:0 0 22px">
         <div class="pattern-stamp" style="display:inline-block; font-family:'Source Code Pro',monospace; font-size:11px; font-weight:700; color:#fff; background:var(--accent-red); padding:6px 16px; border-radius:3px; letter-spacing:1.8px; text-transform:uppercase; transform:scale(0); opacity:0; box-shadow:0 3px 10px rgba(230,57,70,0.35), inset 0 0 0 1px rgba(255,255,255,0.12); text-shadow:0 1px 2px rgba(0,0,0,0.4)">MOST MURDERED</div>
         <div class="pattern-stamp" style="display:inline-block; font-family:'Source Code Pro',monospace; font-size:11px; font-weight:700; color:#fff; background:var(--accent-red); padding:6px 16px; border-radius:3px; letter-spacing:1.8px; text-transform:uppercase; transform:scale(0); opacity:0; box-shadow:0 3px 10px rgba(230,57,70,0.35), inset 0 0 0 1px rgba(255,255,255,0.12); text-shadow:0 1px 2px rgba(0,0,0,0.4)">MOST RAPED</div>
         <div class="pattern-stamp" style="display:inline-block; font-family:'Source Code Pro',monospace; font-size:11px; font-weight:700; color:#fff; background:var(--accent-red); padding:6px 16px; border-radius:3px; letter-spacing:1.8px; text-transform:uppercase; transform:scale(0); opacity:0; box-shadow:0 3px 10px rgba(230,57,70,0.35), inset 0 0 0 1px rgba(255,255,255,0.12); text-shadow:0 1px 2px rgba(0,0,0,0.4)">MOST ROBBED</div>
         <div class="pattern-stamp" style="display:inline-block; font-family:'Source Code Pro',monospace; font-size:11px; font-weight:700; color:#fff; background:var(--accent-red); padding:6px 16px; border-radius:3px; letter-spacing:1.8px; text-transform:uppercase; transform:scale(0); opacity:0; box-shadow:0 3px 10px rgba(230,57,70,0.35), inset 0 0 0 1px rgba(255,255,255,0.12); text-shadow:0 1px 2px rgba(0,0,0,0.4)">MOST KIDNAPPED</div>
       </div>
       <div style="text-align:center; font-family:'Source Code Pro',monospace; font-size:11px; color:var(--text-secondary); margin-bottom:6px">#1 most interracially targeted across all four crime categories</div>
-      <div style="text-align:center; font-family:'Source Code Pro',monospace; font-size:9px; color:var(--text-muted); margin-bottom:14px; letter-spacing:0.5px">Ranked #1 or #2 most interracially victimized in every city:</div>
+      <div style="text-align:center; font-family:'Source Code Pro',monospace; font-size:9px; color:var(--text-muted); margin-bottom:14px; letter-spacing:0.5px">Where White ranks in each city &times; crime combination we have data for:</div>
       <div class="pattern-chips" style="display:flex; flex-wrap:wrap; gap:6px; justify-content:center">
-        <div class="pattern-chip" style="font-family:'Source Code Pro',monospace; font-size:9px; letter-spacing:0.5px; padding:5px 10px; border-radius:3px; background:rgba(78,168,222,0.15); border:1px solid rgba(78,168,222,0.5); color:#ffffff; transform:translateY(30px) scale(0.8); opacity:0"><span style="opacity:0.8">Sacramento</span> Homicide <strong>#1</strong></div>
-        <div class="pattern-chip" style="font-family:'Source Code Pro',monospace; font-size:9px; letter-spacing:0.5px; padding:5px 10px; border-radius:3px; background:rgba(78,168,222,0.15); border:1px solid rgba(78,168,222,0.5); color:#ffffff; transform:translateY(30px) scale(0.8); opacity:0"><span style="opacity:0.8">Sacramento</span> Sexual Assault <strong>#1</strong></div>
-        <div class="pattern-chip" style="font-family:'Source Code Pro',monospace; font-size:9px; letter-spacing:0.5px; padding:5px 10px; border-radius:3px; background:rgba(255,214,10,0.12); border:1px solid rgba(255,214,10,0.4); color:#ffd60a; transform:translateY(30px) scale(0.8); opacity:0"><span style="opacity:0.8">Sacramento</span> Robbery <strong>#2</strong></div>
-        <div class="pattern-chip" style="font-family:'Source Code Pro',monospace; font-size:9px; letter-spacing:0.5px; padding:5px 10px; border-radius:3px; background:rgba(255,214,10,0.12); border:1px solid rgba(255,214,10,0.4); color:#ffd60a; transform:translateY(30px) scale(0.8); opacity:0"><span style="opacity:0.8">Sacramento</span> Kidnapping <strong>#2</strong></div>
-        <div class="pattern-chip" style="font-family:'Source Code Pro',monospace; font-size:9px; letter-spacing:0.5px; padding:5px 10px; border-radius:3px; background:rgba(255,214,10,0.12); border:1px solid rgba(255,214,10,0.4); color:#ffd60a; transform:translateY(30px) scale(0.8); opacity:0"><span style="opacity:0.8">San José</span> Homicide <strong>#2</strong></div>
-        <div class="pattern-chip" style="font-family:'Source Code Pro',monospace; font-size:9px; letter-spacing:0.5px; padding:5px 10px; border-radius:3px; background:rgba(78,168,222,0.15); border:1px solid rgba(78,168,222,0.5); color:#ffffff; transform:translateY(30px) scale(0.8); opacity:0"><span style="opacity:0.8">San José</span> Sexual Assault <strong>#1</strong></div>
-        <div class="pattern-chip" style="font-family:'Source Code Pro',monospace; font-size:9px; letter-spacing:0.5px; padding:5px 10px; border-radius:3px; background:rgba(255,214,10,0.12); border:1px solid rgba(255,214,10,0.4); color:#ffd60a; transform:translateY(30px) scale(0.8); opacity:0"><span style="opacity:0.8">San José</span> Robbery <strong>#2</strong></div>
-        <div class="pattern-chip" style="font-family:'Source Code Pro',monospace; font-size:9px; letter-spacing:0.5px; padding:5px 10px; border-radius:3px; background:rgba(255,214,10,0.12); border:1px solid rgba(255,214,10,0.4); color:#ffd60a; transform:translateY(30px) scale(0.8); opacity:0"><span style="opacity:0.8">San José</span> Kidnapping <strong>#2</strong></div>
-        <div class="pattern-chip" style="font-family:'Source Code Pro',monospace; font-size:9px; letter-spacing:0.5px; padding:5px 10px; border-radius:3px; background:rgba(78,168,222,0.15); border:1px solid rgba(78,168,222,0.5); color:#ffffff; transform:translateY(30px) scale(0.8); opacity:0"><span style="opacity:0.8">San Francisco</span> Homicide <strong>#1</strong></div>
-        <div class="pattern-chip" style="font-family:'Source Code Pro',monospace; font-size:9px; letter-spacing:0.5px; padding:5px 10px; border-radius:3px; background:rgba(78,168,222,0.15); border:1px solid rgba(78,168,222,0.5); color:#ffffff; transform:translateY(30px) scale(0.8); opacity:0"><span style="opacity:0.8">Oakland</span> Homicide <strong>#1</strong></div>
-        <div class="pattern-chip" style="font-family:'Source Code Pro',monospace; font-size:9px; letter-spacing:0.5px; padding:5px 10px; border-radius:3px; background:rgba(78,168,222,0.15); border:1px solid rgba(78,168,222,0.5); color:#ffffff; transform:translateY(30px) scale(0.8); opacity:0"><span style="opacity:0.8">San Diego</span> Homicide <strong>#1</strong></div>
+        <div class="pattern-chip" style="font-family:'Source Code Pro',monospace; font-size:9px; letter-spacing:0.5px; padding:5px 10px; border-radius:3px; background:rgba(78,168,222,0.18); border:1px solid rgba(78,168,222,0.55); color:#ffffff; transform:translateY(30px) scale(0.8); opacity:0"><span style="opacity:0.8">Sacramento</span> Homicide <strong style="color:#ffffff">#1</strong></div>
+        <div class="pattern-chip" style="font-family:'Source Code Pro',monospace; font-size:9px; letter-spacing:0.5px; padding:5px 10px; border-radius:3px; background:rgba(78,168,222,0.18); border:1px solid rgba(78,168,222,0.55); color:#ffffff; transform:translateY(30px) scale(0.8); opacity:0"><span style="opacity:0.8">Sacramento</span> Sexual Assault <strong style="color:#ffffff">#1</strong></div>
+        <div class="pattern-chip" style="font-family:'Source Code Pro',monospace; font-size:9px; letter-spacing:0.5px; padding:5px 10px; border-radius:3px; background:rgba(78,168,222,0.18); border:1px solid rgba(78,168,222,0.55); color:#ffffff; transform:translateY(30px) scale(0.8); opacity:0"><span style="opacity:0.8">Sacramento</span> Robbery <strong style="color:#ffffff">#1</strong></div>
+        <div class="pattern-chip" style="font-family:'Source Code Pro',monospace; font-size:9px; letter-spacing:0.5px; padding:5px 10px; border-radius:3px; background:rgba(78,168,222,0.18); border:1px solid rgba(78,168,222,0.55); color:#ffffff; transform:translateY(30px) scale(0.8); opacity:0"><span style="opacity:0.8">Sacramento</span> Kidnapping <strong style="color:#ffffff">#1</strong></div>
+        <div class="pattern-chip" style="font-family:'Source Code Pro',monospace; font-size:9px; letter-spacing:0.5px; padding:5px 10px; border-radius:3px; background:rgba(255,214,10,0.13); border:1px solid rgba(255,214,10,0.42); color:#ffd60a; transform:translateY(30px) scale(0.8); opacity:0"><span style="opacity:0.8">San José</span> Homicide <strong style="color:#ffd60a">#2</strong></div>
+        <div class="pattern-chip" style="font-family:'Source Code Pro',monospace; font-size:9px; letter-spacing:0.5px; padding:5px 10px; border-radius:3px; background:rgba(255,214,10,0.13); border:1px solid rgba(255,214,10,0.42); color:#ffd60a; transform:translateY(30px) scale(0.8); opacity:0"><span style="opacity:0.8">San José</span> Sexual Assault <strong style="color:#ffd60a">#2</strong></div>
+        <div class="pattern-chip" style="font-family:'Source Code Pro',monospace; font-size:9px; letter-spacing:0.5px; padding:5px 10px; border-radius:3px; background:rgba(180,180,200,0.06); border:1px solid rgba(180,180,200,0.25); color:var(--text-muted); transform:translateY(30px) scale(0.8); opacity:0"><span style="opacity:0.8">San José</span> Robbery <strong style="color:var(--text-muted)">#3</strong></div>
+        <div class="pattern-chip" style="font-family:'Source Code Pro',monospace; font-size:9px; letter-spacing:0.5px; padding:5px 10px; border-radius:3px; background:rgba(180,180,200,0.06); border:1px solid rgba(180,180,200,0.25); color:var(--text-muted); transform:translateY(30px) scale(0.8); opacity:0"><span style="opacity:0.8">San José</span> Kidnapping <strong style="color:var(--text-muted)">#3</strong></div>
+        <div class="pattern-chip" style="font-family:'Source Code Pro',monospace; font-size:9px; letter-spacing:0.5px; padding:5px 10px; border-radius:3px; background:rgba(255,214,10,0.13); border:1px solid rgba(255,214,10,0.42); color:#ffd60a; transform:translateY(30px) scale(0.8); opacity:0"><span style="opacity:0.8">San Francisco</span> Homicide <strong style="color:#ffd60a">#2</strong></div>
+        <div class="pattern-chip" style="font-family:'Source Code Pro',monospace; font-size:9px; letter-spacing:0.5px; padding:5px 10px; border-radius:3px; background:rgba(180,180,200,0.04); border:1px solid rgba(180,180,200,0.18); color:var(--text-muted); transform:translateY(30px) scale(0.8); opacity:0"><span style="opacity:0.8">Oakland</span> Homicide <strong style="color:var(--text-muted)">#4</strong></div>
+        <div class="pattern-chip" style="font-family:'Source Code Pro',monospace; font-size:9px; letter-spacing:0.5px; padding:5px 10px; border-radius:3px; background:rgba(78,168,222,0.18); border:1px solid rgba(78,168,222,0.55); color:#ffffff; transform:translateY(30px) scale(0.8); opacity:0"><span style="opacity:0.8">San Diego</span> Homicide <strong style="color:#ffffff">#1</strong></div>
       </div>
     </div>
 
-    <!-- Card 2: Black Californians -->
+    <!-- =========== Card 2: BLACK = #1 SOURCE =========== -->
     <div class="pattern-card" style="background:var(--bg-card); border:1px solid var(--border); border-radius:12px; padding:32px 24px; margin:0 auto 28px; max-width:860px; position:relative; overflow:hidden">
       <div style="position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg, transparent, #c840e9, transparent)"></div>
       <div style="text-align:center">
         <div style="font-family:'Source Code Pro',monospace; font-size:9px; font-weight:700; letter-spacing:3px; text-transform:uppercase; color:var(--accent-red); margin-bottom:6px">Finding</div>
-        <div style="font-family:'Source Code Pro',monospace; font-size:12px; letter-spacing:2px; text-transform:uppercase; color:var(--text-secondary); margin-bottom:4px">#1 source of interracial violence in California</div>
+        <div style="font-family:'Source Code Pro',monospace; font-size:clamp(15px,1.8vw,20px); font-weight:700; letter-spacing:2.5px; text-transform:uppercase; color:var(--text-primary); margin-bottom:6px">#1 source of interracial violence in California</div>
+        <div style="font-family:'Source Code Pro',monospace; font-size:9px; color:var(--text-muted); letter-spacing:0.5px; margin-bottom:4px; font-style:italic; opacity:0.8">(of the cities that responded to our public records requests)</div>
         <div style="font-family:'Playfair Display',serif; font-size:clamp(32px,5vw,48px); color:#c840e9; letter-spacing:2px; text-shadow:0 0 30px rgba(200,64,233,0.3)">Black Californians</div>
       </div>
       <div style="display:flex; justify-content:center; gap:28px; flex-wrap:wrap; margin:24px 0 8px">
         <div style="text-align:center">
           <div class="pattern-big-num" style="font-family:'Source Code Pro',monospace; font-size:44px; font-weight:800; color:#c840e9; text-shadow:0 0 24px rgba(200,64,233,0.4)">9,474</div>
-          <div style="font-family:'Source Code Pro',monospace; font-size:10px; color:var(--text-muted); letter-spacing:1px; margin-top:2px">INTERRACIAL ATTACKS</div>
+          <div style="font-family:'Source Code Pro',monospace; font-size:10px; color:var(--text-muted); letter-spacing:1px; margin-top:2px">INTERRACIAL ATTACKS BY BLACK SUSPECTS</div>
         </div>
         <div style="text-align:center">
-          <div class="pattern-big-num" style="font-family:'Source Code Pro',monospace; font-size:44px; font-weight:800; color:var(--accent-red); text-shadow:0 0 24px rgba(230,57,70,0.4)">7/11</div>
-          <div style="font-family:'Source Code Pro',monospace; font-size:10px; color:var(--text-muted); letter-spacing:1px; margin-top:2px">RANKED #1</div>
+          <div class="pattern-big-num" style="font-family:'Source Code Pro',monospace; font-size:44px; font-weight:800; color:#ffd60a; text-shadow:0 0 24px rgba(255,214,10,0.4)">+6,731</div>
+          <div style="font-family:'Source Code Pro',monospace; font-size:10px; color:var(--text-muted); letter-spacing:1px; margin-top:2px">MORE THAN #2 (HISPANIC)</div>
+          <div style="font-family:'Source Code Pro',monospace; font-size:8.5px; color:var(--text-muted); letter-spacing:0.5px; margin-top:3px; font-style:italic; opacity:0.75; max-width:220px; margin-left:auto; margin-right:auto; line-height:1.4">(Black Californians are only ~6% of the state's population)</div>
+        </div>
+        <div style="text-align:center">
+          <div class="pattern-big-num" style="font-family:'Source Code Pro',monospace; font-size:44px; font-weight:800; color:var(--accent-red); text-shadow:0 0 24px rgba(230,57,70,0.4)">44.5%</div>
+          <div style="font-family:'Source Code Pro',monospace; font-size:10px; color:var(--text-muted); letter-spacing:1px; margin-top:2px">OF BLACK INTERRACIAL ATTACKS TARGETED WHITE</div>
+          <div style="font-family:'Source Code Pro',monospace; font-size:8.5px; color:var(--text-muted); letter-spacing:0.5px; margin-top:3px; font-style:italic; opacity:0.75; max-width:220px; margin-left:auto; margin-right:auto; line-height:1.4">(Whites are not California's largest group. Hispanics are.)</div>
         </div>
       </div>
-      <div style="display:flex; justify-content:center; gap:10px; flex-wrap:wrap; margin:18px 0 22px">
+      <div style="text-align:center; font-family:'Source Code Pro',monospace; font-size:10px; font-weight:700; letter-spacing:3px; color:var(--text-secondary); margin:22px 0 10px">INTERRACIALLY</div>
+      <div style="display:flex; justify-content:center; gap:10px; flex-wrap:wrap; margin:0 0 22px">
         <div class="pattern-stamp" style="display:inline-block; font-family:'Source Code Pro',monospace; font-size:11px; font-weight:700; color:#fff; background:var(--accent-red); padding:6px 16px; border-radius:3px; letter-spacing:1.8px; text-transform:uppercase; transform:scale(0); opacity:0; box-shadow:0 3px 10px rgba(230,57,70,0.35), inset 0 0 0 1px rgba(255,255,255,0.12); text-shadow:0 1px 2px rgba(0,0,0,0.4)">MOST MURDERING</div>
         <div class="pattern-stamp" style="display:inline-block; font-family:'Source Code Pro',monospace; font-size:11px; font-weight:700; color:#fff; background:var(--accent-red); padding:6px 16px; border-radius:3px; letter-spacing:1.8px; text-transform:uppercase; transform:scale(0); opacity:0; box-shadow:0 3px 10px rgba(230,57,70,0.35), inset 0 0 0 1px rgba(255,255,255,0.12); text-shadow:0 1px 2px rgba(0,0,0,0.4)">MOST RAPING</div>
         <div class="pattern-stamp" style="display:inline-block; font-family:'Source Code Pro',monospace; font-size:11px; font-weight:700; color:#fff; background:var(--accent-red); padding:6px 16px; border-radius:3px; letter-spacing:1.8px; text-transform:uppercase; transform:scale(0); opacity:0; box-shadow:0 3px 10px rgba(230,57,70,0.35), inset 0 0 0 1px rgba(255,255,255,0.12); text-shadow:0 1px 2px rgba(0,0,0,0.4)">MOST ROBBING</div>
         <div class="pattern-stamp" style="display:inline-block; font-family:'Source Code Pro',monospace; font-size:11px; font-weight:700; color:#fff; background:var(--accent-red); padding:6px 16px; border-radius:3px; letter-spacing:1.8px; text-transform:uppercase; transform:scale(0); opacity:0; box-shadow:0 3px 10px rgba(230,57,70,0.35), inset 0 0 0 1px rgba(255,255,255,0.12); text-shadow:0 1px 2px rgba(0,0,0,0.4)">MOST KIDNAPPING</div>
       </div>
       <div style="text-align:center; font-family:'Source Code Pro',monospace; font-size:11px; color:var(--text-secondary); margin:14px 0 6px">#1 interracial perpetrator across all four crime categories</div>
-      <div style="text-align:center; font-family:'Source Code Pro',monospace; font-size:9px; color:var(--text-muted); margin-bottom:14px; letter-spacing:0.5px">Ranked #1 or #2 interracial perpetrator in every city:</div>
+      <div style="text-align:center; font-family:'Source Code Pro',monospace; font-size:9px; color:var(--text-muted); margin-bottom:14px; letter-spacing:0.5px">Where Black ranks in each city &times; crime combination we have data for:</div>
       <div class="pattern-chips" style="display:flex; flex-wrap:wrap; gap:6px; justify-content:center">
-        <div class="pattern-chip" style="font-family:'Source Code Pro',monospace; font-size:9px; letter-spacing:0.5px; padding:5px 10px; border-radius:3px; background:rgba(200,64,233,0.15); border:1px solid rgba(200,64,233,0.5); color:#c840e9; transform:translateY(30px) scale(0.8); opacity:0"><span style="opacity:0.8">Sacramento</span> Homicide <strong>#1</strong></div>
-        <div class="pattern-chip" style="font-family:'Source Code Pro',monospace; font-size:9px; letter-spacing:0.5px; padding:5px 10px; border-radius:3px; background:rgba(200,64,233,0.15); border:1px solid rgba(200,64,233,0.5); color:#c840e9; transform:translateY(30px) scale(0.8); opacity:0"><span style="opacity:0.8">Sacramento</span> Sexual Assault <strong>#1</strong></div>
-        <div class="pattern-chip" style="font-family:'Source Code Pro',monospace; font-size:9px; letter-spacing:0.5px; padding:5px 10px; border-radius:3px; background:rgba(200,64,233,0.15); border:1px solid rgba(200,64,233,0.5); color:#c840e9; transform:translateY(30px) scale(0.8); opacity:0"><span style="opacity:0.8">Sacramento</span> Robbery <strong>#1</strong></div>
-        <div class="pattern-chip" style="font-family:'Source Code Pro',monospace; font-size:9px; letter-spacing:0.5px; padding:5px 10px; border-radius:3px; background:rgba(200,64,233,0.15); border:1px solid rgba(200,64,233,0.5); color:#c840e9; transform:translateY(30px) scale(0.8); opacity:0"><span style="opacity:0.8">Sacramento</span> Kidnapping <strong>#1</strong></div>
-        <div class="pattern-chip" style="font-family:'Source Code Pro',monospace; font-size:9px; letter-spacing:0.5px; padding:5px 10px; border-radius:3px; background:rgba(230,57,70,0.12); border:1px solid rgba(230,57,70,0.4); color:#e63946; transform:translateY(30px) scale(0.8); opacity:0"><span style="opacity:0.8">San José</span> Homicide <strong>#2</strong></div>
-        <div class="pattern-chip" style="font-family:'Source Code Pro',monospace; font-size:9px; letter-spacing:0.5px; padding:5px 10px; border-radius:3px; background:rgba(230,57,70,0.12); border:1px solid rgba(230,57,70,0.4); color:#e63946; transform:translateY(30px) scale(0.8); opacity:0"><span style="opacity:0.8">San José</span> Sexual Assault <strong>#2</strong></div>
-        <div class="pattern-chip" style="font-family:'Source Code Pro',monospace; font-size:9px; letter-spacing:0.5px; padding:5px 10px; border-radius:3px; background:rgba(230,57,70,0.12); border:1px solid rgba(230,57,70,0.4); color:#e63946; transform:translateY(30px) scale(0.8); opacity:0"><span style="opacity:0.8">San José</span> Robbery <strong>#2</strong></div>
-        <div class="pattern-chip" style="font-family:'Source Code Pro',monospace; font-size:9px; letter-spacing:0.5px; padding:5px 10px; border-radius:3px; background:rgba(200,64,233,0.15); border:1px solid rgba(200,64,233,0.5); color:#c840e9; transform:translateY(30px) scale(0.8); opacity:0"><span style="opacity:0.8">San José</span> Kidnapping <strong>#1</strong></div>
-        <div class="pattern-chip" style="font-family:'Source Code Pro',monospace; font-size:9px; letter-spacing:0.5px; padding:5px 10px; border-radius:3px; background:rgba(200,64,233,0.15); border:1px solid rgba(200,64,233,0.5); color:#c840e9; transform:translateY(30px) scale(0.8); opacity:0"><span style="opacity:0.8">San Francisco</span> Homicide <strong>#1</strong></div>
-        <div class="pattern-chip" style="font-family:'Source Code Pro',monospace; font-size:9px; letter-spacing:0.5px; padding:5px 10px; border-radius:3px; background:rgba(200,64,233,0.15); border:1px solid rgba(200,64,233,0.5); color:#c840e9; transform:translateY(30px) scale(0.8); opacity:0"><span style="opacity:0.8">Oakland</span> Homicide <strong>#1</strong></div>
-        <div class="pattern-chip" style="font-family:'Source Code Pro',monospace; font-size:9px; letter-spacing:0.5px; padding:5px 10px; border-radius:3px; background:rgba(230,57,70,0.12); border:1px solid rgba(230,57,70,0.4); color:#e63946; transform:translateY(30px) scale(0.8); opacity:0"><span style="opacity:0.8">San Diego</span> Homicide <strong>#2</strong></div>
+        <div class="pattern-chip" style="font-family:'Source Code Pro',monospace; font-size:9px; letter-spacing:0.5px; padding:5px 10px; border-radius:3px; background:rgba(200,64,233,0.15); border:1px solid rgba(200,64,233,0.5); color:#c840e9; transform:translateY(30px) scale(0.8); opacity:0"><span style="opacity:0.8">Sacramento</span> Homicide <strong style="color:#c840e9">#1</strong></div>
+        <div class="pattern-chip" style="font-family:'Source Code Pro',monospace; font-size:9px; letter-spacing:0.5px; padding:5px 10px; border-radius:3px; background:rgba(200,64,233,0.15); border:1px solid rgba(200,64,233,0.5); color:#c840e9; transform:translateY(30px) scale(0.8); opacity:0"><span style="opacity:0.8">Sacramento</span> Sexual Assault <strong style="color:#c840e9">#1</strong></div>
+        <div class="pattern-chip" style="font-family:'Source Code Pro',monospace; font-size:9px; letter-spacing:0.5px; padding:5px 10px; border-radius:3px; background:rgba(200,64,233,0.15); border:1px solid rgba(200,64,233,0.5); color:#c840e9; transform:translateY(30px) scale(0.8); opacity:0"><span style="opacity:0.8">Sacramento</span> Robbery <strong style="color:#c840e9">#1</strong></div>
+        <div class="pattern-chip" style="font-family:'Source Code Pro',monospace; font-size:9px; letter-spacing:0.5px; padding:5px 10px; border-radius:3px; background:rgba(200,64,233,0.15); border:1px solid rgba(200,64,233,0.5); color:#c840e9; transform:translateY(30px) scale(0.8); opacity:0"><span style="opacity:0.8">Sacramento</span> Kidnapping <strong style="color:#c840e9">#1</strong></div>
+        <div class="pattern-chip" style="font-family:'Source Code Pro',monospace; font-size:9px; letter-spacing:0.5px; padding:5px 10px; border-radius:3px; background:rgba(255,214,10,0.12); border:1px solid rgba(255,214,10,0.4); color:#ffd60a; transform:translateY(30px) scale(0.8); opacity:0"><span style="opacity:0.8">San José</span> Homicide <strong style="color:#ffd60a">#2</strong></div>
+        <div class="pattern-chip" style="font-family:'Source Code Pro',monospace; font-size:9px; letter-spacing:0.5px; padding:5px 10px; border-radius:3px; background:rgba(255,214,10,0.12); border:1px solid rgba(255,214,10,0.4); color:#ffd60a; transform:translateY(30px) scale(0.8); opacity:0"><span style="opacity:0.8">San José</span> Sexual Assault <strong style="color:#ffd60a">#2</strong></div>
+        <div class="pattern-chip" style="font-family:'Source Code Pro',monospace; font-size:9px; letter-spacing:0.5px; padding:5px 10px; border-radius:3px; background:rgba(255,214,10,0.12); border:1px solid rgba(255,214,10,0.4); color:#ffd60a; transform:translateY(30px) scale(0.8); opacity:0"><span style="opacity:0.8">San José</span> Robbery <strong style="color:#ffd60a">#2</strong></div>
+        <div class="pattern-chip" style="font-family:'Source Code Pro',monospace; font-size:9px; letter-spacing:0.5px; padding:5px 10px; border-radius:3px; background:rgba(200,64,233,0.15); border:1px solid rgba(200,64,233,0.5); color:#c840e9; transform:translateY(30px) scale(0.8); opacity:0"><span style="opacity:0.8">San José</span> Kidnapping <strong style="color:#c840e9">#1</strong></div>
+        <div class="pattern-chip" style="font-family:'Source Code Pro',monospace; font-size:9px; letter-spacing:0.5px; padding:5px 10px; border-radius:3px; background:rgba(200,64,233,0.15); border:1px solid rgba(200,64,233,0.5); color:#c840e9; transform:translateY(30px) scale(0.8); opacity:0"><span style="opacity:0.8">San Francisco</span> Homicide <strong style="color:#c840e9">#1</strong></div>
+        <div class="pattern-chip" style="font-family:'Source Code Pro',monospace; font-size:9px; letter-spacing:0.5px; padding:5px 10px; border-radius:3px; background:rgba(200,64,233,0.15); border:1px solid rgba(200,64,233,0.5); color:#c840e9; transform:translateY(30px) scale(0.8); opacity:0"><span style="opacity:0.8">Oakland</span> Homicide <strong style="color:#c840e9">#1</strong></div>
+        <div class="pattern-chip" style="font-family:'Source Code Pro',monospace; font-size:9px; letter-spacing:0.5px; padding:5px 10px; border-radius:3px; background:rgba(255,214,10,0.12); border:1px solid rgba(255,214,10,0.4); color:#ffd60a; transform:translateY(30px) scale(0.8); opacity:0"><span style="opacity:0.8">San Diego</span> Homicide <strong style="color:#ffd60a">#2</strong></div>
       </div>
-      <div style="text-align:center; font-family:'Source Code Pro',monospace; font-size:11px; color:var(--text-secondary); margin-top:16px">#2 source: <strong style="color:#4ade80">Hispanic</strong> (2,743 interracial attacks)</div>
     </div>
 
     <div style="text-align:center; font-family:'Source Code Pro',monospace; font-size:10px; color:var(--text-muted); line-height:1.8; max-width:600px; margin:0 auto; padding:16px 0">
       Based on 11 city/crime combinations from 5 California police departments. Cities that denied records requests are not represented. This is the pattern in the data that was provided.
     </div>
   </div>
+  <div class="section-nav-arrow"><a onclick="document.getElementById('floyd-riots').scrollIntoView({behavior:'smooth'})" aria-label="What happened in Sacramento"><svg viewBox="0 0 24 24"><path d="M12 5v14M19 12l-7 7-7-7"/></svg></a></div>
+</section>
+<!-- ============ FLOYD RIOTS · WHAT HAPPENED IN SACRAMENTO ============ -->
+<section class="section" id="floyd-riots">
+  <div class="wrap">
+    <div class="section-kicker">Sacramento &middot; May 30 &ndash; June 1, 2020</div>
+    <h2 class="section-title">An unarmed Black man was killed by police in Minneapolis. <em>Sacramento businesses got looted.</em></h2>
+
+    <div class="section-body">
+      <p>George Floyd died in police custody on May 25, 2020 in Minneapolis. Five days later, the response in Sacramento &mdash; 1,800 miles away &mdash; looked like this:</p>
+    </div>
+
+    <div class="case-card" style="margin-top:24px">
+      <div class="case-body text-only">
+        <ul style="line-height:1.85; font-size:16px; color:var(--text-primary); padding-left:22px; margin:0">
+          <li><strong>Sharif Jewelers</strong> on K Street &mdash; a four-generation family-owned jeweler &mdash; <a href="https://www.cbsnews.com/sacramento/news/sacramento-business-clean-up-george-floyd-protests/" target="_blank">looted twice over the weekend, display cases emptied</a>.</li>
+          <li><strong>BevMo</strong> in Midtown &mdash; <a href="https://www.cbsnews.com/sacramento/news/sacramento-looting-george-floyd-protest-18-arrested/" target="_blank">looted</a>; employees boarded up the entrance the next morning.</li>
+          <li><strong>Macy&rsquo;s</strong> at the Downtown Commons &mdash; <a href="https://www.cbsnews.com/sacramento/news/sacramento-business-clean-up-george-floyd-protests/" target="_blank">windows shattered</a>.</li>
+          <li><strong>7-Eleven</strong> on J Street &mdash; <a href="https://www.cbsnews.com/sacramento/news/sacramento-business-clean-up-george-floyd-protests/" target="_blank">ransacked</a>. <strong>PF Chang&rsquo;s</strong> on J Street &mdash; looted. <strong>Pennisi&rsquo;s Deli</strong>, <strong>Halal Food and Ice Cream</strong>, <strong>Subway</strong>, and the <strong>Stylz tattoo parlor</strong> &mdash; all <a href="https://www.abc10.com/article/news/local/sacramento/day-2-of-sacramento-george-floyd-protests/103-0e407a5a-906b-4c26-ac3b-6f449efa3be7" target="_blank">vandalized along J Street</a>.</li>
+          <li><strong>Kicx Unlimited</strong> &mdash; <a href="https://www.abc10.com/article/news/local/sacramento/george-floyd-protests-may-31-2020/103-2de4d4de-a84d-4c96-bd0b-c2c5fba5c3ec" target="_blank">looted</a>; community members showed up the next morning to clean up.</li>
+          <li><strong>Fry&rsquo;s Electronics</strong> in North Natomas &mdash; <a href="https://www.natomasbuzz.com/2020/12/frys-closure-in-natomas-appears-permanent/" target="_blank">looted in the early hours of June 1, 2020</a>, while operating with curbside pickup. <strong>It never reopened.</strong> The chain&rsquo;s nationwide bankruptcy was eight months later (Feb 24, 2021); this Sacramento store closed for good earlier than scheduled because of the looting.</li>
+          <li>The <strong>Sacramento County Main Jail</strong> was <a href="https://www.abc10.com/article/news/local/sacramento/george-floyd-protests-may-30-2020-2/103-e4e60ffe-776e-408d-968e-290214e19666" target="_blank">vandalized</a>.</li>
+          <li>Sacramento police: <strong>18 arrests Saturday night, 25 more Sunday night</strong> (22 looting, 3 failure to disperse). Officers were <a href="https://www.abc10.com/article/news/local/sacramento/george-floyd-protests-may-30-2020-2/103-e4e60ffe-776e-408d-968e-290214e19666" target="_blank">pelted with rocks, bricks, and fireworks</a>; tear gas and rubber bullets deployed at 3 a.m. Nine officers had been hurt the previous night at Oak Park.</li>
+        </ul>
+      </div>
+      <div class="case-source">
+        Sources: ABC10, CBS Sacramento, CapRadio, Natomas Buzz. Damage spanned the K Street corridor, J Street, Downtown Commons, Midtown, Oak Park, and North Natomas, May 30 &ndash; June 1, 2020.
+      </div>
+    </div>
+
+    <!-- Thesis callout: routine vs outlier response -->
+    <div style="margin-top:36px; padding:28px 30px; border:2px solid rgba(230,57,70,0.45); background:linear-gradient(180deg, rgba(230,57,70,0.06), rgba(230,57,70,0.01)); border-radius:8px">
+      <div style="font-family:'Source Code Pro',monospace; font-size:9px; font-weight:700; letter-spacing:3px; text-transform:uppercase; color:var(--accent-red); margin-bottom:14px; text-align:center">The contrast</div>
+      <p style="font-family:'DM Sans',sans-serif; font-size:18px; line-height:1.55; color:var(--text-primary); margin:0 0 14px; text-align:center"><strong>Black suspects commit the most interracial rape, robbery, murder, and kidnapping against white victims in Sacramento.</strong> Every category. Every year. The numbers are above.</p>
+      <p style="font-family:'DM Sans',sans-serif; font-size:18px; line-height:1.55; color:var(--text-primary); margin:0; text-align:center">One outlier happens 1,800 miles away. <strong style="color:var(--accent-red)">Of course, Sacramento businesses pay for it.</strong></p>
+    </div>
+
+    <div class="section-body" style="margin-top:24px">
+      <p>The man who died was killed in a different state by an officer Sacramento businesses had never employed. The four-generation family that ran Sharif Jewelers had nothing to do with it. Neither did the people who worked at BevMo, the unhoused population sleeping near 7-Eleven, or the tattoo artist at Stylz who told a reporter the wreckage took his words away. They paid anyway.</p>
+    </div>
+  </div>
+  <div class="section-nav-arrow"><a onclick="document.getElementById('k-street').scrollIntoView({behavior:'smooth'})" aria-label="Next section"><svg viewBox="0 0 24 24"><path d="M12 5v14M19 12l-7 7-7-7"/></svg></a></div>
+</section>
+
+<!-- ============ K STREET · DEADLIEST SHOOTING + SAC BEE FRAMING ============ -->
+<section class="section" id="k-street">
+  <div class="wrap">
+    <div class="section-kicker">K Street &middot; Sacramento &middot; April 3, 2022</div>
+    <h2 class="section-title">The deadliest shooting in Sacramento&rsquo;s history. Six dead. Three Black men charged. <em>The Sacramento Bee, of course, made Black people the victims.</em></h2>
+
+    <!-- One unified bullet card: shooting + Smiley Martin -->
+    <div class="case-card">
+      <div class="case-body text-only">
+        <ul style="line-height:1.85; font-size:16px; color:var(--text-primary); padding-left:22px; margin:0">
+          <li>April 3, 2022, 2 a.m. <strong>K and 10th streets</strong>, blocks from the State Capitol.</li>
+          <li><strong>Five Black men opened fire</strong> from two rival gangs. <strong>Six killed. Twelve wounded.</strong> <a href="https://en.wikipedia.org/wiki/2022_Sacramento_shooting" target="_blank">The deadliest shooting in Sacramento&rsquo;s history.</a></li>
+          <li>Three charged with murder: <strong>Smiley Martin</strong>, <strong>Dandrae Martin</strong>, <strong>Mtula Payton</strong>. <a href="https://www.cbsnews.com/sacramento/news/suspect-sacramento-mass-shooting-dies-in-jail/" target="_blank">All three previously convicted felons.</a></li>
+          <li><strong>Smiley Martin</strong> was sentenced to <strong>10 years for domestic violence in 2018</strong>. <a href="https://www.abc10.com/article/news/local/sacramento/mass-shooting-suspcet-to-be-paid-by-sac-county/103-ae8650a9-a698-4449-9d7f-3b87cbc4f338" target="_blank">Released six years early</a> under voter-approved sentencing rollbacks. <strong>Five weeks after walking out, he was on K Street firing into a crowd.</strong></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Sac Bee card: tight -->
+    <div class="case-card" style="margin-top:24px">
+      <div class="case-header">
+        <div class="case-kicker">The Sacramento Bee &middot; 14 days later &middot; April 17, 2022 &middot; By Phillip Reese</div>
+        <div class="case-headline">&ldquo;Gun homicides are up 50% in Sacramento County. Here&rsquo;s who is dying.&rdquo;</div>
+      </div>
+      <div class="case-body text-only">
+        <p style="font-family:'DM Sans',sans-serif; font-size:16px; line-height:1.7; color:var(--text-primary); margin:0">The framing throughout: <strong>Black residents as victims.</strong> Death rate <strong>nine times higher</strong> than white residents. Who was doing the killing: not the story.</p>
+      </div>
+      <div class="case-source">
+        Source: <a href="https://amp.sacbee.com/news/local/crime/article260150720.html" target="_blank">Sacramento Bee, April 17, 2022</a>
+      </div>
+    </div>
+
+    <!-- Consider the opposite — the flip-the-script callout, ties back to the Ebony Alert/Petito framing -->
+    <div style="margin-top:36px; padding:30px 32px; border:2px solid rgba(230,57,70,0.5); background:linear-gradient(180deg, rgba(230,57,70,0.07), rgba(230,57,70,0.02)); border-radius:8px; max-width:820px; margin-left:auto; margin-right:auto">
+      <div style="font-family:'Source Code Pro',monospace; font-size:10px; letter-spacing:2.8px; text-transform:uppercase; color:var(--accent-red); font-weight:700; margin-bottom:14px; text-align:center">Consider the opposite</div>
+      <p style="font-family:'DM Sans',sans-serif; font-size:18px; line-height:1.55; color:var(--text-primary); margin:0 0 14px; text-align:center">A white shooter kills six people. Two weeks later, the local paper runs <em>&ldquo;Here&rsquo;s who is dying&rdquo;</em> &mdash; and the answer is <strong>white people, killed by white shooters.</strong> White commentators reframe it as <em>&ldquo;what about us?&rdquo;</em></p>
+      <p style="font-family:'DM Sans',sans-serif; font-size:18px; line-height:1.55; color:var(--text-primary); margin:0; text-align:center"><strong>Just like the Ebony Alert. Whites making it about themselves.</strong> That would end careers. <strong style="color:var(--accent-red)">This was published anyway.</strong></p>
+    </div>
+  </div>
   <div class="section-nav-arrow"><a onclick="document.getElementById('stage-3').scrollIntoView({behavior:'smooth'})" aria-label="Continue to Stage 3"><svg viewBox="0 0 24 24"><path d="M12 5v14M19 12l-7 7-7-7"/></svg></a></div>
 </section>
+
 <!-- ============ STAGE 3 BANNER ============ -->
 <section class="stage-banner stage-3" id="stage-3">
   <div class="section-nav-arrow"><a onclick="document.getElementById('post-stage-3').scrollIntoView({behavior:'smooth'})" aria-label="Next section"><svg viewBox="0 0 24 24"><path d="M12 5v14M19 12l-7 7-7-7"/></svg></a></div>
   <div class="wrap">
     <div class="stage-num">Stage 3 of 4</div>
-    <div class="stage-label">Call the critic racist</div>
-    <div class="stage-sub">The data is unambiguous. So the state trains the officer, won’t enforce the law, and labels anyone who points at the numbers.</div>
+    <div class="stage-label">Pay us or else</div>
+    <div class="stage-sub">The crisis is the product. Every stage pays a different line item.</div>
   </div>
 </section>
 
 <span id="post-stage-3" style="display:block; height:0"></span>
+<!-- ============ ADVANCE PEACE ============ -->
+<section class="section">
+  <div class="wrap">
+    <div class="section-kicker">Advance Peace &middot; The Mob Program</div>
+    <h2 class="section-title">A government program where you <em>pay Black men cash not to murder you</em>.</h2>
+
+    <div class="case-card">
+      <div class="case-body text-only">
+        <ul style="line-height:1.75; font-size:16px; color:var(--text-primary); padding-left:22px; margin:0">
+          <li>Started in Richmond, California, where homicides had already <a href="https://www.nlc.org/resource/richmond-ca-community-violence-intervention/" target="_blank">fallen dramatically under Richmond&rsquo;s Office of Neighborhood Safety before the paid Peacemaker Fellowship launched in 2010</a>. Exported to Sacramento anyway.</li>
+          <li>Identifies the small cohort of men in a city most likely to shoot or be shot.</li>
+          <li>Enrolls them in an 18-month "Peacemaker Fellowship."</li>
+          <li><strong>Pays them monthly cash stipends.</strong></li>
+          <li><a href="https://dont-shoot-the-data.github.io/california-crime-data/" target="_blank">Sacramento contract</a> required a <strong>20&ndash;25% citywide violence reduction</strong>. Actual citywide reduction: <strong>~1%</strong>.</li>
+          <li>When the citywide metric failed, defenders switched the outcome to <a href="https://www.advancepeace.org/media/" target="_blank">"youth homicides are down"</a>. The word <em>youth</em> does not appear in the original contract.</li>
+          <li>In any academic or regulatory context, switching the outcome after the fact is called fraud.</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3 style="font-family:'DM Sans',sans-serif; font-size:26px; font-weight:800; margin:44px 0 8px; color:#e63946; letter-spacing:-0.02em; text-transform:uppercase; text-align:center">The Internal Contradiction</h3>
+    <p style="font-family:'DM Sans',sans-serif; font-size:17px; color:var(--text-secondary); margin:0 auto 26px; line-height:1.55; max-width:720px; text-align:center">Read the program's own words. Both positions cannot be operational at the same time.</p>
+
+    <div class="vs-grid">
+      <div class="vs-cell claim">
+        <div class="vs-label">Stated Problem</div>
+        <p class="vs-quote">Gun violence is caused by "<strong>dehumanizing policing, extreme poverty, and institutional racism</strong>" inflicted on Black and Brown communities.</p>
+        <div class="vs-attr">Corburn, Boggan, Muttaqi et al., <a href="https://www.nature.com/articles/s41599-021-00820-y" target="_blank"><em>Humanities and Social Sciences Communications</em>, 2021</a></div>
+      </div>
+      <div class="vs-cell data">
+        <div class="vs-label">Stated Solution</div>
+        <p class="vs-quote">Pay the most violent Black and Brown shooters a monthly cash stipend. Stated mission: "<strong>empower Black and Brown men</strong>."</p>
+        <div class="vs-attr">Khaalid Muttaqi, COO, Advance Peace &middot; <a href="https://news.berkeley.edu/2021/03/17/berkeley-study-california-gun-violence-program-saves-lives-taxpayers-millions/" target="_blank">UC Berkeley News, March 2021</a></div>
+      </div>
+    </div>
+
+    <div class="highlight" style="text-align:center; font-size:19px; line-height:1.5; padding:28px 26px;">
+      You can&rsquo;t have it both ways. <strong>You can&rsquo;t call white people racist for saying Black people commit crime, and then pay Black people not to commit crime.</strong>
+    </div>
+
+    <div class="pullquote">
+      This is just like the mafia. If you don&rsquo;t pay, you will be dealt with.
+    </div>
+  </div>
+  <div class="section-nav-arrow"><a onclick="document.getElementById('reparations').scrollIntoView({behavior:'smooth'})" aria-label="Next section"><svg viewBox="0 0 24 24"><path d="M12 5v14M19 12l-7 7-7-7"/></svg></a></div>
+</section>
+
+<!-- ============ REPARATIONS ============ -->
+<section class="section" id="reparations">
+  <div class="wrap">
+    <div class="section-kicker">Reparations &middot; Seriously Considered in California</div>
+    <h2 class="section-title">California is preparing to pay reparations <em>for a slave economy it never had.</em></h2>
+
+    <!-- Historical backdrop — now the first thing after the title -->
+    <div class="never-slave-banner">
+      <div class="never-slave-label">California was never a slave state</div>
+      <div class="never-slave-sub">but it is being treated as though it invented slavery.</div>
+    </div>
+
+    <!-- Civil War bullets, upgraded visual treatment -->
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:14px; max-width:900px; margin:22px auto 6px;">
+      <div style="background:var(--bg-card); border:1px solid var(--border); border-top:3px solid #4ea8de; padding:22px 16px; text-align:center;">
+        <div style="font-family:'Source Code Pro',monospace; font-size:32px; font-weight:800; color:#4ea8de; line-height:1;">1850</div>
+        <div style="font-family:'DM Sans',sans-serif; font-size:12px; color:var(--text-secondary); margin-top:8px; line-height:1.4">Entered the Union as a <strong>free state</strong></div>
+      </div>
+      <div style="background:var(--bg-card); border:1px solid var(--border); border-top:3px solid #4ade80; padding:22px 16px; text-align:center;">
+        <div style="font-family:'Source Code Pro',monospace; font-size:32px; font-weight:800; color:#4ade80; line-height:1;">15,000+</div>
+        <div style="font-family:'DM Sans',sans-serif; font-size:12px; color:var(--text-secondary); margin-top:8px; line-height:1.4">Californians fought for the Union in the Civil War</div>
+      </div>
+      <div style="background:var(--bg-card); border:1px solid rgba(230,57,70,0.4); border-top:3px solid var(--accent-red); padding:22px 16px; text-align:center;">
+        <div style="font-family:'Source Code Pro',monospace; font-size:32px; font-weight:800; color:var(--accent-red); line-height:1;">500+</div>
+        <div style="font-family:'DM Sans',sans-serif; font-size:12px; color:var(--text-secondary); margin-top:8px; line-height:1.4">Californians <strong>died</strong> fighting to end slavery elsewhere</div>
+      </div>
+    </div>
+
+    <div class="ce-kicker" style="margin-top:40px">Chinese Exclusion &middot; The Counter-Test</div>
+    <p class="ce-intro">In California specifically, Chinese Americans faced legal restrictions more severe than Black Americans on every major dimension of civil rights. If historical discrimination drives present-day offending, this is where the strongest effect should appear.</p>
+
+    <table class="ce-table">
+      <thead>
+        <tr><th>California Rights</th><th>Black Californians</th><th>Chinese Californians</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Right to vote</td><td><span class="yes">&#10003;</span> 1870</td><td><span class="no">&#10007;</span> Until 1943</td></tr>
+        <tr><td>U.S. citizenship</td><td><span class="yes">&#10003;</span> 1868</td><td><span class="no">&#10007;</span> Until 1943</td></tr>
+        <tr><td>Own land</td><td><span class="yes">&#10003;</span></td><td><span class="no">&#10007;</span> 1913&ndash;1952</td></tr>
+        <tr><td>Testify in court</td><td><span class="yes">&#10003;</span> 1863</td><td><span class="no">&#10007;</span> 1854&ndash;1873</td></tr>
+        <tr><td>Immigrate freely</td><td><span class="yes">&#10003;</span></td><td><span class="no">&#10007;</span> 1882&ndash;1943</td></tr>
+        <tr class="ce-final"><td><strong>CA homicide arrest rate</strong></td><td><strong class="rate-high">4.4&times;</strong></td><td><strong class="rate-low">0.42&times;</strong></td></tr>
+      </tbody>
+    </table>
+
+    <p class="ce-footnote" style="margin-bottom:46px">CA homicide arrest rates from CA DOJ Table 31, 24-year average. The 0.42&times; figure is for Asian/Other Californians as reported in Table 31, which does not break out Chinese-Americans specifically.</p>
+
+    <!-- Transition banner: two-line thesis + threat clause -->
+    <div class="never-slave-banner" style="margin-top:20px; background:linear-gradient(180deg, rgba(230,57,70,0.08), rgba(230,57,70,0.02)); border-color:rgba(230,57,70,0.5)">
+      <div class="never-slave-label" style="color:var(--accent-red)">California wants you to pay for slaves it never had.</div>
+      <div class="never-slave-label" style="color:var(--accent-red); margin-top:10px">And they will threaten you if they don&rsquo;t get paid.</div>
+    </div>
+
+    <!-- Separated subtitle, standalone line below the banner (per Vincent) -->
+    <div style="max-width:720px; margin:22px auto 0; text-align:center; font-family:'DM Sans',sans-serif; font-size:clamp(14px,1.9vw,17px); font-style:italic; color:var(--text-secondary); line-height:1.5">
+      Said out loud, into an open microphone, at a state-created public meeting. And applauded.
+    </div>
+
+    <!-- Griff pullquote + video slot, moved to bottom as user requested -->
+    <div class="pullquote" style="margin-top:30px; font-size:clamp(20px,3vw,26px); line-height:1.35">
+      "There's only one thing that would stop our kids from busting into these jewelry stores, stealing watches and jewelry, and that&rsquo;s reparations."
+      <cite>&mdash; "Big Money Griff" &middot; California Reparations Task Force public meeting &middot; Sacramento, March 2023</cite>
+    </div>
+
+    <div style="text-align:center; margin:28px 0 14px;">
+      <div style="display:inline-block; font-family:'Source Code Pro',monospace; font-size:11px; font-weight:700; letter-spacing:3.5px; text-transform:uppercase; color:var(--accent-red); background:transparent; border:2px solid rgba(230,57,70,0.6); padding:9px 20px; transform:rotate(-2deg); text-shadow:0 0 20px rgba(230,57,70,0.4); box-shadow:0 0 30px rgba(230,57,70,0.15), inset 0 0 20px rgba(230,57,70,0.05);">See for yourself</div>
+    </div>
+    <div style="margin:12px auto 0; max-width:720px;">
+      <div style="position:relative; padding-bottom:56.25%; height:0; overflow:hidden; background:#000; border:1px solid var(--border);">
+        <iframe
+          src="https://www.youtube.com/embed/aEN2AA6nSlQ"
+          style="position:absolute; top:0; left:0; width:100%; height:100%; border:0;"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen
+          title="Big Money Griff at California Reparations Task Force, Sacramento March 2023"></iframe>
+      </div>
+      <div style="font-family:'Source Code Pro',monospace; font-size:10px; letter-spacing:1.5px; text-transform:uppercase; color:var(--text-muted); text-align:center; margin-top:10px;">
+        California Reparations Task Force &middot; Sacramento &middot; March 2023
+      </div>
+    </div>
+
+    <div class="section-body" style="margin-top:34px">
+      <p>He did not say this on a pirate radio broadcast. He said it into an open microphone at a public meeting of the <strong>California Reparations Task Force</strong> &mdash; a body <a href="https://leginfo.legislature.ca.gov/faces/billNavClient.xhtml?bill_id=201920200AB3121" target="_blank">created by AB 3121 (2020) and signed by Governor Newsom</a>. <strong>The audience applauded.</strong> The task force&rsquo;s 2023 final report recommended cash payments up to <strong>$1.2 million</strong> per eligible Black Californian.</p>
+      <p><strong style="color:var(--accent-red)">Pay us, or we rob you.</strong> The part of the scheme that usually stays quiet, spoken into a live microphone and recorded.</p>
+    </div>
+  </div>
+  <div class="section-nav-arrow"><a onclick="document.getElementById('money').scrollIntoView({behavior:'smooth'})" aria-label="Next section"><svg viewBox="0 0 24 24"><path d="M12 5v14M19 12l-7 7-7-7"/></svg></a></div>
+</section>
+
+<!-- ============ MONEY ============ -->
+<section class="section" id="money">
+  <div class="wrap">
+    <div class="section-kicker">Follow the Money</div>
+    <h2 class="section-title">How much does this scheme pay?</h2>
+
+    <div class="money-list">
+      <div class="money-row">
+        <div>
+          <div class="money-label">Dr. J. Luke Wood &middot; President, Sacramento State</div>
+          <div class="money-sub">2025 total comp &middot; base $504,799 + $60K housing + $12K transportation + performance pay eligible</div>
+        </div>
+        <div class="money-amt">$627K/yr</div>
+      </div>
+      <div class="money-row">
+        <div>
+          <div class="money-label">California Anti-Hate Program Spending</div>
+          <div class="money-sub">CalHHS CA vs Hate initiative &middot; cumulative, 2019&ndash;present</div>
+        </div>
+        <div class="money-amt">$400M+</div>
+      </div>
+      <div class="money-row">
+        <div>
+          <div class="money-label">Nonprofit Security Grant Program</div>
+          <div class="money-sub">Single 2024 grant round to "communities at risk of hate-based crime"</div>
+        </div>
+        <div class="money-amt">$76M</div>
+      </div>
+      <div class="money-row">
+        <div>
+          <div class="money-label">Transgender, Gender-Nonconforming &amp; Intersex Wellness Fund</div>
+          <div class="money-sub">AB 2521 &middot; CDPH TGI Unit &middot; 2022 appropriation</div>
+        </div>
+        <div class="money-amt">$10.3M</div>
+      </div>
+      <div class="money-row">
+        <div>
+          <div class="money-label">Advance Peace Sacramento Contract</div>
+          <div class="money-sub">~$1.5M total &middot; ~$300K to fellows &middot; balance to administration, evaluators, consultants</div>
+        </div>
+        <div class="money-amt">$1.5M</div>
+      </div>
+      <div class="money-row">
+        <div>
+          <div class="money-label">CSU &amp; UC System DEI Staffing</div>
+          <div class="money-sub">Annual aggregate estimate &middot; across 33 campuses &middot; excludes compliance consultants</div>
+        </div>
+        <div class="money-amt">$50M+/yr</div>
+      </div>
+      <div class="money-row">
+        <div>
+          <div class="money-label">Reparations Task Force Recommendation</div>
+          <div class="money-sub">2023 final report &middot; up to $1.2M per eligible Black Californian &middot; ~1.6M eligible</div>
+        </div>
+        <div class="money-amt">$800B+</div>
+      </div>
+    </div>
+
+  </div>
+  <div class="section-nav-arrow"><a onclick="document.getElementById('stage-4').scrollIntoView({behavior:'smooth'})" aria-label="Continue to Stage 4"><svg viewBox="0 0 24 24"><path d="M12 5v14M19 12l-7 7-7-7"/></svg></a></div>
+</section>
+
+<!-- ============ STAGE 4 BANNER ============ -->
+<section class="stage-banner stage-4" id="stage-4">
+  <div class="section-nav-arrow"><a onclick="document.getElementById('post-stage-4').scrollIntoView({behavior:'smooth'})" aria-label="Next section"><svg viewBox="0 0 24 24"><path d="M12 5v14M19 12l-7 7-7-7"/></svg></a></div>
+  <div class="wrap">
+    <div class="stage-num">Stage 4 of 4</div>
+    <div class="stage-label">Punish dissent</div>
+    <div class="stage-sub">The data is unambiguous. So the state trains the officer, won’t enforce the law, and labels anyone who points at the numbers.</div>
+  </div>
+</section>
+
+<span id="post-stage-4" style="display:block; height:0"></span>
 <!-- Stephon Clark ASYMMETRIC RESPONSE section moved to Stage 2 as "clark-details" -->
 <section class="section" id="stephon-clark-archived" style="display:none">
   <div class="wrap">
@@ -2605,214 +3370,6 @@ footer a { color: var(--accent-red); text-decoration: none; }
       Agree and you keep your job. Hedge and you keep your job. Affirm that the lives of everyone equally matter and you lose the job you held for 32 years.
     </div>
   </div>
-  <div class="section-nav-arrow"><a onclick="document.getElementById('stage-4').scrollIntoView({behavior:'smooth'})" aria-label="Next section"><svg viewBox="0 0 24 24"><path d="M12 5v14M19 12l-7 7-7-7"/></svg></a></div>
-</section>
-
-<!-- ============ STAGE 4 BANNER ============ -->
-<section class="stage-banner stage-4" id="stage-4">
-  <div class="section-nav-arrow"><a onclick="document.getElementById('post-stage-4').scrollIntoView({behavior:'smooth'})" aria-label="Next section"><svg viewBox="0 0 24 24"><path d="M12 5v14M19 12l-7 7-7-7"/></svg></a></div>
-  <div class="wrap">
-    <div class="stage-num">Stage 4 of 4</div>
-    <div class="stage-label">Pay us or we will murder you</div>
-    <div class="stage-sub">The crisis is the product. Every stage pays a different line item.</div>
-  </div>
-</section>
-
-<span id="post-stage-4" style="display:block; height:0"></span>
-<!-- ============ ADVANCE PEACE ============ -->
-<section class="section">
-  <div class="wrap">
-    <div class="section-kicker">Advance Peace &middot; The Mob Program</div>
-    <h2 class="section-title">A government program where you <em>pay Black men cash not to murder you</em>.</h2>
-
-    <div class="case-card">
-      <div class="case-body text-only">
-        <ul style="line-height:1.75; font-size:16px; color:var(--text-primary); padding-left:22px; margin:0">
-          <li>Started in Richmond, California, where homicides had already <a href="https://www.nlc.org/resource/richmond-ca-community-violence-intervention/" target="_blank">fallen dramatically under Richmond&rsquo;s Office of Neighborhood Safety before the paid Peacemaker Fellowship launched in 2010</a>. Exported to Sacramento anyway.</li>
-          <li>Identifies the small cohort of men in a city most likely to shoot or be shot.</li>
-          <li>Enrolls them in an 18-month "Peacemaker Fellowship."</li>
-          <li><strong>Pays them monthly cash stipends.</strong></li>
-          <li><a href="https://dont-shoot-the-data.github.io/california-crime-data/" target="_blank">Sacramento contract</a> required a <strong>20&ndash;25% citywide violence reduction</strong>. Actual citywide reduction: <strong>~1%</strong>.</li>
-          <li>When the citywide metric failed, defenders switched the outcome to <a href="https://www.advancepeace.org/media/" target="_blank">"youth homicides are down"</a>. The word <em>youth</em> does not appear in the original contract.</li>
-          <li>In any academic or regulatory context, switching the outcome after the fact is called fraud.</li>
-        </ul>
-      </div>
-    </div>
-
-    <h3 style="font-family:'DM Sans',sans-serif; font-size:26px; font-weight:800; margin:44px 0 8px; color:#e63946; letter-spacing:-0.02em; text-transform:uppercase; text-align:center">The Internal Contradiction</h3>
-    <p style="font-family:'DM Sans',sans-serif; font-size:17px; color:var(--text-secondary); margin:0 auto 26px; line-height:1.55; max-width:720px; text-align:center">Read the program's own words. Both positions cannot be operational at the same time.</p>
-
-    <div class="vs-grid">
-      <div class="vs-cell claim">
-        <div class="vs-label">Stated Problem</div>
-        <p class="vs-quote">Gun violence is caused by "<strong>dehumanizing policing, extreme poverty, and institutional racism</strong>" inflicted on Black and Brown communities.</p>
-        <div class="vs-attr">Corburn, Boggan, Muttaqi et al., <a href="https://www.nature.com/articles/s41599-021-00820-y" target="_blank"><em>Humanities and Social Sciences Communications</em>, 2021</a></div>
-      </div>
-      <div class="vs-cell data">
-        <div class="vs-label">Stated Solution</div>
-        <p class="vs-quote">Pay the most violent Black and Brown shooters a monthly cash stipend. Stated mission: "<strong>empower Black and Brown men</strong>."</p>
-        <div class="vs-attr">Khaalid Muttaqi, COO, Advance Peace &middot; <a href="https://news.berkeley.edu/2021/03/17/berkeley-study-california-gun-violence-program-saves-lives-taxpayers-millions/" target="_blank">UC Berkeley News, March 2021</a></div>
-      </div>
-    </div>
-
-    <div class="highlight" style="text-align:center; font-size:19px; line-height:1.5; padding:28px 26px;">
-      You can&rsquo;t have it both ways. <strong>You can&rsquo;t call white people racist for saying Black people commit crime, and then pay Black people not to commit crime.</strong>
-    </div>
-
-    <div class="pullquote">
-      This is just like the mafia. If you don&rsquo;t pay, you will be dealt with.
-    </div>
-  </div>
-  <div class="section-nav-arrow"><a onclick="document.getElementById('reparations').scrollIntoView({behavior:'smooth'})" aria-label="Next section"><svg viewBox="0 0 24 24"><path d="M12 5v14M19 12l-7 7-7-7"/></svg></a></div>
-</section>
-
-<!-- ============ REPARATIONS ============ -->
-<section class="section" id="reparations">
-  <div class="wrap">
-    <div class="section-kicker">Reparations &middot; Seriously Considered in California</div>
-    <h2 class="section-title">California is preparing to pay reparations <em>for a slave economy it never had.</em></h2>
-
-    <!-- Historical backdrop — now the first thing after the title -->
-    <div class="never-slave-banner">
-      <div class="never-slave-label">California was never a slave state</div>
-      <div class="never-slave-sub">but it is being treated as though it invented slavery.</div>
-    </div>
-
-    <!-- Civil War bullets, upgraded visual treatment -->
-    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:14px; max-width:900px; margin:22px auto 6px;">
-      <div style="background:var(--bg-card); border:1px solid var(--border); border-top:3px solid #4ea8de; padding:22px 16px; text-align:center;">
-        <div style="font-family:'Source Code Pro',monospace; font-size:32px; font-weight:800; color:#4ea8de; line-height:1;">1850</div>
-        <div style="font-family:'DM Sans',sans-serif; font-size:12px; color:var(--text-secondary); margin-top:8px; line-height:1.4">Entered the Union as a <strong>free state</strong></div>
-      </div>
-      <div style="background:var(--bg-card); border:1px solid var(--border); border-top:3px solid #4ade80; padding:22px 16px; text-align:center;">
-        <div style="font-family:'Source Code Pro',monospace; font-size:32px; font-weight:800; color:#4ade80; line-height:1;">15,000+</div>
-        <div style="font-family:'DM Sans',sans-serif; font-size:12px; color:var(--text-secondary); margin-top:8px; line-height:1.4">Californians fought for the Union in the Civil War</div>
-      </div>
-      <div style="background:var(--bg-card); border:1px solid rgba(230,57,70,0.4); border-top:3px solid var(--accent-red); padding:22px 16px; text-align:center;">
-        <div style="font-family:'Source Code Pro',monospace; font-size:32px; font-weight:800; color:var(--accent-red); line-height:1;">500+</div>
-        <div style="font-family:'DM Sans',sans-serif; font-size:12px; color:var(--text-secondary); margin-top:8px; line-height:1.4">Californians <strong>died</strong> fighting to end slavery elsewhere</div>
-      </div>
-      <div style="background:var(--bg-card); border:1px solid var(--border); border-top:3px solid var(--text-muted); padding:22px 16px; text-align:center;">
-        <div style="font-family:'Source Code Pro',monospace; font-size:32px; font-weight:800; color:var(--text-primary); line-height:1;">0</div>
-        <div style="font-family:'DM Sans',sans-serif; font-size:12px; color:var(--text-secondary); margin-top:8px; line-height:1.4">California never operated a slave economy</div>
-      </div>
-    </div>
-
-    <div class="ce-kicker" style="margin-top:40px">Chinese Exclusion &middot; The Counter-Test</div>
-    <p class="ce-intro">In California specifically, Chinese Americans faced legal restrictions more severe than Black Americans on every major dimension of civil rights. If historical discrimination drives present-day offending, this is where the strongest effect should appear.</p>
-
-    <table class="ce-table">
-      <thead>
-        <tr><th>California Rights</th><th>Black Californians</th><th>Chinese Californians</th></tr>
-      </thead>
-      <tbody>
-        <tr><td>Right to vote</td><td><span class="yes">&#10003;</span> 1870</td><td><span class="no">&#10007;</span> Until 1943</td></tr>
-        <tr><td>U.S. citizenship</td><td><span class="yes">&#10003;</span> 1868</td><td><span class="no">&#10007;</span> Until 1943</td></tr>
-        <tr><td>Own land</td><td><span class="yes">&#10003;</span></td><td><span class="no">&#10007;</span> 1913&ndash;1952</td></tr>
-        <tr><td>Testify in court</td><td><span class="yes">&#10003;</span> 1863</td><td><span class="no">&#10007;</span> 1854&ndash;1873</td></tr>
-        <tr><td>Immigrate freely</td><td><span class="yes">&#10003;</span></td><td><span class="no">&#10007;</span> 1882&ndash;1943</td></tr>
-        <tr class="ce-final"><td><strong>CA homicide arrest rate</strong></td><td><strong class="rate-high">4.4&times;</strong></td><td><strong class="rate-low">0.42&times;</strong></td></tr>
-      </tbody>
-    </table>
-
-    <p class="ce-footnote" style="margin-bottom:46px">CA homicide arrest rates from CA DOJ Table 31, 24-year average. The 0.42&times; figure is for Asian/Other Californians as reported in Table 31, which does not break out Chinese-Americans specifically.</p>
-
-    <!-- Transition banner: California wants us to pay for slaves it never had -->
-    <div class="never-slave-banner" style="margin-top:20px; background:linear-gradient(180deg, rgba(230,57,70,0.08), rgba(230,57,70,0.02)); border-color:rgba(230,57,70,0.5)">
-      <div class="never-slave-label" style="color:var(--accent-red)">California wants you to pay for slaves it never had.</div>
-      <div class="never-slave-sub">Said out loud, into an open microphone, at a state-created public meeting. And applauded.</div>
-    </div>
-
-    <!-- Griff pullquote + video slot, moved to bottom as user requested -->
-    <div class="pullquote" style="margin-top:30px; font-size:clamp(20px,3vw,26px); line-height:1.35">
-      "There's only one thing that would stop our kids from busting into these jewelry stores, stealing watches and jewelry, and that&rsquo;s reparations."
-      <cite>&mdash; "Big Money Griff" &middot; California Reparations Task Force public meeting &middot; Sacramento, March 2023</cite>
-    </div>
-
-    <div style="text-align:center; margin:28px 0 14px;">
-      <div style="display:inline-block; font-family:'Source Code Pro',monospace; font-size:11px; font-weight:700; letter-spacing:3.5px; text-transform:uppercase; color:var(--accent-red); background:transparent; border:2px solid rgba(230,57,70,0.6); padding:9px 20px; transform:rotate(-2deg); text-shadow:0 0 20px rgba(230,57,70,0.4); box-shadow:0 0 30px rgba(230,57,70,0.15), inset 0 0 20px rgba(230,57,70,0.05);">See for yourself</div>
-    </div>
-    <div style="margin:12px auto 0; max-width:720px;">
-      <div style="position:relative; padding-bottom:56.25%; height:0; overflow:hidden; background:#000; border:1px solid var(--border);">
-        <iframe
-          src="https://www.youtube.com/embed/aEN2AA6nSlQ"
-          style="position:absolute; top:0; left:0; width:100%; height:100%; border:0;"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowfullscreen
-          title="Big Money Griff at California Reparations Task Force, Sacramento March 2023"></iframe>
-      </div>
-      <div style="font-family:'Source Code Pro',monospace; font-size:10px; letter-spacing:1.5px; text-transform:uppercase; color:var(--text-muted); text-align:center; margin-top:10px;">
-        California Reparations Task Force &middot; Sacramento &middot; March 2023
-      </div>
-    </div>
-
-    <div class="section-body" style="margin-top:34px">
-      <p>He did not say this on a pirate radio broadcast. He said it into an open microphone at a public meeting of the <strong>California Reparations Task Force</strong> &mdash; a body <a href="https://leginfo.legislature.ca.gov/faces/billNavClient.xhtml?bill_id=201920200AB3121" target="_blank">created by AB 3121 (2020) and signed by Governor Newsom</a>. <strong>The audience applauded.</strong> The task force&rsquo;s 2023 final report recommended cash payments up to <strong>$1.2 million</strong> per eligible Black Californian.</p>
-      <p><strong style="color:var(--accent-red)">Pay us, or we rob you.</strong> The part of the scheme that usually stays quiet, spoken into a live microphone and recorded.</p>
-    </div>
-  </div>
-  <div class="section-nav-arrow"><a onclick="document.getElementById('money').scrollIntoView({behavior:'smooth'})" aria-label="Next section"><svg viewBox="0 0 24 24"><path d="M12 5v14M19 12l-7 7-7-7"/></svg></a></div>
-</section>
-
-<!-- ============ MONEY ============ -->
-<section class="section" id="money">
-  <div class="wrap">
-    <div class="section-kicker">Follow the Money</div>
-    <h2 class="section-title">How much does this scheme pay?</h2>
-
-    <div class="money-list">
-      <div class="money-row">
-        <div>
-          <div class="money-label">Dr. J. Luke Wood &middot; President, Sacramento State</div>
-          <div class="money-sub">2025 total comp &middot; base $504,799 + $60K housing + $12K transportation + performance pay eligible</div>
-        </div>
-        <div class="money-amt">$627K/yr</div>
-      </div>
-      <div class="money-row">
-        <div>
-          <div class="money-label">California Anti-Hate Program Spending</div>
-          <div class="money-sub">CalHHS CA vs Hate initiative &middot; cumulative, 2019&ndash;present</div>
-        </div>
-        <div class="money-amt">$400M+</div>
-      </div>
-      <div class="money-row">
-        <div>
-          <div class="money-label">Nonprofit Security Grant Program</div>
-          <div class="money-sub">Single 2024 grant round to "communities at risk of hate-based crime"</div>
-        </div>
-        <div class="money-amt">$76M</div>
-      </div>
-      <div class="money-row">
-        <div>
-          <div class="money-label">Transgender, Gender-Nonconforming &amp; Intersex Wellness Fund</div>
-          <div class="money-sub">AB 2521 &middot; CDPH TGI Unit &middot; 2022 appropriation</div>
-        </div>
-        <div class="money-amt">$10.3M</div>
-      </div>
-      <div class="money-row">
-        <div>
-          <div class="money-label">Advance Peace Sacramento Contract</div>
-          <div class="money-sub">~$1.5M total &middot; ~$300K to fellows &middot; balance to administration, evaluators, consultants</div>
-        </div>
-        <div class="money-amt">$1.5M</div>
-      </div>
-      <div class="money-row">
-        <div>
-          <div class="money-label">CSU &amp; UC System DEI Staffing</div>
-          <div class="money-sub">Annual aggregate estimate &middot; across 33 campuses &middot; excludes compliance consultants</div>
-        </div>
-        <div class="money-amt">$50M+/yr</div>
-      </div>
-      <div class="money-row">
-        <div>
-          <div class="money-label">Reparations Task Force Recommendation</div>
-          <div class="money-sub">2023 final report &middot; up to $1.2M per eligible Black Californian &middot; ~1.6M eligible</div>
-        </div>
-        <div class="money-amt">$800B+</div>
-      </div>
-    </div>
-
-  </div>
   <div class="section-nav-arrow"><a onclick="document.getElementById('loop').scrollIntoView({behavior:'smooth'})" aria-label="Next section"><svg viewBox="0 0 24 24"><path d="M12 5v14M19 12l-7 7-7-7"/></svg></a></div>
 </section>
 
@@ -2851,13 +3408,14 @@ footer a { color: var(--accent-red); text-decoration: none; }
 <!-- ============ THE LOOP ============ -->
 <section class="section" id="loop">
   <div class="wrap">
-    <div class="section-kicker">The Scheme</div>
+    <div style="text-align:center">
+      <div class="section-kicker">The Scheme</div>
+    </div>
 
     <!-- 4-node spiral -->
-    <div class="loop-card">
-      <h4>Four stages. Every cycle pays them and punishes you.</h4>
-      <div class="loop-svg-wrap">
-        <svg viewBox="0 0 560 560" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:auto; display:block;">
+    <div class="loop-card no-topbar" style="padding:22px 14px 16px; margin:18px auto; max-width:520px;">
+      <div class="loop-svg-wrap" style="max-width:460px;">
+        <svg viewBox="30 30 500 500" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:auto; display:block;">
           <defs>
             <marker id="arr" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
               <polygon points="0 0, 10 3, 0 6" fill="#e63946" />
@@ -2868,11 +3426,11 @@ footer a { color: var(--accent-red); text-decoration: none; }
             </filter>
           </defs>
 
-          <!-- Node 1 TOP · Fake racism -->
+          <!-- Node 1 TOP · Claim racism -->
           <g transform="translate(280, 100)">
             <circle r="62" fill="#12121a" stroke="#e63946" stroke-width="3" filter="url(#glow)"/>
             <text text-anchor="middle" y="-14" font-family="DM Sans" font-size="32" font-weight="800" fill="#e63946">1</text>
-            <text text-anchor="middle" y="14" font-family="DM Sans" font-size="14" font-weight="700" fill="#e8e8ec">Fake</text>
+            <text text-anchor="middle" y="14" font-family="DM Sans" font-size="14" font-weight="700" fill="#e8e8ec">Claim</text>
             <text text-anchor="middle" y="32" font-family="DM Sans" font-size="14" font-weight="700" fill="#e8e8ec">racism</text>
           </g>
 
@@ -2884,20 +3442,20 @@ footer a { color: var(--accent-red); text-decoration: none; }
             <text text-anchor="middle" y="32" font-family="DM Sans" font-size="14" font-weight="700" fill="#e8e8ec">opposite</text>
           </g>
 
-          <!-- Node 3 BOTTOM · Call critic racist — matches Stage 3 banner color -->
+          <!-- Node 3 BOTTOM · Pay us or else — matches Stage 3 banner color -->
           <g transform="translate(280, 460)">
             <circle r="62" fill="#12121a" stroke="#4ea8de" stroke-width="3" filter="url(#glow)"/>
             <text text-anchor="middle" y="-14" font-family="DM Sans" font-size="32" font-weight="800" fill="#4ea8de">3</text>
-            <text text-anchor="middle" y="14" font-family="DM Sans" font-size="14" font-weight="700" fill="#e8e8ec">Call critic</text>
-            <text text-anchor="middle" y="32" font-family="DM Sans" font-size="14" font-weight="700" fill="#e8e8ec">racist</text>
+            <text text-anchor="middle" y="14" font-family="DM Sans" font-size="14" font-weight="700" fill="#e8e8ec">Pay us</text>
+            <text text-anchor="middle" y="32" font-family="DM Sans" font-size="14" font-weight="700" fill="#e8e8ec">or else</text>
           </g>
 
-          <!-- Node 4 LEFT · Pay us or we will murder you — matches Stage 4 banner color -->
+          <!-- Node 4 LEFT · Punish dissent — matches Stage 4 banner color -->
           <g transform="translate(100, 280)">
             <circle r="62" fill="#12121a" stroke="#4ade80" stroke-width="3" filter="url(#glow)"/>
             <text text-anchor="middle" y="-14" font-family="DM Sans" font-size="32" font-weight="800" fill="#4ade80">4</text>
-            <text text-anchor="middle" y="12" font-family="DM Sans" font-size="11.5" font-weight="700" fill="#e8e8ec">Pay us or we</text>
-            <text text-anchor="middle" y="27" font-family="DM Sans" font-size="11.5" font-weight="700" fill="#e8e8ec">murder you</text>
+            <text text-anchor="middle" y="14" font-family="DM Sans" font-size="14" font-weight="700" fill="#e8e8ec">Punish</text>
+            <text text-anchor="middle" y="32" font-family="DM Sans" font-size="14" font-weight="700" fill="#e8e8ec">dissent</text>
           </g>
 
           <!-- Connecting arrows 1→2→3→4→1 (clockwise spiral) -->
@@ -2906,38 +3464,7 @@ footer a { color: var(--accent-red); text-decoration: none; }
           <path d="M 228 440 Q 130 410 120 320" stroke="#e63946" stroke-width="2.5" fill="none" marker-end="url(#arr)" opacity="0.75"/>
           <path d="M 120 240 Q 130 170 228 120" stroke="#e63946" stroke-width="2.5" fill="none" marker-end="url(#arr)" opacity="0.75"/>
 
-          <!-- Captions positioned inside the ring, between nodes — small so the whole thing fits on one screen -->
-          <!-- Between Node 1 (top) and Node 2 (right): upper-right quadrant -->
-          <text text-anchor="middle" x="390" y="175" font-family="Source Code Pro" font-size="10" fill="#8a8a9a" font-weight="600" letter-spacing="0.2">
-            <tspan x="390" dy="0">Sac Co. declares</tspan>
-            <tspan x="390" dy="13">racism a crisis.</tspan>
-            <tspan x="390" dy="13">Mural blames whites.</tspan>
-          </text>
-
-          <!-- Between Node 2 (right) and Node 3 (bottom): lower-right quadrant -->
-          <text text-anchor="middle" x="390" y="385" font-family="Source Code Pro" font-size="10" fill="#8a8a9a" font-weight="600" letter-spacing="0.2">
-            <tspan x="390" dy="0">TCLEAR: Black 4.79&times;.</tspan>
-            <tspan x="390" dy="13">SacPD PRR: Black on</tspan>
-            <tspan x="390" dy="13">White 11 : 1.</tspan>
-          </text>
-
-          <!-- Between Node 3 (bottom) and Node 4 (left): lower-left quadrant -->
-          <text text-anchor="middle" x="170" y="385" font-family="Source Code Pro" font-size="10" fill="#8a8a9a" font-weight="600" letter-spacing="0.2">
-            <tspan x="170" dy="0">Harris bias training.</tspan>
-            <tspan x="170" dy="13">Rate rises to 4.97&times;.</tspan>
-            <tspan x="170" dy="13">Newsom won&rsquo;t arrest.</tspan>
-          </text>
-
-          <!-- Between Node 4 (left) and Node 1 (top): upper-left quadrant -->
-          <text text-anchor="middle" x="170" y="175" font-family="Source Code Pro" font-size="10" fill="#8a8a9a" font-weight="600" letter-spacing="0.2">
-            <tspan x="170" dy="0">Reparations $800B+.</tspan>
-            <tspan x="170" dy="13">Advance Peace $1.5M.</tspan>
-            <tspan x="170" dy="13">Wood $627K/yr.</tspan>
-          </text>
         </svg>
-      </div>
-      <div class="chart-caption" style="margin-top:18px">
-        Each cycle extracts more money. Each cycle widens the disparity it claims to fight. Each cycle buys the silence of the next critic. The scheme cannot reform itself &mdash; reform is unemployment for the people running it.
       </div>
     </div>
 
@@ -3000,16 +3527,88 @@ footer a { color: var(--accent-red); text-decoration: none; }
 
 <!-- ============ [PENDING: TCLEAR CASE STUDY · Vincent to supply screenshot] ============ -->
 
-<!-- ============ CLOSE ============ -->
-<section class="close">
+<!-- ============ CONCLUSION (merged: manifesto + close lines + tagline) ============ -->
+<section class="section" id="closing" style="padding:96px 0 84px; border-bottom:none">
+  <div class="wrap" style="max-width:760px">
+    <div style="text-align:center; margin-bottom:48px">
+      <div class="section-kicker" style="margin-bottom:0; letter-spacing:3.2px">Conclusion</div>
+    </div>
+
+    <p style="font-family:'DM Sans',sans-serif; font-size:clamp(17px,2vw,19px); line-height:1.6; color:var(--text-primary); margin:0 0 30px; text-align:center">An unarmed Black man is shot by a Black police officer in Sacramento. The town will riot. Every major outlet will run the same headline. <strong>In Oakland, four white police officers will be killed by a Black gunman in a single day. You will never hear of it. Activists will rally for the gunman, calling him a hero.</strong></p>
+
+    <p style="font-family:'DM Sans',sans-serif; font-size:clamp(17px,2vw,19px); line-height:1.6; color:var(--text-primary); margin:0 0 30px; text-align:center">Sacramento paints a mural reading <strong>&ldquo;White Silence = Violence&rdquo;</strong> for a Black trans woman killed in another state &mdash; <strong>case unsolved, no suspect ever named.</strong> The data on transgender homicide says <strong>65.1% of identified suspects are Black.</strong></p>
+
+    <p style="font-family:'DM Sans',sans-serif; font-size:clamp(17px,2vw,19px); line-height:1.6; color:var(--text-primary); margin:0 0 30px; text-align:center">The county will declare racism a public health crisis. The data will show Black suspects commit the most interracial rape, robbery, murder, and kidnapping against white victims in Sacramento. <strong>Every category. Every year.</strong></p>
+
+    <p style="font-family:'DM Sans',sans-serif; font-size:clamp(17px,2vw,19px); line-height:1.6; color:var(--text-primary); margin:0 0 30px; text-align:center">A white woman is raped, sodomized, strangled, and hung from a tree by a Black perpetrator in Sacramento. <strong>Her name was Emma Roark. You never heard it.</strong></p>
+
+    <p style="font-family:'DM Sans',sans-serif; font-size:clamp(17px,2vw,19px); line-height:1.6; color:var(--text-primary); margin:0 0 30px; text-align:center">Expand it to every California city that responded to a public records request. <strong>5,891</strong> interracial attacks on white victims. <strong>9,474</strong> by Black suspects. Whites are the most attacked group <strong>in most of these cities, in most categories.</strong> Black suspects, the most attacking, in every direction.</p>
+
+    <p style="font-family:'DM Sans',sans-serif; font-size:clamp(17px,2vw,19px); line-height:1.6; color:var(--text-primary); margin:0 0 30px; text-align:center">A white woman will go missing in another state. Black activists will sociopathically make it about themselves. They will demand a parallel state alert system for themselves. <strong>It will pass unanimously.</strong></p>
+
+    <p style="font-family:'DM Sans',sans-serif; font-size:clamp(17px,2vw,19px); line-height:1.6; color:var(--text-primary); margin:0 0 30px; text-align:center">Twenty-four years of California Attorney General arrest data. Five consecutive Democratic attorneys general &mdash; <strong>Kamala Harris among them.</strong> Black Californians arrested at <strong>four times their 6% population share.</strong> Every single year. The state&rsquo;s response: <strong>mandate anti-bias training for white officers &mdash; for arresting Black suspects too often.</strong></p>
+
+    <p style="font-family:'DM Sans',sans-serif; font-size:clamp(17px,2vw,19px); line-height:1.6; color:var(--text-primary); margin:0 0 30px; text-align:center">The state will be run as if slavery was invented here. <strong>California has never had slavery.</strong> California&rsquo;s Black homicide multiplier matches the United States, Canada, and post-Windrush London. None of those places descend from American chattel slavery either.</p>
+
+    <p style="font-family:'DM Sans',sans-serif; font-size:clamp(17px,2vw,19px); line-height:1.6; color:var(--text-primary); margin:0 0 30px; text-align:center">If you say the data out loud, you will lose your job. If you say <strong>&ldquo;All Lives Matter,&rdquo;</strong> you will lose your job.</p>
+
+    <p style="font-family:'DM Sans',sans-serif; font-size:clamp(17px,2vw,19px); line-height:1.6; color:var(--text-primary); margin:0 0 30px; text-align:center">Meanwhile, the state will <strong>pay Black men not to murder.</strong> The state will fund <strong>reparations for slavery it never had.</strong></p>
+
+    <!-- This is California — no longer says "the receipts are below" because we are the receipts -->
+    <div style="width:60px; height:2px; background:var(--accent-red); margin:14px auto 32px; opacity:0.6"></div>
+    <p style="font-family:'DM Sans',sans-serif; font-size:clamp(22px,3vw,28px); line-height:1.4; color:var(--accent-red); margin:0 0 64px; text-align:center; font-weight:800; letter-spacing:-0.02em">This is California.</p>
+
+    <!-- IN SUMMATION subhead before the 4 poetic close lines -->
+    <div style="text-align:center; margin-bottom:36px">
+      <div style="font-family:'Source Code Pro',monospace; font-size:11px; letter-spacing:4px; text-transform:uppercase; color:var(--accent-red); font-weight:700">In summation</div>
+    </div>
+
+    <!-- 4 close lines — moved here from the deleted #close section -->
+    <p class="close-line">In California, your great-grandparents were sent to fight a war against slavery California never had.</p>
+    <p class="close-line">Their great-grandchildren will possibly be raped, robbed, kidnapped, and murdered.</p>
+    <p class="close-line">By Black Californians &mdash; now collecting reparation checks &mdash; who will tell you white supremacy is their biggest fear.</p>
+    <p class="close-line">And when the killer is caught, his community will hold a rally for him. Just like in Oakland.</p>
+
+    <!-- Final tagline — also the article's title -->
+    <p class="close-line tell" style="margin-top:56px">No state for white men.</p>
+  </div>
+  <!-- No mid-conclusion arrow per Vincent. Reader scrolls naturally to #conclusion (PRR instructions). -->
+</section>
+
+<!-- (former #close section content moved into #closing above; #close section deleted) -->
+<!-- ============ CONCLUSION · FINAL PAGE ============ -->
+<section class="section" id="conclusion">
   <div class="wrap">
-    <p class="close-line">In California, if you are white, you will be raped, robbed, kidnapped, and murdered.</p>
-    <p class="close-line">California never practiced slavery.</p>
-    <p class="close-line">Black Californians are arrested for the plurality of every one of those crimes, at three to five times their population share.</p>
-    <p class="close-line">White Californians will be blamed. Taxed. Called racist the entire time.</p>
-    <p class="close-line tell">No state for white men.</p>
+    <div style="text-align:center">
+      <div class="section-kicker">What&rsquo;s Next</div>
+    </div>
+    <h2 class="section-title" style="text-align:center; max-width:820px; margin:0 auto 26px">The records are public. Read them yourself.</h2>
+
+    <div style="max-width:700px; margin:0 auto 40px; font-family:'DM Sans',sans-serif; font-size:17px; line-height:1.65; color:var(--text-secondary); text-align:center">
+      <p style="margin-bottom:18px">Every chart in this article traces back to a state or municipal record. Nothing was modeled, extrapolated, or adjusted. The cities that denied our public records requests are labeled as denied.</p>
+      <p style="margin-bottom:18px">The full dataset &mdash; incident-level matrices, multi-year time series, cross-city comparisons &mdash; is published at the <a href="https://dont-shoot-the-data.github.io/california-crime-data/" target="_blank" style="color:var(--accent-red); text-decoration:underline; text-underline-offset:3px">California Race Crime Investigation</a>.</p>
+      <p>California&rsquo;s own records describe a pattern the state&rsquo;s policy actively denies. That denial is what funds the scheme.</p>
+    </div>
+
+    <div style="text-align:center; margin:40px 0 30px">
+      <div style="display:inline-block; padding:14px 30px; border:2px solid var(--accent-red); background:rgba(230,57,70,0.06); color:var(--text-primary); font-family:'Source Code Pro',monospace; font-size:13px; letter-spacing:3px; text-transform:uppercase; font-weight:700; box-shadow:0 0 24px rgba(230,57,70,0.18);">File your own public records request.</div>
+    </div>
+
+    <div style="max-width:680px; margin:28px auto 0; padding:20px 24px; border:1px solid var(--border); background:var(--bg-card); font-family:'DM Sans',sans-serif; font-size:14px; line-height:1.7; color:var(--text-secondary)">
+      <div class="section-kicker" style="margin-bottom:12px; font-size:10px">How to file one</div>
+      <ol style="padding-left:22px; margin:0">
+        <li>Identify the agency. Police, sheriff, and CA DOJ all accept PRRs.</li>
+        <li>Cite California Government Code &sect;&sect;7920&ndash;7931 (California Public Records Act).</li>
+        <li>Request incident-level data: suspect race, victim race, crime category, date range.</li>
+        <li>When denied, appeal. Many agencies deny first and release on follow-up.</li>
+      </ol>
+    </div>
+
+    <p style="text-align:center; font-family:'Source Code Pro',monospace; font-size:10px; letter-spacing:3px; text-transform:uppercase; color:var(--text-muted); margin:56px 0 0">Don&rsquo;t Shoot the Data</p>
   </div>
 </section>
+
+<div class="article-end-bar" aria-hidden="true"></div>
 
 <footer>
   <div class="wrap">
@@ -3162,11 +3761,86 @@ const sacChart = new Chart(document.getElementById('chartSac'), {
   }
 });
 
+// ============================================================
+// INTERRACIAL-RIBBON helpers (Most Targeted / Biggest Cause)
+// Data layout for the 16-cell matrix (INTERRACIAL_LABELS order):
+//   0-3   Black on {B, H, W, A}
+//   4-7   White on {B, H, W, A}
+//   8-11  Hispanic on {B, H, W, A}
+//   12-15 Asian/Other on {B, H, W, A}
+// Interracial victimization (who is the victim in interracial attacks):
+//   White victim  = B-W(2) + H-W(10) + A-W(14)
+//   Black victim  = W-B(4) + H-B(8)  + A-B(12)
+//   Hisp  victim  = B-H(1) + W-H(5)  + A-H(13)
+//   Asian victim  = B-A(3) + W-A(7)  + H-A(11)
+// Interracial perpetration (who is the suspect in interracial attacks):
+//   Black sus = B-H(1) + B-W(2) + B-A(3)
+//   White sus = W-B(4) + W-H(5) + W-A(7)
+//   Hisp  sus = H-B(8) + H-W(10)+ H-A(11)
+//   Asian sus = A-B(12)+ A-H(13)+ A-W(14)
+// ============================================================
+function computeInterracialRanks(data) {
+  if (!Array.isArray(data) || data.length < 16) return null;
+  const suspects = {
+    Black:    (data[1]  || 0) + (data[2]  || 0) + (data[3]  || 0),
+    White:    (data[4]  || 0) + (data[5]  || 0) + (data[7]  || 0),
+    Hispanic: (data[8]  || 0) + (data[10] || 0) + (data[11] || 0),
+    Asian:    (data[12] || 0) + (data[13] || 0) + (data[14] || 0)
+  };
+  const victims = {
+    Black:    (data[4]  || 0) + (data[8]  || 0) + (data[12] || 0),
+    White:    (data[2]  || 0) + (data[10] || 0) + (data[14] || 0),
+    Hispanic: (data[1]  || 0) + (data[5]  || 0) + (data[13] || 0),
+    Asian:    (data[3]  || 0) + (data[7]  || 0) + (data[11] || 0)
+  };
+  const rank = obj => Object.entries(obj).sort((a,b) => b[1] - a[1]);
+  return { targeted: rank(victims).slice(0, 2), cause: rank(suspects).slice(0, 2) };
+}
+function renderTopRaceRibbons(targetId, causeId, data, crimeLabel) {
+  const targetEl = document.getElementById(targetId);
+  const causeEl  = document.getElementById(causeId);
+  if (!targetEl || !causeEl) return;
+  const ranks = computeInterracialRanks(data);
+  if (!ranks) {
+    targetEl.innerHTML = '';
+    causeEl.innerHTML  = '';
+    if (targetEl.parentElement) targetEl.parentElement.style.display = 'none';
+    return;
+  }
+  if (targetEl.parentElement) targetEl.parentElement.style.display = '';
+  const raceClass = r => 'race-' + r.toLowerCase();
+  const row = (label, items) => {
+    const pills = items.map((p, i) =>
+      '<span class="rb-rank">#' + (i+1) + '</span>' +
+      '<span class="rb-race ' + raceClass(p[0]) + '">' + p[0].toUpperCase() + '</span>' +
+      '<span class="rb-count">' + p[1].toLocaleString() + ' suspects</span>'
+    ).join('<span style="color:var(--text-muted); margin:0 4px;">·</span>');
+    return '<span class="rb-label">' + label + '</span>' + pills;
+  };
+  targetEl.innerHTML = row('Most interracially targeted' + (crimeLabel ? ' (' + crimeLabel + ')' : '') + ':', ranks.targeted);
+  causeEl.innerHTML  = row('Biggest interracial cause'    + (crimeLabel ? ' (' + crimeLabel + ')' : '') + ':', ranks.cause);
+}
+
+// Disproportionality label maps (shared by Sacramento and cross-cities strips)
+const DISP_LABEL = {
+  homicide: 'HOMICIDE DISPROPORTIONALITY',
+  rape:     'RAPE DISPROPORTIONALITY',
+  kidnap:   'KIDNAPPING DISPROPORTIONALITY',
+  kidnapping: 'KIDNAPPING DISPROPORTIONALITY',
+  robbery:  'ROBBERY DISPROPORTIONALITY'
+};
+function setDispLabel(elId, crime) {
+  const el = document.getElementById(elId);
+  if (el) el.textContent = DISP_LABEL[crime] || 'DISPROPORTIONALITY';
+}
+
 function setSacCrime(crime) {
   const d = SAC_DATA[crime];
   sacChart.data.datasets[0].data = d.data;
   sacChart.update();
   document.getElementById('sacTitle').textContent = d.title;
+  setDispLabel('sacDispLabel', crime);
+  renderTopRaceRibbons('sacTargetRibbon', 'sacCauseRibbon', d.data, crime);
   // Re-render the date/duration line with a typewriter span that re-triggers its animation
   (function() {
     const subEl = document.getElementById('sacSub');
@@ -3271,7 +3945,7 @@ const CITY_DATA = {
     name: "San Diego Co.",
     period: "2022 – 2025",
     sourceLink: "https://www.sdsheriff.gov/resources/transparency-reports",
-    pop: "Black 4.7%, Hispanic 34.0%, White 44.8%, Asian/Other 16.5%",
+    pop: "Black 4.7%, Hispanic 34%, White 44.8%, Asian/Other 16.5%",
     crimes: {
       homicide: { title: 'Homicide Incidents in San Diego Co.',
         sub: '2022 \u2013 2025 \u00b7 4 years \u00b7 Sheriff Transparency Reports',
@@ -3297,6 +3971,32 @@ const CITY_DATA = {
 
 let currentCityId = 'san_jose';
 let currentCityCrime = 'homicide';
+
+// Canvas pattern for the LA population bars — diagonal red/white stripes.
+// Built lazily + cached because canvas patterns need a live 2D context.
+let __laStripePattern = null;
+function getLaStripePattern() {
+  if (__laStripePattern) return __laStripePattern;
+  try {
+    const size = 10;
+    const c = document.createElement('canvas');
+    c.width = size; c.height = size;
+    const ctx = c.getContext('2d');
+    ctx.fillStyle = '#e63946';
+    ctx.fillRect(0, 0, size, size);
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = size * 0.35;
+    ctx.lineCap = 'square';
+    ctx.beginPath();
+    ctx.moveTo(-1, size * 1.5);
+    ctx.lineTo(size * 1.5, -1);
+    ctx.stroke();
+    __laStripePattern = ctx.createPattern(c, 'repeat');
+  } catch (e) {
+    __laStripePattern = null;
+  }
+  return __laStripePattern;
+}
 
 const cityChart = new Chart(document.getElementById('chartCity'), {
   type: 'bar',
@@ -3335,33 +4035,34 @@ const cityBarCountPills = {
   afterDatasetsDraw(chart) {
     if (chart.canvas.id !== 'chartCity') return;
     const {ctx} = chart;
-    const dataset = chart.data.datasets[0];
-    const meta = chart.getDatasetMeta(0);
     ctx.save();
     ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
     ctx.font = "700 10.5px 'Source Code Pro', monospace";
-    meta.data.forEach((bar, i) => {
-      const v = dataset.data[i];
-      if (v == null || v === 0) return;
-      const label = v.toLocaleString();
-      const x = bar.x; const y = bar.y - 12;
-      const padX = 6; const w = ctx.measureText(label).width + padX * 2; const h = 16;
-      ctx.fillStyle = 'rgba(18, 18, 26, 0.92)';
-      ctx.strokeStyle = 'rgba(138, 138, 154, 0.45)';
-      ctx.lineWidth = 1;
-      const rx = x - w/2, ry = y - h/2, r = 8;
-      ctx.beginPath();
-      ctx.moveTo(rx + r, ry); ctx.lineTo(rx + w - r, ry);
-      ctx.quadraticCurveTo(rx + w, ry, rx + w, ry + r);
-      ctx.lineTo(rx + w, ry + h - r);
-      ctx.quadraticCurveTo(rx + w, ry + h, rx + w - r, ry + h);
-      ctx.lineTo(rx + r, ry + h);
-      ctx.quadraticCurveTo(rx, ry + h, rx, ry + h - r);
-      ctx.lineTo(rx, ry + r);
-      ctx.quadraticCurveTo(rx, ry, rx + r, ry);
-      ctx.closePath(); ctx.fill(); ctx.stroke();
-      ctx.fillStyle = '#e8e8ec';
-      ctx.fillText(label, x, y);
+    chart.data.datasets.forEach((dataset, di) => {
+      const meta = chart.getDatasetMeta(di);
+      meta.data.forEach((bar, i) => {
+        const v = dataset.data[i];
+        if (v == null || v === 0) return;
+        const label = dataset.__isPercent ? (Number(v).toFixed(1).replace(/\.0$/, '') + '%') : Number(v).toLocaleString();
+        const x = bar.x; const y = bar.y - 12;
+        const padX = 6; const w = ctx.measureText(label).width + padX * 2; const h = 16;
+        ctx.fillStyle = 'rgba(18, 18, 26, 0.92)';
+        ctx.strokeStyle = 'rgba(138, 138, 154, 0.45)';
+        ctx.lineWidth = 1;
+        const rx = x - w/2, ry = y - h/2, r = 8;
+        ctx.beginPath();
+        ctx.moveTo(rx + r, ry); ctx.lineTo(rx + w - r, ry);
+        ctx.quadraticCurveTo(rx + w, ry, rx + w, ry + r);
+        ctx.lineTo(rx + w, ry + h - r);
+        ctx.quadraticCurveTo(rx + w, ry + h, rx + w - r, ry + h);
+        ctx.lineTo(rx + r, ry + h);
+        ctx.quadraticCurveTo(rx, ry + h, rx, ry + h - r);
+        ctx.lineTo(rx, ry + r);
+        ctx.quadraticCurveTo(rx, ry, rx + r, ry);
+        ctx.closePath(); ctx.fill(); ctx.stroke();
+        ctx.fillStyle = '#e8e8ec';
+        ctx.fillText(label, x, y);
+      });
     });
     ctx.restore();
   }
@@ -3409,51 +4110,85 @@ function renderCityCrime() {
   const laBadgeEl = document.getElementById('laPublicSourceBadge');
   const fmt = v => v.toFixed(1) + '<span style="font-size:0.6em; font-weight:600; opacity:0.85">&times;</span>';
 
+  // Top-race ribbons: populate from matrix data, or hide for cities with no matrix (LA)
+  const cityTopRibbonsEl = document.getElementById('cityTopRibbons');
+  if (!city.noMatrix && c.data && c.data.length >= 16) {
+    if (cityTopRibbonsEl) cityTopRibbonsEl.style.display = '';
+    renderTopRaceRibbons('cityTargetRibbon', 'cityCauseRibbon', c.data, currentCityCrime);
+  } else {
+    if (cityTopRibbonsEl) cityTopRibbonsEl.style.display = 'none';
+  }
+
   if (city.noMatrix) {
-    // LA — no matrix. Y-axis = integer suspect counts. Population bars scaled
-    // so that 100% of population corresponds to the chart's max (the highest
-    // suspect count). A bar as tall as the tallest suspect bar = 100% population.
-    // Tooltip restores the real % for pop bars.
+    // LA — public-source data (LAPD Annual Homicide Reports; PRR denied).
+    // Grouped-pair bars: each race has a suspect bar next to its population bar.
+    // Population bars use a diagonal red/white stripe pattern (built lazily below).
     const agg = c.aggregate || { Black: 0, Hispanic: 0, White: 0, Other: 0 };
-    const suspectCounts = [agg.Black, agg.Hispanic, agg.Other, agg.White];
-    const maxSuspect = Math.max.apply(null, suspectCounts);
-    const popPcts = [8, 48, 16, 28];  // LA: Black, Hispanic, Asian/Other, White
-    const popScaled = popPcts.map(p => Math.round(p * maxSuspect / 100));
+    const suspTotal = agg.Black + agg.Hispanic + agg.White + agg.Other;
+    const pct = n => suspTotal > 0 ? +(n / suspTotal * 100).toFixed(1) : 0;
+    const sB = pct(agg.Black);
+    const sH = pct(agg.Hispanic);
+    const sO = pct(agg.Other);
+    const sW = pct(agg.White);
+    const popB = 8, popH = 48, popO = 16, popW = 28;  // LA population shares
+    const stripePattern = getLaStripePattern();
 
     cityChart.data.labels = ['Black', 'Hispanic', 'Asian/Other', 'White'];
     cityChart.data.datasets = [
       {
-        label: 'Suspects (count)',
-        data: suspectCounts,
+        label: 'Arrested for Homicide',
+        data: [sB, sH, sO, sW],
         backgroundColor: [C.purple, C.good, C.yellow, C.blue],
-        borderColor: [C.purple, C.good, C.yellow, C.blue],
+        borderColor:     [C.purple, C.good, C.yellow, C.blue],
         borderWidth: 1,
-        maxBarThickness: 90,
-        __actualKind: 'count'
+        borderRadius: 4,
+        borderSkipped: false,
+        maxBarThickness: 40,
+        __isPercent: true,
+        __rawCounts: [agg.Black, agg.Hispanic, agg.Other, agg.White]
       },
       {
-        label: 'Population share (scaled)',
-        data: popScaled,
-        backgroundColor: 'rgba(138,138,154,0.25)',
-        borderColor: 'rgba(138,138,154,0.75)',
-        borderWidth: 1,
-        maxBarThickness: 90,
-        __popPcts: popPcts
+        label: 'Share of LA Population',
+        data: [popB, popH, popO, popW],
+        backgroundColor: 'rgba(230,57,70,0.15)',
+        borderColor: C.red,
+        borderWidth: 1.5,
+        borderDash: [4, 3],
+        borderRadius: 4,
+        borderSkipped: false,
+        maxBarThickness: 40,
+        __isPercent: true
       }
     ];
     cityChart.options.plugins.legend.display = true;
-    cityChart.options.plugins.legend.labels = { color: C.text, font: { size: 11 } };
+    cityChart.options.plugins.legend.position = 'top';
+    cityChart.options.plugins.legend.labels = {
+      color: C.text, font: { size: 11, weight: 600, family: "'Source Code Pro', monospace" },
+      boxWidth: 12, boxHeight: 12, padding: 14, usePointStyle: true, pointStyle: 'rectRounded'
+    };
     cityChart.options.plugins.tooltip.callbacks = {
       label: function(ctx) {
-        const ds = ctx.dataset;
-        if (ds.__popPcts) {
-          return ds.__popPcts[ctx.dataIndex] + '% of LA population (scaled to chart max)';
+        if (ctx.datasetIndex === 0) {
+          const rc = ctx.dataset.__rawCounts ? ctx.dataset.__rawCounts[ctx.dataIndex] : null;
+          return ctx.parsed.y + '% (' + (rc !== null && rc !== undefined ? rc.toLocaleString() + ' arrests' : '—') + ')';
         }
-        return ctx.parsed.y.toLocaleString() + ' suspects';
+        return ctx.parsed.y + '% of LA population';
       }
     };
-    cityChart.options.scales.y.title.text = 'Suspects';
-    cityChart.options.scales.y.ticks.callback = v => v;
+    const maxVal = Math.max(sB, sH, sO, sW, popB, popH, popO, popW);
+    cityChart.options.scales.y.max = Math.ceil((maxVal + 10) / 10) * 10;
+    cityChart.options.scales.y.title.text = 'Percentage';
+    cityChart.options.scales.y.ticks.callback = v => v + '%';
+    // Horizontal category labels for grouped bars (no rotation needed — only 4 groups)
+    cityChart.options.scales.x.ticks.maxRotation = 0;
+    cityChart.options.scales.x.ticks.minRotation = 0;
+    cityChart.options.scales.x.ticks.font = { size: 12, weight: 700, family: "'Source Code Pro', monospace" };
+    cityChart.options.scales.x.ticks.color = C.text;
+    // Grouped-bar spacing: wider gap between pairs, bars close within a pair
+    cityChart.data.datasets.forEach(ds => {
+      ds.barPercentage = 0.9;       // bars nearly touching within each group
+      ds.categoryPercentage = 0.58; // ~42% gap between groups (vs ~20% default)
+    });
     cityChart.update();
     ribbonEl.style.display = 'none';
   } else {
@@ -3463,7 +4198,11 @@ function renderCityCrime() {
       data: c.data,
       backgroundColor: INTERRACIAL_COLORS,
       borderColor: INTERRACIAL_COLORS,
-      borderWidth: 1
+      borderWidth: 1,
+      // reset any LA-specific percentage tweaks back to Chart.js defaults
+      barPercentage: 0.9,
+      categoryPercentage: 0.8,
+      maxBarThickness: undefined
     }];
     cityChart.options.plugins.legend.display = false;
     cityChart.options.plugins.tooltip.callbacks = {
@@ -3471,6 +4210,11 @@ function renderCityCrime() {
     };
     cityChart.options.scales.y.title.text = 'Incidents';
     cityChart.options.scales.y.ticks.callback = v => v;
+    cityChart.options.scales.y.max = undefined;  // reset after LA
+    cityChart.options.scales.x.ticks.maxRotation = 60;
+    cityChart.options.scales.x.ticks.minRotation = 45;
+    cityChart.options.scales.x.ticks.font = { size: 9, weight: 600 };
+    cityChart.options.scales.x.ticks.color = C.text;
     cityChart.update();
     ribbonEl.style.display = '';
     const bowCount = c.data[2];
@@ -3484,6 +4228,7 @@ function renderCityCrime() {
   // Disp row: show for EVERY city that has a disp object
   if (c.disp) {
     dispRowEl.style.display = 'block';
+    setDispLabel('cityDispLabel', currentCityCrime);
     document.getElementById('cityDispBlack').innerHTML = fmt(c.disp.Black);
     document.getElementById('cityDispHispanic').innerHTML = fmt(c.disp.Hispanic);
     document.getElementById('cityDispOther').innerHTML = fmt(c.disp.Other);
@@ -3815,10 +4560,193 @@ document.querySelectorAll('#stToggle button').forEach(btn => {
     }
   });
 })();
+// ============================================================
+// T-CLEAR · DISPROPORTIONALITY CHART (Suspect/Victim × %/# · ported from TCLEAR source)
+// Ported to dark mode with always-visible datalabels on top of every bar.
+// Two toggles: Suspect vs Victim (setTclearView), and % vs # (toggleTclearUnits).
+// ============================================================
+const TCLEAR_SUSPECT_PCT    = [65.1, 18.0, 16.4, 0.5];
+const TCLEAR_SUSPECT_COUNTS = [123, 34, 31, 1];
+const TCLEAR_VICTIM_PCT     = [68.8, 14.2, 13.8, 2.3];
+const TCLEAR_VICTIM_COUNTS  = [209, 43, 42, 7];
+const TCLEAR_POP_PCT        = [13.6, 59.3, 19.1, 8.0];
+// Multiplier = share / pop share, rounded to 2 decimals
+const TCLEAR_SUSPECT_MULT   = ['4.79×', '0.30×', '0.86×', '0.14×'];
+const TCLEAR_VICTIM_MULT    = ['5.06×', '0.24×', '0.72×', '0.29×'];
+let tclearView       = 'suspect';  // 'suspect' | 'victim'
+let tclearShowCounts = false;
+let tclearChart      = null;
+
+(function() {
+  const el = document.getElementById('chartTclear');
+  if (!el || typeof Chart === 'undefined') return;
+  // Scope the datalabels plugin to JUST this chart (don't register globally;
+  // that would spray labels onto every other chart on the page).
+  const tclearPlugins = (typeof ChartDataLabels !== 'undefined') ? [ChartDataLabels] : [];
+  tclearChart = new Chart(el, {
+    plugins: tclearPlugins,
+    type: 'bar',
+    data: {
+      labels: ['Black', 'White', 'Hispanic', 'Asian/Other'],
+      datasets: [
+        {
+          label: 'Identified Suspects',
+          data: TCLEAR_SUSPECT_PCT.slice(),
+          rawCounts: TCLEAR_SUSPECT_COUNTS.slice(),
+          backgroundColor: [C.purple, C.blue, C.gold, C.yellow],
+          borderColor:     [C.purple, C.blue, C.gold, C.yellow],
+          borderWidth: 1,
+          borderRadius: 3,
+          barPercentage: 0.85,
+          categoryPercentage: 0.7
+        },
+        {
+          label: 'U.S. Population %',
+          data: TCLEAR_POP_PCT.slice(),
+          backgroundColor: 'rgba(230,57,70,0.15)',
+          borderColor: C.red,
+          borderWidth: 1.5,
+          borderDash: [4, 3],
+          borderRadius: 3,
+          barPercentage: 0.85,
+          categoryPercentage: 0.7
+        }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      layout: { padding: { top: 24 } },
+      plugins: {
+        legend: {
+          position: 'top',
+          labels: { color: C.text, usePointStyle: true, pointStyle: 'rectRounded', padding: 14, font: { size: 11, weight: '600' }, boxWidth: 12, boxHeight: 12 }
+        },
+        tooltip: {
+          backgroundColor: '#0d0d14', borderColor: C.border, borderWidth: 1,
+          titleColor: C.red, bodyColor: C.text, padding: 10,
+          callbacks: {
+            label: function(ctx) { return tclearTooltipLabel(ctx); }
+          }
+        },
+        datalabels: {
+          anchor: 'end',
+          align: 'end',
+          offset: 4,
+          color: function(ctx) { return ctx.datasetIndex === 1 ? '#ff9aa4' : '#e8e8ec'; },
+          backgroundColor: 'rgba(13,13,20,0.85)',
+          borderColor: function(ctx) { return ctx.datasetIndex === 1 ? 'rgba(230,57,70,0.55)' : 'rgba(138,138,154,0.45)'; },
+          borderWidth: 1,
+          borderRadius: 8,
+          padding: { top: 3, bottom: 3, left: 7, right: 7 },
+          font: { family: "'Source Code Pro', monospace", size: 10.5, weight: '700' },
+          formatter: function(v, ctx) { return tclearFormatBar(v, ctx); }
+        }
+      },
+      scales: {
+        y: { beginAtZero: true, max: 80, grid: { color: C.border },
+             ticks: { color: C.muted, callback: function(v) { return v + '%'; }, stepSize: 10 },
+             title: { display: true, text: 'Percentage of Group', color: C.muted, font: { size: 10 } } },
+        x: { grid: { display: false }, ticks: { color: C.text, font: { size: 12, weight: '600' } } }
+      }
+    }
+  });
+})();
+
+function tclearPctData()      { return tclearView === 'victim' ? TCLEAR_VICTIM_PCT    : TCLEAR_SUSPECT_PCT; }
+function tclearCountData()    { return tclearView === 'victim' ? TCLEAR_VICTIM_COUNTS : TCLEAR_SUSPECT_COUNTS; }
+function tclearMultData()     { return tclearView === 'victim' ? TCLEAR_VICTIM_MULT   : TCLEAR_SUSPECT_MULT; }
+function tclearDatasetLabel() { return tclearView === 'victim' ? 'Identified Victims' : 'Identified Suspects'; }
+
+function tclearFormatBar(v, ctx) {
+  // Dataset 0 = subject (suspect/victim) — if showing counts, format as integer; else %
+  // Dataset 1 = population — always %
+  if (ctx.datasetIndex === 1) return v + '%';
+  return tclearShowCounts ? String(v) : (v + '%');
+}
+function tclearTooltipLabel(ctx) {
+  const pct  = tclearPctData();
+  const cnt  = tclearCountData();
+  if (ctx.datasetIndex === 0) {
+    if (tclearShowCounts) {
+      return ctx.dataset.label + ': ' + ctx.raw + ' (' + pct[ctx.dataIndex] + '%)';
+    }
+    return ctx.dataset.label + ': ' + cnt[ctx.dataIndex] + ' (' + ctx.raw + '%)';
+  }
+  return ctx.dataset.label + ': ' + ctx.raw + '%';
+}
+
+function updateTclearChart() {
+  if (!tclearChart) return;
+  const ds       = tclearChart.data.datasets;
+  const pct      = tclearPctData();
+  const cnt      = tclearCountData();
+  ds[0].label     = tclearDatasetLabel();
+  ds[0].rawCounts = cnt.slice();
+  if (tclearShowCounts) {
+    ds[0].data = cnt.slice();
+    const maxCount = Math.max.apply(null, cnt);
+    tclearChart.options.scales.y.max          = Math.ceil((maxCount * 1.2) / 20) * 20;
+    tclearChart.options.scales.y.ticks.callback = function(v) { return v; };
+    tclearChart.options.scales.y.ticks.stepSize = 20;
+    tclearChart.options.scales.y.title.text    = tclearView === 'victim' ? 'Number of Victims' : 'Number of Suspects';
+  } else {
+    ds[0].data = pct.slice();
+    tclearChart.options.scales.y.max          = 80;
+    tclearChart.options.scales.y.ticks.callback = function(v) { return v + '%'; };
+    tclearChart.options.scales.y.ticks.stepSize = 10;
+    tclearChart.options.scales.y.title.text    = 'Percentage of Group';
+  }
+  tclearChart.update();
+
+  // Multiplier cards
+  const mult = tclearMultData();
+  const setTxt = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+  setTxt('tclearMultBlack',    mult[0]);
+  setTxt('tclearMultWhite',    mult[1]);
+  setTxt('tclearMultHispanic', mult[2]);
+  setTxt('tclearMultOther',    mult[3]);
+
+  // Chart title above the canvas
+  const title = document.getElementById('tclearChartTitle');
+  if (title) title.textContent = 'Racial Disproportionality of Identified ' + (tclearView === 'victim' ? 'Victims' : 'Suspects');
+  const date  = document.getElementById('tclearChartDate');
+  if (date) date.textContent = '2015 – 2024 · 10 years · N = ' + (tclearView === 'victim' ? 301 : 189);
+}
+
+function setTclearView(view) {
+  if (view !== 'suspect' && view !== 'victim') return;
+  tclearView = view;
+  const bs = document.getElementById('tclearBtnSuspect');
+  const bv = document.getElementById('tclearBtnVictim');
+  if (bs) bs.classList.toggle('tclear-view-active', view === 'suspect');
+  if (bv) bv.classList.toggle('tclear-view-active', view === 'victim');
+  updateTclearChart();
+}
+
+function toggleTclearUnits(showCounts) {
+  tclearShowCounts = !!showCounts;
+  const dot   = document.getElementById('tclear-dot');
+  const track = document.getElementById('tclear-track');
+  const lblP  = document.getElementById('tclear-lbl-pct');
+  const lblH  = document.getElementById('tclear-lbl-hash');
+  if (showCounts) {
+    if (dot)   dot.style.left = '18px';
+    if (track) track.style.background = 'var(--text-muted)';
+    if (lblP)  lblP.style.color = 'var(--text-muted)';
+    if (lblH)  lblH.style.color = 'var(--accent-gold)';
+  } else {
+    if (dot)   dot.style.left = '2px';
+    if (track) track.style.background = 'var(--accent-gold)';
+    if (lblP)  lblP.style.color = 'var(--accent-gold)';
+    if (lblH)  lblH.style.color = 'var(--text-muted)';
+  }
+  updateTclearChart();
+}
+
 // Typewriter observer: watches chart cards and triggers the typing animation
 // each time one enters the viewport. Exits reset so the animation can re-play.
 (function() {
-  const cards = document.querySelectorAll('.chart-card');
+  const cards = document.querySelectorAll('.chart-card, .tclear-callout');
   if (!cards.length) return;
   const obs = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
@@ -3835,6 +4763,37 @@ document.querySelectorAll('#stToggle button').forEach(btn => {
     });
   }, { threshold: 0.25 });
   cards.forEach(c => obs.observe(c));
+})();
+
+/* ============================================================
+   MOBILE: auto-inject "Swipe to see more" badge below any element
+   whose content overflows horizontally (chart-ribbon, chart-tabs).
+   Mirrors the companion-site pattern.
+   ============================================================ */
+(function injectScrollHints() {
+  function check() {
+    if (window.innerWidth > 680) return;
+    const candidates = document.querySelectorAll('.chart-ribbon, .chart-tabs');
+    candidates.forEach(el => {
+      // Skip if already badged
+      if (el.dataset.swipeBadged) return;
+      if (el.scrollWidth > el.clientWidth + 2) {
+        const hint = document.createElement('div');
+        hint.className = 'scroll-hint-badge';
+        hint.innerHTML = '<span class="arrow">&#8596;</span> Swipe to see more <span class="arrow">&#8596;</span>';
+        el.parentNode.insertBefore(hint, el.nextSibling);
+        el.dataset.swipeBadged = '1';
+      }
+    });
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', check);
+  } else {
+    check();
+  }
+  // Re-check after a tick because some chart layouts compute width async
+  setTimeout(check, 600);
+  setTimeout(check, 1500);
 })();
 </script>
 </body>

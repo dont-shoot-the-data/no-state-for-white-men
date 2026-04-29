@@ -1888,6 +1888,18 @@ footer a { color: var(--accent-red); text-decoration: none; }
   }
 }
 
+/* Police-shootings race cards: 2x2 by default (mobile + half-screen), 4x1 at desktop */
+.race-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+@media (min-width: 760px) {
+  .race-cards-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
 </style>
 </head>
 <body>
@@ -2201,8 +2213,10 @@ footer a { color: var(--accent-red); text-decoration: none; }
       </div>
       <div class="case-body mural">
         <div class="mural-image-slot">
-          <img src="chyna-gibson-mural.jpg" alt="Mural on 2013 Neighbors Alley, Sacramento: Protect Our Trans Daughters / White Silence = Violence"
-               onerror="this.outerHTML='&lt;div class=\'fallback\'&gt;image slot &middot; chyna-gibson-mural.jpg&lt;br&gt;[Google Street View &middot; 2013 Neighbors Alley, Sacramento &middot; Feb 2025]&lt;/div&gt;'">
+          <a href="https://maps.app.goo.gl/rCzDuW66hT3wrFDX7" target="_blank" style="display:block; line-height:0;" aria-label="View the mural on Google Maps">
+            <img src="chyna-gibson-mural.jpg" alt="Mural on 2013 Neighbors Alley, Sacramento: Protect Our Trans Daughters / White Silence = Violence — tap to view on Google Maps"
+                 onerror="this.outerHTML='&lt;div class=\'fallback\'&gt;image slot &middot; chyna-gibson-mural.jpg&lt;br&gt;[Google Street View &middot; 2013 Neighbors Alley, Sacramento &middot; Feb 2025]&lt;/div&gt;'">
+          </a>
         </div>
         <div class="case-text">
           <p>On a building at <strong>2013 Neighbors Alley in Midtown Sacramento</strong>, a public mural memorializes Chyna Gibson, a Black transgender performer shot ten times in a New Orleans parking lot in 2017.</p>
@@ -2210,7 +2224,7 @@ footer a { color: var(--accent-red); text-decoration: none; }
         </div>
       </div>
       <div class="case-source">
-        The mural can be viewed on <a href="https://www.google.com/maps/@38.5660,-121.4700,3a,75y/data=!3m6!1e1" target="_blank">Google Street View</a> at 2013 Neighbors Alley, Sacramento, California (image dated February 2025).
+        The mural can be viewed on <a href="https://maps.app.goo.gl/rCzDuW66hT3wrFDX7" target="_blank">Google Maps</a> at 2013 Neighbors Alley, Sacramento, California &middot; tap the image to open the location.
       </div>
     </div>
 
@@ -2329,15 +2343,19 @@ footer a { color: var(--accent-red); text-decoration: none; }
     <!-- Oscar Grant — short setup -->
     <div class="case-card" style="margin-bottom:22px">
       <div class="case-body vertical">
-        <!-- Grant + Mehserle side-by-side · awaiting upload -->
+        <!-- Grant + Mehserle side-by-side · cards locked to equal aspect-ratio -->
         <div style="display:grid; grid-template-columns:repeat(2, 1fr); gap:14px; max-width:520px; margin:0 auto 20px;">
-          <div style="border:1px solid var(--border); background:#12121a">
-            <img src="oscar-grant.png" alt="Oscar Grant III, killed by BART officer Johannes Mehserle on the Fruitvale platform, January 1, 2009" style="width:100%; height:auto; display:block" onerror="this.outerHTML='<div style=&quot;padding:38px 12px; text-align:center; font-family:Source Code Pro,monospace; font-size:10px; letter-spacing:1.6px; color:var(--text-muted); text-transform:uppercase; line-height:1.7&quot;>image slot &middot; oscar-grant.png<br>[Oscar Grant]</div>'">
-            <div style="padding:8px 10px; font-family:'Source Code Pro',monospace; font-size:9.5px; letter-spacing:1.4px; text-transform:uppercase; color:var(--text-muted); text-align:center; border-top:1px solid var(--border)">Oscar Grant &middot; age 22</div>
+          <div style="border:1px solid var(--border); background:#12121a; aspect-ratio:5/6; display:flex; flex-direction:column; overflow:hidden">
+            <div style="flex:1 1 auto; overflow:hidden; min-height:0; background:#12121a">
+              <img src="oscar-grant.png" alt="Oscar Grant III, killed by BART officer Johannes Mehserle on the Fruitvale platform, January 1, 2009" style="width:100%; height:100%; object-fit:cover; object-position:center; display:block" onerror="this.outerHTML='<div style=&quot;padding:38px 12px; text-align:center; font-family:Source Code Pro,monospace; font-size:10px; letter-spacing:1.6px; color:var(--text-muted); text-transform:uppercase; line-height:1.7&quot;>image slot &middot; oscar-grant.png<br>[Oscar Grant]</div>'">
+            </div>
+            <div style="padding:8px 10px; font-family:'Source Code Pro',monospace; font-size:9.5px; letter-spacing:1.4px; text-transform:uppercase; color:var(--text-muted); text-align:center; border-top:1px solid var(--border); flex-shrink:0">Oscar Grant &middot; age 22</div>
           </div>
-          <div style="border:1px solid var(--border); background:#12121a">
-            <img src="mehserle.png" alt="Johannes Mehserle, the BART officer who shot Oscar Grant on January 1, 2009" style="width:100%; height:auto; display:block" onerror="this.outerHTML='<div style=&quot;padding:38px 12px; text-align:center; font-family:Source Code Pro,monospace; font-size:10px; letter-spacing:1.6px; color:var(--text-muted); text-transform:uppercase; line-height:1.7&quot;>image slot &middot; mehserle.png<br>[Johannes Mehserle]</div>'">
-            <div style="padding:8px 10px; font-family:'Source Code Pro',monospace; font-size:9.5px; letter-spacing:1.4px; text-transform:uppercase; color:var(--text-muted); text-align:center; border-top:1px solid var(--border)">Johannes Mehserle &middot; BART officer</div>
+          <div style="border:1px solid var(--border); background:#12121a; aspect-ratio:5/6; display:flex; flex-direction:column; overflow:hidden">
+            <div style="flex:1 1 auto; overflow:hidden; min-height:0; background:#12121a">
+              <img src="mehserle.png" alt="Johannes Mehserle, the BART officer who shot Oscar Grant on January 1, 2009" style="width:100%; height:100%; object-fit:cover; object-position:46% 28%; display:block; transform:scale(1.45); transform-origin:46% 28%" onerror="this.outerHTML='<div style=&quot;padding:38px 12px; text-align:center; font-family:Source Code Pro,monospace; font-size:10px; letter-spacing:1.6px; color:var(--text-muted); text-transform:uppercase; line-height:1.7&quot;>image slot &middot; mehserle.png<br>[Johannes Mehserle]</div>'">
+            </div>
+            <div style="padding:8px 10px; font-family:'Source Code Pro',monospace; font-size:9.5px; letter-spacing:1.4px; text-transform:uppercase; color:var(--text-muted); text-align:center; border-top:1px solid var(--border); flex-shrink:0">Johannes Mehserle &middot; BART officer</div>
           </div>
         </div>
         <div style="display:flex; align-items:baseline; gap:14px; flex-wrap:wrap; margin-bottom:14px">
@@ -2423,27 +2441,29 @@ footer a { color: var(--accent-red); text-decoration: none; }
       <p>The <a href="https://www.washingtonpost.com/graphics/investigations/police-shootings-database/" target="_blank">Washington Post Fatal Force database</a> has tracked every fatal U.S. police shooting since 2015. We pulled the unarmed subset, by race, and set it against the number of American police officers killed by gunfire across the same decade.</p>
     </div>
 
-    <!-- Annual averages · 52.4 officers card spans full width on top, 4 race cards in a row below -->
-    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); gap:12px; max-width:900px; margin:0 auto 22px;">
-      <div style="grid-column:1 / -1; background:var(--bg-card); border:1px solid rgba(74,222,128,0.4); border-top:3px solid #4ade80; padding:22px 16px; text-align:center;">
+    <!-- Annual averages · 52.4 spans full width, 4 race cards below: 2x2 on narrow, 4x1 on wide -->
+    <div style="max-width:900px; margin:0 auto 22px;">
+      <div style="background:var(--bg-card); border:1px solid rgba(74,222,128,0.4); border-top:3px solid #4ade80; padding:22px 16px; text-align:center; margin-bottom:12px;">
         <div style="font-family:'Source Code Pro',monospace; font-size:38px; font-weight:800; color:#4ade80; line-height:1; text-shadow:0 0 22px rgba(74,222,128,0.45)">52.4</div>
         <div style="font-family:'Source Code Pro',monospace; font-size:10px; letter-spacing:1.8px; color:var(--text-muted); margin-top:10px; text-transform:uppercase">Officers killed by gunfire / yr</div>
       </div>
-      <div style="background:var(--bg-card); border:1px solid var(--border); border-top:3px solid #4ea8de; padding:18px 12px; text-align:center;">
-        <div style="font-family:'Source Code Pro',monospace; font-size:30px; font-weight:800; color:#4ea8de; line-height:1; text-shadow:0 0 18px rgba(78,168,222,0.35)">22.2</div>
-        <div style="font-family:'Source Code Pro',monospace; font-size:9.5px; letter-spacing:1.5px; color:var(--text-muted); margin-top:8px; text-transform:uppercase">White unarmed/yr</div>
-      </div>
-      <div style="background:var(--bg-card); border:1px solid var(--border); border-top:3px solid #c840e9; padding:18px 12px; text-align:center;">
-        <div style="font-family:'Source Code Pro',monospace; font-size:30px; font-weight:800; color:#c840e9; line-height:1; text-shadow:0 0 18px rgba(200,64,233,0.35)">18.0</div>
-        <div style="font-family:'Source Code Pro',monospace; font-size:9.5px; letter-spacing:1.5px; color:var(--text-muted); margin-top:8px; text-transform:uppercase">Black unarmed/yr</div>
-      </div>
-      <div style="background:var(--bg-card); border:1px solid var(--border); border-top:3px solid #e8853a; padding:18px 12px; text-align:center;">
-        <div style="font-family:'Source Code Pro',monospace; font-size:30px; font-weight:800; color:#e8853a; line-height:1; text-shadow:0 0 18px rgba(232,133,58,0.35)">11.2</div>
-        <div style="font-family:'Source Code Pro',monospace; font-size:9.5px; letter-spacing:1.5px; color:var(--text-muted); margin-top:8px; text-transform:uppercase">Hispanic unarmed/yr</div>
-      </div>
-      <div style="background:var(--bg-card); border:1px solid var(--border); border-top:3px solid #e8d44d; padding:18px 12px; text-align:center;">
-        <div style="font-family:'Source Code Pro',monospace; font-size:30px; font-weight:800; color:#e8d44d; line-height:1; text-shadow:0 0 18px rgba(232,212,77,0.35)">0.9</div>
-        <div style="font-family:'Source Code Pro',monospace; font-size:9.5px; letter-spacing:1.5px; color:var(--text-muted); margin-top:8px; text-transform:uppercase">Asian unarmed/yr</div>
+      <div class="race-cards-grid">
+        <div style="background:var(--bg-card); border:1px solid var(--border); border-top:3px solid #4ea8de; padding:18px 12px; text-align:center;">
+          <div style="font-family:'Source Code Pro',monospace; font-size:30px; font-weight:800; color:#4ea8de; line-height:1; text-shadow:0 0 18px rgba(78,168,222,0.35)">22.2</div>
+          <div style="font-family:'Source Code Pro',monospace; font-size:9.5px; letter-spacing:1.5px; color:var(--text-muted); margin-top:8px; text-transform:uppercase">White unarmed/yr</div>
+        </div>
+        <div style="background:var(--bg-card); border:1px solid var(--border); border-top:3px solid #c840e9; padding:18px 12px; text-align:center;">
+          <div style="font-family:'Source Code Pro',monospace; font-size:30px; font-weight:800; color:#c840e9; line-height:1; text-shadow:0 0 18px rgba(200,64,233,0.35)">18.0</div>
+          <div style="font-family:'Source Code Pro',monospace; font-size:9.5px; letter-spacing:1.5px; color:var(--text-muted); margin-top:8px; text-transform:uppercase">Black unarmed/yr</div>
+        </div>
+        <div style="background:var(--bg-card); border:1px solid var(--border); border-top:3px solid #e8853a; padding:18px 12px; text-align:center;">
+          <div style="font-family:'Source Code Pro',monospace; font-size:30px; font-weight:800; color:#e8853a; line-height:1; text-shadow:0 0 18px rgba(232,133,58,0.35)">11.2</div>
+          <div style="font-family:'Source Code Pro',monospace; font-size:9.5px; letter-spacing:1.5px; color:var(--text-muted); margin-top:8px; text-transform:uppercase">Hispanic unarmed/yr</div>
+        </div>
+        <div style="background:var(--bg-card); border:1px solid var(--border); border-top:3px solid #e8d44d; padding:18px 12px; text-align:center;">
+          <div style="font-family:'Source Code Pro',monospace; font-size:30px; font-weight:800; color:#e8d44d; line-height:1; text-shadow:0 0 18px rgba(232,212,77,0.35)">0.9</div>
+          <div style="font-family:'Source Code Pro',monospace; font-size:9.5px; letter-spacing:1.5px; color:var(--text-muted); margin-top:8px; text-transform:uppercase">Asian unarmed/yr</div>
+        </div>
       </div>
     </div>
 
@@ -2736,16 +2756,28 @@ footer a { color: var(--accent-red); text-decoration: none; }
       <p style="font-family:'DM Sans',sans-serif; font-size:15px; line-height:1.7; color:var(--text-secondary); margin:0 0 14px"><a href="https://abcnews.go.com/GMA/News/gabby-petito-case-missing-white-woman-syndrome-experts/story?id=80144611" target="_blank" style="color:var(--text-secondary); text-decoration:underline; text-decoration-color:rgba(230,57,70,0.5)">Gabby Petito</a> disappeared in September 2021. She and her fianc&eacute; <strong>Brian Laundrie</strong> were van-life YouTube streamers who built a brand around their perfect relationship. Behind the camera, there was obvious turmoil. He killed her. <strong style="color:var(--text-primary)">The story was the mismatch &mdash; not her race.</strong></p>
       <p style="font-family:'DM Sans',sans-serif; font-size:15px; line-height:1.7; color:var(--text-secondary); margin:0 0 18px">Of course, within days, <a href="https://www.deseret.com/2021/9/21/22686285/gabby-petito-news-coverage-brian-laundrie-missing-white-woman-syndrome/" target="_blank" style="color:var(--text-secondary); text-decoration:underline; text-decoration-color:rgba(230,57,70,0.5)">MSNBC&rsquo;s Joy Reid</a> reframed it as &ldquo;missing white woman syndrome.&rdquo; <a href="https://leginfo.legislature.ca.gov/faces/billNavClient.xhtml?bill_id=202320240SB673" target="_blank" style="color:var(--text-secondary); text-decoration:underline; text-decoration-color:rgba(230,57,70,0.5)">Sen. Steven Bradford</a>, the author of the bill that became California&rsquo;s Ebony Alert, then <a href="https://blackandmissinginc.com/californias-ebony-alert-what-to-know-about-the-alert-system-for-missing-black-youth/" target="_blank" style="color:var(--text-secondary); text-decoration:underline; text-decoration-color:rgba(230,57,70,0.5)">cited Petito by name as the pretext</a> &mdash; telling <em>People</em> magazine: <strong style="color:var(--text-primary)">&ldquo;She was a prime example [of] what this country can do when they really want to find you. But the media attention that her disappearance garnered across this country, you very rarely, if ever, see that for an African American.&rdquo;</strong></p>
 
+      <!-- ACT 1: The pundit — Joy Reid coining "missing white woman syndrome" -->
+      <div style="text-align:center; margin:8px 0 6px;">
+        <div style="display:inline-block; font-family:'Source Code Pro',monospace; font-size:10px; font-weight:700; letter-spacing:2.8px; text-transform:uppercase; color:var(--text-muted); border-top:1px solid var(--border); border-bottom:1px solid var(--border); padding:6px 18px;">The pundit</div>
+      </div>
+      <p style="text-align:center; margin:6px auto 14px; max-width:600px; font-family:'DM Sans',sans-serif; font-size:15px; color:var(--text-secondary); line-height:1.5;">Here&rsquo;s MSNBC&rsquo;s Joy Reid coining the phrase <em>&ldquo;missing white woman syndrome&rdquo;</em> &mdash; days after Petito disappeared, before her body was even found:</p>
+
       <!-- Joy Reid "missing white woman syndrome" video tweet — embedded so the video plays inline -->
-      <div style="margin:0 auto 18px; max-width:560px;">
+      <div style="margin:0 auto 26px; max-width:560px;">
         <blockquote class="twitter-tweet" data-theme="dark" data-conversation="none" data-media-max-width="560">
           <p lang="en" dir="ltr">Joy Reid: &ldquo;missing white woman syndrome&rdquo;</p>
           &mdash; Mike Sington (@MikeSington) <a href="https://twitter.com/MikeSington/status/1440125733821583360">September 21, 2021</a>
         </blockquote>
       </div>
 
+      <!-- ACT 2: The senator — Bradford invoking Petito by name on TMZ Live -->
+      <div style="text-align:center; margin:8px 0 6px;">
+        <div style="display:inline-block; font-family:'Source Code Pro',monospace; font-size:10px; font-weight:700; letter-spacing:2.8px; text-transform:uppercase; color:var(--accent-red); border-top:1px solid rgba(230,57,70,0.5); border-bottom:1px solid rgba(230,57,70,0.5); padding:6px 18px;">The senator</div>
+      </div>
+      <p style="text-align:center; margin:6px auto 12px; max-width:620px; font-family:'DM Sans',sans-serif; font-size:15px; color:var(--text-secondary); line-height:1.5;">And here&rsquo;s the bill&rsquo;s author, Sen. Steven Bradford, invoking <strong>Gabby Petito by name</strong> on TMZ Live as the rationale for the alert &mdash; two days after Newsom signed it into law:</p>
+
       <!-- Bradford on TMZ Live invoking Gabby Petito by name — two days after Newsom signed the bill -->
-      <div style="text-align:center; margin:22px 0 12px;">
+      <div style="text-align:center; margin:6px 0 12px;">
         <div style="display:inline-block; font-family:'Source Code Pro',monospace; font-size:10.5px; font-weight:700; letter-spacing:3.2px; text-transform:uppercase; color:var(--accent-red); background:transparent; border:2px solid rgba(230,57,70,0.6); padding:8px 18px; transform:rotate(-2deg); text-shadow:0 0 20px rgba(230,57,70,0.4); box-shadow:0 0 30px rgba(230,57,70,0.15), inset 0 0 20px rgba(230,57,70,0.05);">See for yourself</div>
       </div>
       <div style="margin:10px auto 18px; max-width:560px;">
@@ -3043,6 +3075,18 @@ footer a { color: var(--accent-red); text-decoration: none; }
     <div class="section-kicker">Sacramento &middot; May 30 &ndash; June 1, 2020</div>
     <h2 class="section-title">An unarmed Black man was killed by police in Minneapolis. <em>Sacramento businesses got looted.</em></h2>
 
+    <!-- BevMo + Fry's looting photo grid · top of section -->
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:16px; max-width:820px; margin:18px auto 28px;">
+      <div style="border:1px solid var(--border); background:#12121a">
+        <img src="bevmo-looted.png" alt="Live KCRA news still of BevMo being looted in Midtown Sacramento, May 31 2020" style="width:100%; height:auto; display:block" onerror="this.outerHTML='<div style=&quot;padding:60px 18px; text-align:center; font-family:Source Code Pro,monospace; font-size:10.5px; letter-spacing:1.8px; color:var(--text-muted); text-transform:uppercase; line-height:1.7&quot;>image slot &middot; bevmo-looted.png<br>[BevMo &middot; Midtown &middot; May 31, 2020]</div>'">
+        <div style="padding:9px 12px; font-family:'Source Code Pro',monospace; font-size:9.5px; letter-spacing:1.5px; text-transform:uppercase; color:var(--text-muted); text-align:center; border-top:1px solid var(--border)">Live picture of BevMo being looted &middot; Midtown Sacramento &middot; aftermath</div>
+      </div>
+      <div style="border:1px solid var(--border); background:#12121a">
+        <img src="frys-electronics.png" alt="Fry's Electronics in North Natomas, completely looted during the May 31 - June 1 2020 Floyd protest weekend — never reopened" style="width:100%; height:auto; display:block" onerror="this.outerHTML='<div style=&quot;padding:60px 18px; text-align:center; font-family:Source Code Pro,monospace; font-size:10.5px; letter-spacing:1.8px; color:var(--text-muted); text-transform:uppercase; line-height:1.7&quot;>image slot &middot; frys-electronics.png<br>[Fry&rsquo;s Electronics &middot; North Natomas &middot; June 1, 2020]</div>'">
+        <div style="padding:9px 12px; font-family:'Source Code Pro',monospace; font-size:9.5px; letter-spacing:1.5px; text-transform:uppercase; color:var(--text-muted); text-align:center; border-top:1px solid var(--border)">Fry&rsquo;s Electronics &middot; Sacramento &middot; completely looted</div>
+      </div>
+    </div>
+
     <div class="section-body">
       <p>George Floyd died in police custody on May 25, 2020 in Minneapolis. Five days later, the response in Sacramento &mdash; 1,800 miles away &mdash; looked like this:</p>
     </div>
@@ -3062,18 +3106,6 @@ footer a { color: var(--accent-red); text-decoration: none; }
       </div>
       <div class="case-source">
         Sources: ABC10, CBS Sacramento, CapRadio, Natomas Buzz. Damage spanned the K Street corridor, J Street, Downtown Commons, Midtown, Oak Park, and North Natomas, May 30 &ndash; June 1, 2020.
-      </div>
-    </div>
-
-    <!-- BevMo + Fry's looting photo grid · awaiting upload -->
-    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:16px; max-width:820px; margin:26px auto 0;">
-      <div style="border:1px solid var(--border); background:#12121a">
-        <img src="bevmo-looted.png" alt="BevMo in Midtown Sacramento, looted during the May 31 2020 Floyd protests" style="width:100%; height:auto; display:block" onerror="this.outerHTML='<div style=&quot;padding:60px 18px; text-align:center; font-family:Source Code Pro,monospace; font-size:10.5px; letter-spacing:1.8px; color:var(--text-muted); text-transform:uppercase; line-height:1.7&quot;>image slot &middot; bevmo-looted.png<br>[BevMo &middot; Midtown &middot; May 31, 2020]</div>'">
-        <div style="padding:9px 12px; font-family:'Source Code Pro',monospace; font-size:9.5px; letter-spacing:1.5px; text-transform:uppercase; color:var(--text-muted); text-align:center; border-top:1px solid var(--border)">BevMo &middot; Midtown</div>
-      </div>
-      <div style="border:1px solid var(--border); background:#12121a">
-        <img src="frys-electronics.png" alt="Aftermath of the May 31 - June 1 2020 Floyd protest weekend in Sacramento — storefront with shattered windows and 'sorry, temporarily closed' signage" style="width:100%; height:auto; display:block" onerror="this.outerHTML='<div style=&quot;padding:60px 18px; text-align:center; font-family:Source Code Pro,monospace; font-size:10.5px; letter-spacing:1.8px; color:var(--text-muted); text-transform:uppercase; line-height:1.7&quot;>image slot &middot; frys-electronics.png<br>[Sacramento storefront &middot; protest weekend aftermath]</div>'">
-        <div style="padding:9px 12px; font-family:'Source Code Pro',monospace; font-size:9.5px; letter-spacing:1.5px; text-transform:uppercase; color:var(--text-muted); text-align:center; border-top:1px solid var(--border)">Sacramento storefront &middot; aftermath of the protest weekend</div>
       </div>
     </div>
 
@@ -3097,20 +3129,8 @@ footer a { color: var(--accent-red); text-decoration: none; }
     <div class="section-kicker">K Street &middot; Sacramento &middot; April 3, 2022</div>
     <h2 class="section-title">The deadliest shooting in Sacramento&rsquo;s history. Six dead. Three Black men charged. <em>The Sacramento Bee, of course, made Black people the victims.</em></h2>
 
-    <!-- One unified bullet card: shooting + Smiley Martin -->
-    <div class="case-card">
-      <div class="case-body text-only">
-        <ul style="line-height:1.85; font-size:16px; color:var(--text-primary); padding-left:22px; margin:0">
-          <li>April 3, 2022, 2 a.m. <strong>K and 10th streets</strong>, blocks from the State Capitol.</li>
-          <li><strong>Five Black men opened fire</strong> from two rival gangs. <strong>Six killed. Twelve wounded.</strong> <a href="https://en.wikipedia.org/wiki/2022_Sacramento_shooting" target="_blank">The deadliest shooting in Sacramento&rsquo;s history.</a></li>
-          <li>Three charged with murder: <strong>Smiley Martin</strong>, <strong>Dandrae Martin</strong>, <strong>Mtula Payton</strong>. <a href="https://www.cbsnews.com/sacramento/news/suspect-sacramento-mass-shooting-dies-in-jail/" target="_blank">All three previously convicted felons.</a></li>
-          <li><strong>Smiley Martin</strong> was sentenced to <strong>10 years for domestic violence in 2018</strong>. <a href="https://www.abc10.com/article/news/local/sacramento/mass-shooting-suspcet-to-be-paid-by-sac-county/103-ae8650a9-a698-4449-9d7f-3b87cbc4f338" target="_blank">Released six years early</a> under voter-approved sentencing rollbacks. <strong>Five weeks after walking out, he was on K Street firing into a crowd.</strong></li>
-        </ul>
-      </div>
-    </div>
-
-    <!-- Victims + suspects photo block · awaiting upload -->
-    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:18px; max-width:880px; margin:24px auto 0;">
+    <!-- Victims + suspects photo block · top of section -->
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:18px; max-width:880px; margin:18px auto 28px;">
       <!-- Six victims -->
       <div style="border:1px solid var(--border); background:#12121a">
         <img src="k-street-victims.png" alt="The six people killed in the April 3 2022 K Street mass shooting" style="width:100%; height:auto; display:block" onerror="this.outerHTML='<div style=&quot;padding:60px 18px; text-align:center; font-family:Source Code Pro,monospace; font-size:10.5px; letter-spacing:1.8px; color:var(--text-muted); text-transform:uppercase; line-height:1.7&quot;>image slot &middot; k-street-victims.png<br>[The six killed &middot; April 3, 2022]</div>'">
@@ -3120,6 +3140,18 @@ footer a { color: var(--accent-red); text-decoration: none; }
       <div style="border:1px solid var(--border); background:#12121a">
         <img src="k-street-suspects.jpg" alt="The three men charged in the April 3 2022 K Street mass shooting: Smiley Martin, Dandrae Martin, Mtula Payton" style="width:100%; height:auto; display:block" onerror="this.outerHTML='<div style=&quot;padding:60px 18px; text-align:center; font-family:Source Code Pro,monospace; font-size:10.5px; letter-spacing:1.8px; color:var(--text-muted); text-transform:uppercase; line-height:1.7&quot;>image slot &middot; k-street-suspects.png<br>[The three charged &middot; mugshots]</div>'">
         <div style="padding:10px 14px; font-family:'Source Code Pro',monospace; font-size:9.5px; letter-spacing:1.5px; text-transform:uppercase; color:var(--text-muted); text-align:center; border-top:1px solid var(--border)">The three charged &middot; Smiley Martin &middot; Dandrae Martin &middot; Mtula Payton</div>
+      </div>
+    </div>
+
+    <!-- One unified bullet card: shooting + Smiley Martin -->
+    <div class="case-card">
+      <div class="case-body text-only">
+        <ul style="line-height:1.85; font-size:16px; color:var(--text-primary); padding-left:22px; margin:0">
+          <li>April 3, 2022, 2 a.m. <strong>K and 10th streets</strong>, blocks from the State Capitol.</li>
+          <li><strong>Five Black men opened fire</strong> from two rival gangs. <strong>Six killed. Twelve wounded.</strong> <a href="https://en.wikipedia.org/wiki/2022_Sacramento_shooting" target="_blank">The deadliest shooting in Sacramento&rsquo;s history.</a></li>
+          <li>Three charged with murder: <strong>Smiley Martin</strong>, <strong>Dandrae Martin</strong>, <strong>Mtula Payton</strong>. <a href="https://www.cbsnews.com/sacramento/news/suspect-sacramento-mass-shooting-dies-in-jail/" target="_blank">All three previously convicted felons.</a></li>
+          <li><strong>Smiley Martin</strong> was sentenced to <strong>10 years for domestic violence in 2018</strong>. <a href="https://www.abc10.com/article/news/local/sacramento/mass-shooting-suspcet-to-be-paid-by-sac-county/103-ae8650a9-a698-4449-9d7f-3b87cbc4f338" target="_blank">Released six years early</a> under voter-approved sentencing rollbacks. <strong>Five weeks after walking out, he was on K Street firing into a crowd.</strong></li>
+        </ul>
       </div>
     </div>
 
@@ -3164,6 +3196,12 @@ footer a { color: var(--accent-red); text-decoration: none; }
     <div class="section-kicker">Advance Peace &middot; The Mob Program</div>
     <h2 class="section-title">A government program where you <em>pay Black men cash not to murder you</em>.</h2>
 
+    <!-- KCRA "Paying for Peace" headline screenshot · top-of-section -->
+    <div style="width:100%; max-width:580px; margin:18px auto 28px; border:1px solid var(--border); background:#12121a">
+      <img src="advance-peace.png" alt="KCRA news segment titled 'Paying for Peace' covering the Advance Peace program" style="width:100%; height:auto; display:block" onerror="this.outerHTML='<div style=&quot;padding:60px 18px; text-align:center; font-family:Source Code Pro,monospace; font-size:10.5px; letter-spacing:1.8px; color:var(--text-muted); text-transform:uppercase; line-height:1.7&quot;>image slot &middot; advance-peace.png<br>[Advance Peace &middot; KCRA &ldquo;Paying for Peace&rdquo;]</div>'">
+      <div style="padding:9px 12px; font-family:'Source Code Pro',monospace; font-size:9.5px; letter-spacing:1.5px; text-transform:uppercase; color:var(--text-muted); text-align:center; border-top:1px solid var(--border)">KCRA &middot; &ldquo;Paying for Peace&rdquo; &middot; Advance Peace coverage</div>
+    </div>
+
     <div class="case-card">
       <div class="case-body text-only">
         <ul style="line-height:1.75; font-size:16px; color:var(--text-primary); padding-left:22px; margin:0">
@@ -3176,12 +3214,6 @@ footer a { color: var(--accent-red); text-decoration: none; }
           <li>In any academic or regulatory context, switching the outcome after the fact is called fraud.</li>
         </ul>
       </div>
-    </div>
-
-    <!-- Provocative image slot · awaiting upload — suggested: Advance Peace press photo (Boggan/Muttaqi at podium), cash-payment ceremony, or composite of stipend + crime-scene tape -->
-    <div style="width:100%; max-width:580px; margin:28px auto 0; border:1px solid var(--border); background:#12121a">
-      <img src="advance-peace.png" alt="Advance Peace · the program that pays Black men cash stipends not to shoot people" style="width:100%; height:auto; display:block" onerror="this.outerHTML='<div style=&quot;padding:60px 18px; text-align:center; font-family:Source Code Pro,monospace; font-size:10.5px; letter-spacing:1.8px; color:var(--text-muted); text-transform:uppercase; line-height:1.7&quot;>image slot &middot; advance-peace.png<br>[Advance Peace &middot; press photo or stipend imagery]</div>'">
-      <div style="padding:9px 12px; font-family:'Source Code Pro',monospace; font-size:9.5px; letter-spacing:1.5px; text-transform:uppercase; color:var(--text-muted); text-align:center; border-top:1px solid var(--border)">Advance Peace &middot; Peacemaker Fellowship</div>
     </div>
 
     <h3 style="font-family:'DM Sans',sans-serif; font-size:26px; font-weight:800; margin:44px 0 8px; color:#e63946; letter-spacing:-0.02em; text-transform:uppercase; text-align:center">The Internal Contradiction</h3>

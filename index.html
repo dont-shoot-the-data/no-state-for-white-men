@@ -2641,8 +2641,18 @@ footer a { color: var(--accent-red); text-decoration: none; }
           </div>
         </div>
       </div>
+      <!-- Sacramento population by race · visual strip -->
+      <div class="city-pop-strip" style="margin:18px 0 0; padding:14px 0 0; border-top:1px solid var(--border); text-align:center;">
+        <div style="font-family:'Source Code Pro',monospace; font-size:9px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--text-muted); margin-bottom:10px;">Sacramento population by race</div>
+        <div style="display:flex; flex-wrap:wrap; gap:16px; justify-content:center; font-family:'Source Code Pro',monospace; font-size:12px;">
+          <span style="display:inline-flex; align-items:center; gap:6px;"><span style="width:8px; height:8px; border-radius:50%; background:#e8853a; box-shadow:0 0 6px rgba(232,133,58,0.4);"></span><span style="color:#e8853a; font-weight:700;">Hispanic</span><span style="color:var(--text-primary); font-weight:700;">28.8%</span></span>
+          <span style="display:inline-flex; align-items:center; gap:6px;"><span style="width:8px; height:8px; border-radius:50%; background:#c840e9; box-shadow:0 0 6px rgba(200,64,233,0.4);"></span><span style="color:#c840e9; font-weight:700;">Black</span><span style="color:var(--text-primary); font-weight:700;">13.2%</span></span>
+          <span style="display:inline-flex; align-items:center; gap:6px;"><span style="width:8px; height:8px; border-radius:50%; background:#4ea8de; box-shadow:0 0 6px rgba(78,168,222,0.4);"></span><span style="color:#4ea8de; font-weight:700;">White</span><span style="color:var(--text-primary); font-weight:700;">34.8%</span></span>
+          <span style="display:inline-flex; align-items:center; gap:6px;"><span style="width:8px; height:8px; border-radius:50%; background:#e8d44d; box-shadow:0 0 6px rgba(232,212,77,0.4);"></span><span style="color:#e8d44d; font-weight:700;">Asian/Other</span><span style="color:var(--text-primary); font-weight:700;">21.3%</span></span>
+        </div>
+      </div>
       <div class="summary-box" id="sacSummary" style="display:none"></div>
-      <div class="chart-caption" id="sacCaption">Source: <a href="https://dont-shoot-the-data.github.io/california-crime-data/" target="_blank">SacPD public records request</a> &middot; Sacramento population: White 34.8%, Hispanic 28.8%, Asian/Other 21.3%, Black 13.2%</div>
+      <div class="chart-caption" id="sacCaption">Source: <a href="https://dont-shoot-the-data.github.io/california-crime-data/" target="_blank">SacPD public records request</a></div>
     </div>
 
     <div class="highlight">
@@ -2732,6 +2742,11 @@ footer a { color: var(--accent-red); text-decoration: none; }
             <span id="cityDispWhite" style="font-family:'Source Code Pro',monospace; font-size:15px; font-weight:700; color:var(--good); background:rgba(74,222,128,0.15); padding:3px 8px; border:1px solid rgba(74,222,128,0.4)">&mdash;</span>
           </div>
         </div>
+      </div>
+      <!-- Cross-cities population by race · visual strip · populated by renderCityCrime -->
+      <div class="city-pop-strip" id="cityPopStrip" style="margin:18px 0 0; padding:14px 0 0; border-top:1px solid var(--border); text-align:center;">
+        <div id="cityPopHeading" style="font-family:'Source Code Pro',monospace; font-size:9px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--text-muted); margin-bottom:10px;">&nbsp;</div>
+        <div id="cityPopDots" style="display:flex; flex-wrap:wrap; gap:16px; justify-content:center; font-family:'Source Code Pro',monospace; font-size:12px;"></div>
       </div>
       <div class="chart-caption" id="cityCaption">&nbsp;</div>
     </div>
@@ -3895,10 +3910,11 @@ const barCountPillsPlugin = {
     ctx.font = "700 10.5px 'Source Code Pro', monospace";
     meta.data.forEach((bar, i) => {
       const v = dataset.data[i];
-      if (v == null || v === 0) return;
+      if (v == null) return;
       const label = v.toLocaleString();
       const x = bar.x;
-      const y = bar.y - 12;
+      // For zero-valued bars, bar.y sits at the chart's zero-line; nudge the pill above it.
+      const y = (v === 0) ? (bar.y - 14) : (bar.y - 12);
       // pill bg
       const padX = 6, padY = 3;
       const w = ctx.measureText(label).width + padX * 2;
@@ -3937,7 +3953,7 @@ const SAC_DATA = {
     disp: { Black: 5.1, Hispanic: 0.5, White: 0.4, Other: 0.1 },
     summary: `<span class="label">Most interracially attacked:</span> <strong>White</strong> <span style="color:var(--text-muted)">(4,576)</span><br>
               <span class="label">Biggest interracial cause:</span> <strong>Black</strong> <span style="color:var(--text-muted)">(7,917)</span>`,
-    caption: 'Source: <a href="https://dont-shoot-the-data.github.io/california-crime-data/" target="_blank">SacPD public records request</a> &middot; <a href="https://drive.google.com/drive/folders/1KXiYFt02ZmLwX3j2zxGa9dWlIO5zL-I0?usp=share_link" target="_blank">Source records</a> &middot; Sacramento population: White 34.8%, Hispanic 28.8%, Asian/Other 21.3%, Black 13.2% &middot; 1,097 unknown-race suspects and 933 incidents with no linkable victim race excluded from matrix.'
+    caption: 'Source: <a href="https://dont-shoot-the-data.github.io/california-crime-data/" target="_blank">SacPD public records request</a> &middot; <a href="https://drive.google.com/drive/folders/1KXiYFt02ZmLwX3j2zxGa9dWlIO5zL-I0?usp=share_link" target="_blank">Source records</a> &middot; 1,097 unknown-race suspects and 933 incidents with no linkable victim race excluded from matrix.'
   },
   rape: {
     title: 'Rape Incidents in Sacramento',
@@ -4108,10 +4124,17 @@ function setSacCrime(crime) {
   if (ribBoW && ribRatio && ribWoB) {
     const bowCount = d.data[2];  // Black on White
     const wobCount = d.data[4];  // White on Black
-    const ratio = wobCount > 0 ? (bowCount / wobCount) : null;
     ribBoW.textContent = bowCount.toLocaleString();
     ribWoB.textContent = wobCount.toLocaleString();
-    ribRatio.innerHTML = ratio !== null ? (ratio.toFixed(1) + '<span style="font-size:0.6em; font-weight:600; opacity:0.85">&times;</span>') : '&mdash;';
+    if (wobCount > 0) {
+      const ratio = bowCount / wobCount;
+      ribRatio.innerHTML = ratio.toFixed(1) + '<span style="font-size:0.6em; font-weight:600; opacity:0.85">&times;</span>';
+    } else if (bowCount > 0) {
+      // Only direction observed — show infinity symbol
+      ribRatio.innerHTML = '&infin;<span style="font-size:0.6em; font-weight:600; opacity:0.85">&times;</span>';
+    } else {
+      ribRatio.innerHTML = '&mdash;';
+    }
   }
   document.getElementById('sacCaption').innerHTML = d.caption;
 }
@@ -4136,6 +4159,7 @@ const CITY_DATA = {
     period: "Jan 2020 – Jun 2025",
     sourceLink: "https://drive.google.com/drive/folders/1ipp0tY3nCNCeIJ92b0OlhEmWae3mTJ7o?usp=share_link",
     pop: "Black 3%, Hispanic 31%, White 27%, Asian/Other 38.5%",
+    population: { Black: 3, Hispanic: 31, White: 27, Other: 38.5 },
     crimes: {
       homicide: { title: 'Homicide Incidents in San Jos\u00e9',
         sub: 'Jan 2020 – Jun 2025 · 5 years, 6 months',
@@ -4160,6 +4184,7 @@ const CITY_DATA = {
     period: "Jan 2020 – early 2024",
     sourceLink: "https://docs.google.com/spreadsheets/d/1UG_oO9iv6ewp8hDGpfR51-wL_ru9Eji7/edit",
     pop: "Black 5.2%, Hispanic 15.6%, White 39.1%, Asian/Other 33.7%",
+    population: { Black: 5.2, Hispanic: 15.6, White: 39.1, Other: 33.7 },
     crimes: {
       homicide: { title: 'Homicide Incidents in San Francisco',
         sub: 'Jan 2020 – early 2024 · ~4 years · SFPD homicide only',
@@ -4172,6 +4197,7 @@ const CITY_DATA = {
     period: "Jan 2020 – Mar 2024",
     sourceLink: "https://docs.google.com/spreadsheets/d/1cNIAN4bPISC8T43rpRkQUYkjuchuqDXf/edit",
     pop: "Black 21%, Hispanic 28%, White 27%, Asian/Other 15%",
+    population: { Black: 21, Hispanic: 28, White: 27, Other: 15 },
     crimes: {
       homicide: { title: 'Homicide Incidents in Oakland',
         sub: 'Jan 2020 – Mar 2024 · 4 years, 3 months · OPD homicide only',
@@ -4184,6 +4210,7 @@ const CITY_DATA = {
     period: "2022 – 2025",
     sourceLink: "https://www.sdsheriff.gov/resources/transparency-reports",
     pop: "Black 4.7%, Hispanic 34%, White 44.8%, Asian/Other 16.5%",
+    population: { Black: 4.7, Hispanic: 34.0, White: 44.8, Other: 16.5 },
     crimes: {
       homicide: { title: 'Homicide Incidents in San Diego Co.',
         sub: '2022 \u2013 2025 \u00b7 4 years \u00b7 Sheriff Transparency Reports',
@@ -4196,6 +4223,7 @@ const CITY_DATA = {
     period: "Jan 2022 – Dec 2024",
     sourceLink: "https://lapdonlinestrgeacc.blob.core.usgovcloudapi.net/lapdonlinemedia/2024.pdf",
     pop: "Black 8%, Hispanic 48%, White 28%, Asian/Other 16%",
+    population: { Black: 8.0, Hispanic: 48.0, White: 28.0, Other: 16.0 },
     noMatrix: true,
     publicSource: true,
     crimes: {
@@ -4280,9 +4308,9 @@ const cityBarCountPills = {
       const meta = chart.getDatasetMeta(di);
       meta.data.forEach((bar, i) => {
         const v = dataset.data[i];
-        if (v == null || v === 0) return;
+        if (v == null) return;
         const label = dataset.__isPercent ? (Number(v).toFixed(1).replace(/\.0$/, '') + '%') : Number(v).toLocaleString();
-        const x = bar.x; const y = bar.y - 12;
+        const x = bar.x; const y = (v === 0) ? (bar.y - 14) : (bar.y - 12);
         const padX = 6; const w = ctx.measureText(label).width + padX * 2; const h = 16;
         ctx.fillStyle = 'rgba(18, 18, 26, 0.92)';
         ctx.strokeStyle = 'rgba(138, 138, 154, 0.45)';
@@ -4457,10 +4485,16 @@ function renderCityCrime() {
     ribbonEl.style.display = '';
     const bowCount = c.data[2];
     const wobCount = c.data[4];
-    const ratio = wobCount > 0 ? (bowCount / wobCount) : null;
     ribBoW.textContent = bowCount.toLocaleString();
     ribWoB.textContent = wobCount.toLocaleString();
-    ribRatio.innerHTML = ratio !== null ? (ratio.toFixed(1) + '<span style="font-size:0.6em; font-weight:600; opacity:0.85">&times;</span>') : '&mdash;';
+    if (wobCount > 0) {
+      const ratio = bowCount / wobCount;
+      ribRatio.innerHTML = ratio.toFixed(1) + '<span style="font-size:0.6em; font-weight:600; opacity:0.85">&times;</span>';
+    } else if (bowCount > 0) {
+      ribRatio.innerHTML = '&infin;<span style="font-size:0.6em; font-weight:600; opacity:0.85">&times;</span>';
+    } else {
+      ribRatio.innerHTML = '&mdash;';
+    }
   }
 
   // Disp row: show for EVERY city that has a disp object
@@ -4478,8 +4512,34 @@ function renderCityCrime() {
   // LA public-source badge toggle
   if (laBadgeEl) laBadgeEl.style.display = city.publicSource ? 'inline-block' : 'none';
 
+  // Population by race · visual strip (ordered: Hispanic, Black, White, Asian/Other to match chart x-axis groups)
+  const popStripEl = document.getElementById('cityPopStrip');
+  const popHeadingEl = document.getElementById('cityPopHeading');
+  const popDotsEl = document.getElementById('cityPopDots');
+  if (popStripEl && popHeadingEl && popDotsEl && city.population) {
+    popStripEl.style.display = '';
+    popHeadingEl.textContent = city.name + ' population by race';
+    const popOrder = [
+      { key: 'Hispanic', label: 'Hispanic',    color: '#e8853a' },
+      { key: 'Black',    label: 'Black',       color: '#c840e9' },
+      { key: 'White',    label: 'White',       color: '#4ea8de' },
+      { key: 'Other',    label: 'Asian/Other', color: '#e8d44d' }
+    ];
+    popDotsEl.innerHTML = popOrder.map(r => {
+      const v = city.population[r.key];
+      if (v == null) return '';
+      return '<span style="display:inline-flex; align-items:center; gap:6px;">'
+           + '<span style="width:8px; height:8px; border-radius:50%; background:' + r.color + '; box-shadow:0 0 6px ' + r.color + '66;"></span>'
+           + '<span style="color:' + r.color + '; font-weight:700;">' + r.label + '</span>'
+           + '<span style="color:var(--text-primary); font-weight:700;">' + v + '%</span>'
+           + '</span>';
+    }).join('');
+  } else if (popStripEl) {
+    popStripEl.style.display = 'none';
+  }
+
   document.getElementById('cityCaption').innerHTML =
-    'Source: <a href="' + city.sourceLink + '" target="_blank">' + city.name + ' data</a> &middot; ' + city.name + ' population: ' + city.pop;
+    'Source: <a href="' + city.sourceLink + '" target="_blank">' + city.name + ' data</a>';
 }
 
 document.querySelectorAll('#cityTabs button').forEach(btn => {

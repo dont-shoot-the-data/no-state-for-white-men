@@ -114,6 +114,31 @@ iframe {
   border-color: rgba(230,57,70,0.3) !important;
   box-shadow: 0 6px 24px rgba(230,57,70,0.15), 0 0 0 1px rgba(230,57,70,0.1);
 }
+
+/* Clickable image wrapper — subtle hover cue without being heavy-handed.
+   Applied to <a class="img-link"> wrapping <img> tags throughout the article.
+   The cursor + slight brightness lift + red border glow on hover signal interactivity. */
+.img-link {
+  display: block;
+  position: relative;
+  line-height: 0;
+  text-decoration: none;
+  cursor: pointer;
+  transition: filter 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
+}
+.img-link:hover {
+  filter: brightness(1.08);
+  box-shadow: 0 0 0 1px rgba(230,57,70,0.6), 0 6px 22px rgba(230,57,70,0.18);
+  transform: translateY(-2px);
+}
+.img-link:active {
+  transform: translateY(0);
+}
+/* Make the wrapper fill its parent card so the hover effect covers the whole image area */
+.img-link.fill {
+  width: 100%;
+  height: 100%;
+}
 @keyframes stampSlam {
   0%   { transform: rotate(-2.5deg) scale(3); opacity: 0; }
   60%  { transform: rotate(-2.5deg) scale(0.92); opacity: 1; }
@@ -2300,10 +2325,100 @@ footer a { color: var(--accent-red); text-decoration: none; }
     <div class="section-kicker">Stephon Clark &middot; What Actually Happened</div>
     <h2 class="section-title">One of the most left out parts of the Stephon Clark story is <em style="color:var(--accent-red); font-weight:500; font-style:normal">one of the two officers that shot him is Black.</em></h2>
 
-    <!-- The two officers · activist "WANTED" poster -->
-    <div style="width:100%; max-width:520px; margin:0 auto 28px; border:1px solid var(--border); background:#12121a">
-      <img src="clark-officers.png" alt="Activist 'WANTED by the People of Sacramento' poster naming Officers Terrance Mercadal and Jared Robinet, the two Sacramento Police officers who shot Stephon Clark — one of the two officers is Black" style="width:100%; height:auto; display:block" onerror="this.outerHTML='<div style=&quot;padding:50px 18px; text-align:center; font-family:Source Code Pro,monospace; font-size:10.5px; letter-spacing:1.8px; color:var(--text-muted); text-transform:uppercase; line-height:1.7&quot;>image slot &middot; clark-officers.png<br>[The two officers who shot Stephon Clark]</div>'">
-      <div style="padding:8px 12px; font-family:'Source Code Pro',monospace; font-size:9.5px; letter-spacing:1.5px; text-transform:uppercase; color:var(--text-muted); text-align:center; border-top:1px solid var(--border)">Activist &ldquo;Wanted by the People of Sacramento&rdquo; poster &middot; Officers Terrance Mercadal &amp; Jared Robinet</div>
+    <!-- The two officers · activist "WANTED" poster moved down to "What Followed" row below -->
+
+    <!-- Break-in headline + 4 image slots: 3 cars + 1 house -->
+    <div style="text-align:center; margin:36px auto 18px; padding:20px 0 16px; max-width:820px; border-top:1px solid rgba(230,57,70,0.35); border-bottom:1px solid rgba(230,57,70,0.35);">
+      <div style="font-family:'Source Code Pro',monospace; font-size:10px; letter-spacing:2.8px; text-transform:uppercase; color:var(--accent-red); font-weight:700; margin-bottom:10px;">What he was doing that night</div>
+      <div style="font-family:'DM Sans',sans-serif; font-size:clamp(22px,3.2vw,30px); font-weight:800; letter-spacing:-0.015em; line-height:1.25; color:var(--text-primary);">Clark had broken into <span style="color:var(--accent-red)">3 cars</span> and <span style="color:var(--accent-red)">1 house</span> that night.</div>
+      <div style="font-family:'Source Code Pro',monospace; font-size:10px; letter-spacing:2px; text-transform:uppercase; color:var(--text-muted); font-weight:600; margin-top:10px;">DNA-confirmed by Sacramento County DA &middot; March 2019</div>
+    </div>
+
+    <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:12px; max-width:980px; margin:0 auto 28px;">
+      <div style="border:1px solid var(--border); background:#12121a; aspect-ratio:3/2; display:flex; flex-direction:column; overflow:hidden">
+        <a class="img-link fill" href="https://oag.ca.gov/system/files/attachments/press-docs/report-attorney-general-regarding-criminal-investigation-death-stephon-clark.pdf" target="_blank" rel="noopener" title="View the CA Attorney General's report — DNA evidence and crime scene documentation"><div style="flex:1 1 auto; overflow:hidden; min-height:0; background:#12121a; height:100%">
+          <img src="clark-car-1.png" alt="One of the three vehicles Stephon Clark broke into the night of March 18, 2018 — DNA-confirmed by Sacramento County DA" style="width:100%; height:100%; object-fit:cover; object-position:center; display:block" onerror="this.outerHTML='<div style=&quot;padding:38px 12px; text-align:center; font-family:Source Code Pro,monospace; font-size:10px; letter-spacing:1.6px; color:var(--text-muted); text-transform:uppercase; line-height:1.7&quot;>image slot &middot; clark-car-1.png<br>[Car #1 &middot; broken window]</div>'">
+        </div></a>
+        <div style="padding:8px 10px; font-family:'Source Code Pro',monospace; font-size:9.5px; letter-spacing:1.4px; text-transform:uppercase; color:var(--text-muted); text-align:center; border-top:1px solid var(--border); flex-shrink:0">Car #1 &middot; broken window</div>
+      </div>
+      <div style="border:1px solid var(--border); background:#12121a; aspect-ratio:3/2; display:flex; flex-direction:column; overflow:hidden">
+        <a class="img-link fill" href="https://oag.ca.gov/system/files/attachments/press-docs/report-attorney-general-regarding-criminal-investigation-death-stephon-clark.pdf" target="_blank" rel="noopener" title="View the CA Attorney General's report — DNA evidence and crime scene documentation"><div style="flex:1 1 auto; overflow:hidden; min-height:0; background:#12121a; height:100%">
+          <img src="clark-car-2.png" alt="Second vehicle Stephon Clark broke into on the night of March 18, 2018" style="width:100%; height:100%; object-fit:cover; object-position:center; display:block" onerror="this.outerHTML='<div style=&quot;padding:38px 12px; text-align:center; font-family:Source Code Pro,monospace; font-size:10px; letter-spacing:1.6px; color:var(--text-muted); text-transform:uppercase; line-height:1.7&quot;>image slot &middot; clark-car-2.png<br>[Car #2 &middot; broken window]</div>'">
+        </div></a>
+        <div style="padding:8px 10px; font-family:'Source Code Pro',monospace; font-size:9.5px; letter-spacing:1.4px; text-transform:uppercase; color:var(--text-muted); text-align:center; border-top:1px solid var(--border); flex-shrink:0">Car #2 &middot; broken window</div>
+      </div>
+      <div style="border:1px solid var(--border); background:#12121a; aspect-ratio:3/2; display:flex; flex-direction:column; overflow:hidden">
+        <a class="img-link fill" href="https://oag.ca.gov/system/files/attachments/press-docs/report-attorney-general-regarding-criminal-investigation-death-stephon-clark.pdf" target="_blank" rel="noopener" title="View the CA Attorney General's report — DNA evidence and crime scene documentation"><div style="flex:1 1 auto; overflow:hidden; min-height:0; background:#12121a; height:100%">
+          <img src="clark-car-3.png" alt="Third vehicle Stephon Clark broke into on the night of March 18, 2018" style="width:100%; height:100%; object-fit:cover; object-position:center; display:block" onerror="this.outerHTML='<div style=&quot;padding:38px 12px; text-align:center; font-family:Source Code Pro,monospace; font-size:10px; letter-spacing:1.6px; color:var(--text-muted); text-transform:uppercase; line-height:1.7&quot;>image slot &middot; clark-car-3.png<br>[Car #3 &middot; broken window]</div>'">
+        </div></a>
+        <div style="padding:8px 10px; font-family:'Source Code Pro',monospace; font-size:9.5px; letter-spacing:1.4px; text-transform:uppercase; color:var(--text-muted); text-align:center; border-top:1px solid var(--border); flex-shrink:0">Car #3 &middot; broken window</div>
+      </div>
+      <div style="border:1px solid var(--border); background:#12121a; aspect-ratio:3/2; display:flex; flex-direction:column; overflow:hidden">
+        <a class="img-link fill" href="https://oag.ca.gov/system/files/attachments/press-docs/report-attorney-general-regarding-criminal-investigation-death-stephon-clark.pdf" target="_blank" rel="noopener" title="View the CA Attorney General's report — DNA evidence and crime scene documentation"><div style="flex:1 1 auto; overflow:hidden; min-height:0; background:#12121a; height:100%">
+          <img src="clark-house.png" alt="The home at 7570 29th Street whose sliding glass door Stephon Clark smashed with a cinder block, per Sacramento DA DNA evidence" style="width:100%; height:100%; object-fit:cover; object-position:center; display:block" onerror="this.outerHTML='<div style=&quot;padding:38px 12px; text-align:center; font-family:Source Code Pro,monospace; font-size:10px; letter-spacing:1.6px; color:var(--text-muted); text-transform:uppercase; line-height:1.7&quot;>image slot &middot; clark-house.png<br>[House &middot; sliding door smashed]</div>'">
+        </div></a>
+        <div style="padding:8px 10px; font-family:'Source Code Pro',monospace; font-size:9.5px; letter-spacing:1.4px; text-transform:uppercase; color:var(--text-muted); text-align:center; border-top:1px solid var(--border); flex-shrink:0">House &middot; sliding door smashed</div>
+      </div>
+    </div>
+
+    <!-- "What Followed" headline + 4-card grid: Mercadal video · WANTED poster · Fab 40s arrests · demographic data card -->
+    <div style="text-align:center; margin:48px auto 18px; padding:20px 0 16px; max-width:820px; border-top:1px solid rgba(230,57,70,0.35); border-bottom:1px solid rgba(230,57,70,0.35);">
+      <div style="font-family:'Source Code Pro',monospace; font-size:10px; letter-spacing:2.8px; text-transform:uppercase; color:var(--accent-red); font-weight:700; margin-bottom:10px;">What followed</div>
+      <div style="font-family:'DM Sans',sans-serif; font-size:clamp(20px,2.8vw,26px); font-weight:800; letter-spacing:-0.015em; line-height:1.3; color:var(--text-primary);">A <span style="color:var(--accent-red)">Black officer</span> yelled &ldquo;Gun.&rdquo; The protests targeted a <span style="color:var(--accent-red)">white neighborhood.</span></div>
+    </div>
+
+    <!-- Mercadal video · embedded YouTube clip from Donut Operator (3:15-4:53), full width -->
+    <div style="margin:0 auto 22px; max-width:680px;">
+      <div style="position:relative; padding-bottom:56.25%; height:0; overflow:hidden; background:#000; border:1px solid var(--border);">
+        <iframe
+          src="https://www.youtube.com/embed/_IN-YmosRME?start=195&end=293"
+          style="position:absolute; top:0; left:0; width:100%; height:100%; border:0;"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen
+          title="Donut Operator breakdown of the Stephon Clark shooting — Mercadal yells Gun, both officers fire"></iframe>
+      </div>
+      <div style="padding:12px 14px 0; font-family:'DM Sans',sans-serif; font-size:14px; line-height:1.55; color:var(--text-secondary);">
+        Officer <strong style="color:var(--text-primary)">Terrence Mercadal &mdash; the Black officer</strong> &mdash; commands Clark to stop and show his hands. Clark replies <em>&ldquo;fuck you.&rdquo;</em> Mercadal yells <strong style="color:var(--accent-red)">&ldquo;gun, gun, gun.&rdquo;</strong> Both officers fire 20 rounds in five seconds. Eight hits. Clark was pointing his cell phone at them.
+      </div>
+      <div style="padding:8px 14px 0; font-family:'Source Code Pro',monospace; font-size:9.5px; letter-spacing:1.4px; text-transform:uppercase; color:var(--text-muted); text-align:left;">
+        Source: <a href="https://www.youtube.com/watch?v=_IN-YmosRME" target="_blank">Donut Operator on YouTube</a> &middot; clipped to relevant 1:38 window &middot; <a href="https://oag.ca.gov/system/files/attachments/press-docs/report-attorney-general-regarding-criminal-investigation-death-stephon-clark.pdf" target="_blank">CA Attorney General Report, March 2019</a>
+      </div>
+    </div>
+
+    <!-- 3-card row: WANTED poster · Fab 40s arrests article · demographic data card -->
+    <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:14px; max-width:820px; margin:0 auto 28px;">
+
+      <!-- WANTED activist poster · moved here from top -->
+      <div style="border:1px solid var(--border); background:#12121a; aspect-ratio:4/5; display:flex; flex-direction:column; overflow:hidden">
+        <a class="img-link fill" href="https://heavy.com/news/2018/03/stephon-clark-officers-terrence-mercadal-jared-robinet/" target="_blank" rel="noopener" title="Read more — Heavy.com confirms Officer Mercadal is African American" style="display:flex; flex-direction:column; flex:1 1 auto; min-height:0">
+        <div style="flex:1 1 auto; overflow:hidden; min-height:0; background:#12121a">
+          <img src="clark-officers.png" alt="Activist 'WANTED by the People of Sacramento' poster naming Officers Terrance Mercadal and Jared Robinet, the two Sacramento Police officers who shot Stephon Clark" style="width:100%; height:100%; object-fit:cover; object-position:center top; display:block" onerror="this.outerHTML='<div style=&quot;padding:38px 12px; text-align:center; font-family:Source Code Pro,monospace; font-size:10px; letter-spacing:1.6px; color:var(--text-muted); text-transform:uppercase; line-height:1.7&quot;>image slot &middot; clark-officers.png<br>[WANTED poster]</div>'">
+        </div>
+        </a>
+        <div style="padding:8px 10px; font-family:'Source Code Pro',monospace; font-size:9.5px; letter-spacing:1.4px; text-transform:uppercase; color:var(--text-muted); text-align:center; border-top:1px solid var(--border); flex-shrink:0">Activists &ldquo;Wanted&rdquo; poster &middot; Mercadal &amp; Robinet</div>
+      </div>
+
+      <!-- Fab 40s arrests article screenshot -->
+      <div style="border:1px solid var(--border); background:#12121a; aspect-ratio:4/5; display:flex; flex-direction:column; overflow:hidden">
+        <a class="img-link fill" href="https://www.npr.org/2019/03/05/700317892/police-arrest-84-after-stephon-clark-protest-in-east-sacramento" target="_blank" rel="noopener" title="Read the NPR article — 84 arrested after Stephon Clark protest in East Sacramento" style="display:flex; flex-direction:column; flex:1 1 auto; min-height:0">
+        <div style="flex:1 1 auto; overflow:hidden; min-height:0; background:#0e0e16; display:flex; align-items:center; justify-content:center">
+          <img src="fab40s-arrests.png" alt="NPR article screenshot: Police arrest 84 after Stephon Clark protest in East Sacramento — affluent, mostly white neighborhood" style="max-width:100%; max-height:100%; width:auto; height:auto; object-fit:contain; display:block; background:#fff" onerror="this.outerHTML='<div style=&quot;padding:38px 12px; text-align:center; font-family:Source Code Pro,monospace; font-size:10px; letter-spacing:1.6px; color:var(--text-muted); text-transform:uppercase; line-height:1.7&quot;>image slot &middot; fab40s-arrests.png<br>[NPR &middot; 84 arrested]</div>'">
+        </div>
+        </a>
+        <div style="padding:8px 10px; font-family:'Source Code Pro',monospace; font-size:9.5px; letter-spacing:1.4px; text-transform:uppercase; color:var(--text-muted); text-align:center; border-top:1px solid var(--border); flex-shrink:0">NPR &middot; 84 arrested &middot; 8 cars keyed</div>
+      </div>
+
+      <!-- Demographic data card · the kicker -->
+      <div style="border:1px solid var(--accent-red); background:linear-gradient(180deg, rgba(230,57,70,0.08), rgba(230,57,70,0.02)); aspect-ratio:4/5; display:flex; flex-direction:column; overflow:hidden; padding:14px 12px; text-align:center;">
+        <div style="font-family:'Source Code Pro',monospace; font-size:9px; letter-spacing:2px; text-transform:uppercase; color:var(--accent-red); font-weight:700; margin-bottom:8px; flex-shrink:0">The Fab 40s</div>
+        <div style="font-family:'DM Sans',sans-serif; font-size:clamp(11px,1.3vw,14px); line-height:1.45; color:var(--text-secondary); flex:1 1 auto; display:flex; flex-direction:column; justify-content:center; min-height:0">
+          <div style="margin-bottom:10px"><span style="color:var(--text-primary); font-weight:800; font-size:1.4em">66.9%</span><br><span style="font-family:'Source Code Pro',monospace; font-size:0.75em; letter-spacing:1px; color:var(--text-muted); text-transform:uppercase">White &middot; ZIP 95819</span></div>
+          <div style="margin-bottom:10px"><span style="color:var(--text-primary); font-weight:800; font-size:1.1em">$127,500</span><br><span style="font-family:'Source Code Pro',monospace; font-size:0.7em; letter-spacing:1px; color:var(--text-muted); text-transform:uppercase">Median income</span></div>
+          <div style="border-top:1px solid rgba(230,57,70,0.3); padding-top:8px; margin-top:auto"><span style="color:var(--accent-red); font-weight:800; font-size:1.3em">2.3&times;</span><br><span style="font-family:'Source Code Pro',monospace; font-size:0.7em; letter-spacing:1px; color:var(--text-muted); text-transform:uppercase">Whiter than Sac overall (29.3%)</span></div>
+        </div>
+        <div style="padding-top:8px; font-family:'Source Code Pro',monospace; font-size:8.5px; letter-spacing:1.4px; text-transform:uppercase; color:var(--text-muted); border-top:1px solid var(--border); flex-shrink:0; margin-top:8px">The protests went here.</div>
+      </div>
+
     </div>
 
     <div class="case-card">
@@ -2343,12 +2458,14 @@ footer a { color: var(--accent-red); text-decoration: none; }
     <!-- Oscar Grant — short setup -->
     <div class="case-card" style="margin-bottom:22px">
       <div class="case-body vertical">
-        <!-- Grant + Mehserle side-by-side · cards locked to equal aspect-ratio -->
-        <div style="display:grid; grid-template-columns:repeat(2, 1fr); gap:14px; max-width:520px; margin:0 auto 20px;">
+        <!-- Grant + Mehserle + Fruitvale Station poster · cards locked to equal aspect-ratio -->
+        <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:14px; max-width:680px; margin:0 auto 20px;">
           <div style="border:1px solid var(--border); background:#12121a; aspect-ratio:5/6; display:flex; flex-direction:column; overflow:hidden">
+            <a class="img-link fill" href="https://en.wikipedia.org/wiki/Killing_of_Oscar_Grant" target="_blank" rel="noopener" title="Wikipedia — Killing of Oscar Grant" style="display:flex; flex-direction:column; flex:1 1 auto; min-height:0">
             <div style="flex:1 1 auto; overflow:hidden; min-height:0; background:#12121a">
               <img src="oscar-grant.png" alt="Oscar Grant III, killed by BART officer Johannes Mehserle on the Fruitvale platform, January 1, 2009" style="width:100%; height:100%; object-fit:cover; object-position:center; display:block" onerror="this.outerHTML='<div style=&quot;padding:38px 12px; text-align:center; font-family:Source Code Pro,monospace; font-size:10px; letter-spacing:1.6px; color:var(--text-muted); text-transform:uppercase; line-height:1.7&quot;>image slot &middot; oscar-grant.png<br>[Oscar Grant]</div>'">
             </div>
+            </a>
             <div style="padding:8px 10px; font-family:'Source Code Pro',monospace; font-size:9.5px; letter-spacing:1.4px; text-transform:uppercase; color:var(--text-muted); text-align:center; border-top:1px solid var(--border); flex-shrink:0">Oscar Grant &middot; age 22</div>
           </div>
           <div style="border:1px solid var(--border); background:#12121a; aspect-ratio:5/6; display:flex; flex-direction:column; overflow:hidden">
@@ -2356,6 +2473,14 @@ footer a { color: var(--accent-red); text-decoration: none; }
               <img src="mehserle.png" alt="Johannes Mehserle, the BART officer who shot Oscar Grant on January 1, 2009" style="width:100%; height:100%; object-fit:cover; object-position:46% 28%; display:block; transform:scale(1.45); transform-origin:46% 28%" onerror="this.outerHTML='<div style=&quot;padding:38px 12px; text-align:center; font-family:Source Code Pro,monospace; font-size:10px; letter-spacing:1.6px; color:var(--text-muted); text-transform:uppercase; line-height:1.7&quot;>image slot &middot; mehserle.png<br>[Johannes Mehserle]</div>'">
             </div>
             <div style="padding:8px 10px; font-family:'Source Code Pro',monospace; font-size:9.5px; letter-spacing:1.4px; text-transform:uppercase; color:var(--text-muted); text-align:center; border-top:1px solid var(--border); flex-shrink:0">Johannes Mehserle &middot; BART officer</div>
+          </div>
+          <div style="border:1px solid var(--border); background:#12121a; aspect-ratio:5/6; display:flex; flex-direction:column; overflow:hidden">
+            <a class="img-link fill" href="https://en.wikipedia.org/wiki/Fruitvale_Station" target="_blank" rel="noopener" title="Wikipedia — Fruitvale Station (2013 film, Sundance Grand Jury Prize)" style="display:flex; flex-direction:column; flex:1 1 auto; min-height:0">
+            <div style="flex:1 1 auto; overflow:hidden; min-height:0; background:#12121a; display:flex; align-items:center; justify-content:center">
+              <img src="fruitvale-poster.png" alt="Fruitvale Station (2013) movie poster — Ryan Coogler's adaptation of Oscar Grant's killing, Sundance Grand Jury Prize" style="max-width:100%; max-height:100%; width:auto; height:auto; object-fit:contain; display:block" onerror="this.outerHTML='<div style=&quot;padding:38px 12px; text-align:center; font-family:Source Code Pro,monospace; font-size:10px; letter-spacing:1.6px; color:var(--text-muted); text-transform:uppercase; line-height:1.7&quot;>image slot &middot; fruitvale-poster.png<br>[Fruitvale Station &middot; 2013 poster]</div>'">
+            </div>
+            </a>
+            <div style="padding:8px 10px; font-family:'Source Code Pro',monospace; font-size:9.5px; letter-spacing:1.4px; text-transform:uppercase; color:var(--text-muted); text-align:center; border-top:1px solid var(--border); flex-shrink:0">Fruitvale Station &middot; 2013</div>
           </div>
         </div>
         <div style="display:flex; align-items:baseline; gap:14px; flex-wrap:wrap; margin-bottom:14px">
@@ -2573,6 +2698,73 @@ footer a { color: var(--accent-red); text-decoration: none; }
       Consider the reverse. If white men were killing Black transgender women at four times their population share and a mural appeared reading <em>"Black Silence = Violence,"</em> the building would not survive the week. The phrase would be catalogued as a hate crime. The artists would be investigated. The city would issue a public apology. Every institution cited in this study would mobilize against it. But when the actual perpetrators are disproportionately Black and the mural blames white people, no one objects.
     </div>
 
+    <!-- =========================================================================
+         RETURNING TO THE MURAL · animated paint-brush highlight on the lie
+         ========================================================================= -->
+    <div style="margin:48px auto 0; max-width:820px; padding:28px 26px; border:1px solid rgba(230,57,70,0.5); background:linear-gradient(180deg, rgba(230,57,70,0.06), rgba(230,57,70,0.01));">
+
+      <div style="text-align:center; margin-bottom:22px;">
+        <div style="font-family:'Source Code Pro',monospace; font-size:10px; letter-spacing:2.8px; text-transform:uppercase; color:var(--accent-red); font-weight:700; margin-bottom:10px;">Returning to the mural</div>
+        <div style="font-family:'DM Sans',sans-serif; font-size:clamp(24px,3.6vw,32px); font-weight:800; letter-spacing:-0.02em; line-height:1.15; color:var(--text-primary);">They paint <em style="color:var(--accent-red); font-style:italic">&ldquo;White Silence = Violence&rdquo;</em> while committing the violence.</div>
+      </div>
+
+      <!-- Mural with animated paint-brush circle on the "White Silence = Violence" panel -->
+      <div style="position:relative; max-width:680px; margin:0 auto 22px;">
+        <a href="https://maps.app.goo.gl/rCzDuW66hT3wrFDX7" target="_blank" style="display:block; line-height:0; position:relative;" aria-label="View the mural on Google Maps">
+          <img src="chyna-gibson-mural.jpg" alt="Mural on 2013 Neighbors Alley, Sacramento: Protect Our Trans Daughters / White Silence = Violence — with animated highlight on the &ldquo;White Silence = Violence&rdquo; phrase"
+               style="width:100%; height:auto; display:block; border:1px solid var(--border)"
+               onerror="this.outerHTML='&lt;div style=&quot;padding:80px 18px; text-align:center; font-family:Source Code Pro,monospace; font-size:10.5px; letter-spacing:1.8px; color:var(--text-muted); text-transform:uppercase; line-height:1.7; border:1px solid var(--border); background:#12121a&quot;&gt;image slot &middot; chyna-gibson-mural.jpg&lt;br&gt;[Mural &middot; 2013 Neighbors Alley, Sacramento]&lt;/div&gt;'">
+          <!-- SVG paint-brush ellipse overlay · drawn-on animation, loops -->
+          <svg viewBox="0 0 100 100" preserveAspectRatio="none" style="position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none;" aria-hidden="true">
+            <!-- Ellipse positioned over the "White Silence = Violence" left-panel text.
+                 viewBox is 100x100 (percentage-style) so it scales with the image.
+                 The mural's "WHITE SILENCE = VIOLENCE" text occupies roughly the left third of the image,
+                 vertically centered. cx≈22, cy≈55, rx≈19, ry≈9 covers the phrase. -->
+            <!-- Ellipse positioned over the "WHITE SILENCE = VIOLENCE" left-panel text.
+                 viewBox is 100x100 (percentage-style) so it scales with the image.
+                 Verified against actual mural image (chyna-gibson-mural.jpg, 2000x1060 Google Street View):
+                 text spans ~x=22-40%, y=48-58%. Center cx=31, cy=53. Slight rotation matches mural perspective skew. -->
+            <ellipse cx="31" cy="53" rx="11" ry="6"
+                     fill="none"
+                     stroke="#e63946"
+                     stroke-width="0.7"
+                     stroke-linecap="round"
+                     stroke-dasharray="200"
+                     stroke-dashoffset="200"
+                     transform="rotate(-3 31 53)"
+                     style="filter: drop-shadow(0 0 1.5px rgba(230,57,70,0.7));">
+              <animate attributeName="stroke-dashoffset"
+                       values="200; 0; 0; 200; 200"
+                       keyTimes="0; 0.35; 0.75; 0.9; 1"
+                       dur="5s"
+                       repeatCount="indefinite" />
+              <animate attributeName="opacity"
+                       values="0; 1; 1; 0; 0"
+                       keyTimes="0; 0.05; 0.85; 0.95; 1"
+                       dur="5s"
+                       repeatCount="indefinite" />
+            </ellipse>
+          </svg>
+        </a>
+      </div>
+
+      <p style="font-family:'DM Sans',sans-serif; font-size:16px; line-height:1.7; color:var(--text-primary); margin:0 0 16px;">The mural memorializes <strong>Chyna Gibson</strong> &mdash; a Black transgender woman shot ten times in a New Orleans parking lot. By a Black man. The case had nothing to do with white people. NOPD identified <strong>two Black men as persons of interest</strong> and explicitly stated there was no evidence of a hate crime.</p>
+
+      <p style="font-family:'DM Sans',sans-serif; font-size:16px; line-height:1.7; color:var(--text-primary); margin:0 0 22px;">Yet the mural says <strong style="color:var(--accent-red)">&ldquo;White Silence = Violence.&rdquo;</strong> Look at the data this article has presented:</p>
+
+      <ul style="font-family:'DM Sans',sans-serif; font-size:15.5px; line-height:1.85; color:var(--text-primary); padding-left:22px; margin:0 0 22px; list-style:none;">
+        <li style="margin-bottom:10px; padding-left:0; position:relative;"><strong style="color:var(--accent-red); font-family:'Source Code Pro',monospace; font-size:0.9em; letter-spacing:1.5px; text-transform:uppercase; display:inline-block; min-width:180px;">Most homicides &rarr;</strong> Black perpetrators. Blame white people.</li>
+        <li style="margin-bottom:10px; padding-left:0; position:relative;"><strong style="color:var(--accent-red); font-family:'Source Code Pro',monospace; font-size:0.9em; letter-spacing:1.5px; text-transform:uppercase; display:inline-block; min-width:180px;">Most kidnappings &rarr;</strong> Black perpetrators. Blame white people.</li>
+        <li style="margin-bottom:10px; padding-left:0; position:relative;"><strong style="color:var(--accent-red); font-family:'Source Code Pro',monospace; font-size:0.9em; letter-spacing:1.5px; text-transform:uppercase; display:inline-block; min-width:180px;">Most robberies &rarr;</strong> Black perpetrators. Blame white people.</li>
+        <li style="margin-bottom:10px; padding-left:0; position:relative;"><strong style="color:var(--accent-red); font-family:'Source Code Pro',monospace; font-size:0.9em; letter-spacing:1.5px; text-transform:uppercase; display:inline-block; min-width:180px;">Most trans killings &rarr;</strong> Black perpetrators. Blame white people.</li>
+      </ul>
+
+      <div style="margin:0; padding:20px 22px; background:rgba(230,57,70,0.08); border-left:4px solid var(--accent-red); border-radius:3px;">
+        <p style="font-family:'DM Sans',sans-serif; font-size:17px; line-height:1.65; color:var(--text-primary); margin:0; font-weight:700;">Every category &mdash; and the answer is always to demand white people pay.</p>
+      </div>
+
+    </div>
+
   </div>
   <div class="section-nav-arrow"><a onclick="document.getElementById('sacramento').scrollIntoView({behavior:'smooth'})" aria-label="Next section"><svg viewBox="0 0 24 24"><path d="M12 5v14M19 12l-7 7-7-7"/></svg></a></div>
 </section>
@@ -2662,6 +2854,72 @@ footer a { color: var(--accent-red); text-decoration: none; }
     <div class="highlight" style="margin-top:18px; border-left-color: var(--accent-gold)">
       <div style="font-family:'Source Code Pro', monospace; font-size:10.5px; letter-spacing:2.8px; text-transform:uppercase; color:var(--accent-gold); margin-bottom:10px; font-weight:700">Cross-City &middot; The Pattern Holds</div>
       <p style="margin:0">Sacramento is not alone. We filed the same public records request with California's ten most populous cities. Five responded with usable data. <strong>Across the five cities, white victims accounted for 5,891 interracial attacks &mdash; more than any other group &mdash; and Black suspects were in the top two interracial perpetrator groups in every city/crime combination released.</strong> <a href="https://dont-shoot-the-data.github.io/california-crime-data/" target="_blank">Full city-by-city breakdown &middot; Transparency Scorecard</a>.</p>
+    </div>
+
+    <!-- =========================================================================
+         REMEMBER THE FAB 40S? · The asymmetric response · callback to Stephon Clark
+         ========================================================================= -->
+    <div style="margin:48px auto 0; max-width:820px; padding:28px 26px; border:1px solid rgba(230,57,70,0.5); background:linear-gradient(180deg, rgba(230,57,70,0.06), rgba(230,57,70,0.01));">
+
+      <div style="text-align:center; margin-bottom:18px;">
+        <div style="font-family:'Source Code Pro',monospace; font-size:10px; letter-spacing:2.8px; text-transform:uppercase; color:var(--accent-red); font-weight:700; margin-bottom:10px;">The asymmetric response</div>
+        <div style="font-family:'DM Sans',sans-serif; font-size:clamp(26px,4vw,38px); font-weight:800; letter-spacing:-0.02em; line-height:1.1; color:var(--text-primary);">Remember the <span style="color:var(--accent-red)">Fab 40s</span>?</div>
+      </div>
+
+      <p style="font-family:'DM Sans',sans-serif; font-size:16px; line-height:1.7; color:var(--text-primary); margin:0 0 20px;">Four years after the Stephon Clark protests, a 23-year-old Black man named <strong>DeSean Leon Brasser Jr.</strong> murdered a 70-year-old white man named <strong>Charles Starzynski</strong> in the same neighborhood. The protesters who keyed cars over Stephon Clark? They didn't come back.</p>
+
+      <!-- Victim + perpetrator portrait pair -->
+      <div style="display:grid; grid-template-columns:repeat(2, 1fr); gap:14px; max-width:520px; margin:0 auto 22px;">
+        <div style="border:1px solid var(--border); background:#12121a; aspect-ratio:1/1; display:flex; flex-direction:column; overflow:hidden">
+          <a class="img-link fill" href="https://www.capradio.org/articles/2022/10/21/charles-starzynski-former-capradio-program-director-identified-as-victim-of-east-sacramento-shooting/" target="_blank" rel="noopener" title="CapRadio — Charles Starzynski, former program director, identified as victim" style="display:flex; flex-direction:column; flex:1 1 auto; min-height:0">
+          <div style="flex:1 1 auto; overflow:hidden; min-height:0; background:#12121a">
+            <img src="starzynski-portrait.png" alt="Charles Starzynski, 70, longtime CapRadio program director, murdered October 20, 2022 in the Fab 40s" style="width:100%; height:100%; object-fit:cover; object-position:center; display:block" onerror="this.outerHTML='<div style=&quot;padding:38px 12px; text-align:center; font-family:Source Code Pro,monospace; font-size:10px; letter-spacing:1.6px; color:var(--text-muted); text-transform:uppercase; line-height:1.7&quot;>image slot &middot; starzynski-portrait.png<br>[Charles Starzynski &middot; victim]</div>'">
+          </div>
+          </a>
+          <div style="padding:8px 10px; font-family:'Source Code Pro',monospace; font-size:9.5px; letter-spacing:1.4px; text-transform:uppercase; color:var(--text-muted); text-align:center; border-top:1px solid var(--border); flex-shrink:0">Charles Starzynski &middot; age 70</div>
+        </div>
+        <div style="border:1px solid var(--border); background:#12121a; aspect-ratio:1/1; display:flex; flex-direction:column; overflow:hidden">
+          <a class="img-link fill" href="https://www.sacda.org/2026/03/defendant-convicted-of-murder-during-armed-robbery/" target="_blank" rel="noopener" title="Sacramento DA — Defendant Convicted of Murder During Armed Robbery (March 2026)" style="display:flex; flex-direction:column; flex:1 1 auto; min-height:0">
+          <div style="flex:1 1 auto; overflow:hidden; min-height:0; background:#12121a">
+            <img src="brasser-mugshot.png" alt="DeSean Leon Brasser Jr., convicted of first-degree murder in the killing of Charles Starzynski" style="width:100%; height:100%; object-fit:cover; object-position:35% center; display:block" onerror="this.outerHTML='<div style=&quot;padding:38px 12px; text-align:center; font-family:Source Code Pro,monospace; font-size:10px; letter-spacing:1.6px; color:var(--text-muted); text-transform:uppercase; line-height:1.7&quot;>image slot &middot; brasser-mugshot.png<br>[DeSean Brasser Jr. &middot; convicted]</div>'">
+          </div>
+          </a>
+          <div style="padding:8px 10px; font-family:'Source Code Pro',monospace; font-size:9.5px; letter-spacing:1.4px; text-transform:uppercase; color:var(--text-muted); text-align:center; border-top:1px solid var(--border); flex-shrink:0">DeSean Brasser Jr. &middot; age 23</div>
+        </div>
+      </div>
+
+      <ul style="font-family:'DM Sans',sans-serif; font-size:15.5px; line-height:1.75; color:var(--text-primary); padding-left:22px; margin:0 0 22px">
+        <li><strong>October 20, 2022.</strong> Brasser followed Starzynski from a midtown ATM, ambushed him in an alley behind the Sutter Lawn Tennis Club, shot him in the head with a 9mm, and stole his bank bag.</li>
+        <li>At the time, Brasser was out on <strong>$5,000 bail for felony domestic violence</strong> &mdash; beating his girlfriend and vandalizing her car on Valentine's Day.</li>
+        <li>Starzynski was the longtime program director of Capital Public Radio &mdash; the same station that covered the Stephon Clark protests. He had retired and was making business deposits for a local food chain.</li>
+        <li>Brasser was convicted of <strong>first-degree murder with robbery special circumstance and a firearm enhancement</strong> on March 5, 2026. He faces life without parole.</li>
+        <li>At his October 2022 arraignment, Sacramento Superior Court issued a <strong>gag order prohibiting media from showing Brasser's face</strong> &mdash; a courtesy never extended to Officers Mercadal or Robinet, whose names and faces appeared on activist "Wanted" posters within days of the Stephon Clark shooting. (The order expired by his March 2026 conviction; the photo above is from those later proceedings.)</li>
+      </ul>
+
+      <!-- Brasser sentencing quote -->
+      <div style="margin:0 auto 22px; padding:20px 22px; background:#0a0a12; border-left:4px solid var(--accent-red); border-radius:3px;">
+        <div style="font-family:'Source Code Pro',monospace; font-size:9.5px; letter-spacing:2px; text-transform:uppercase; color:var(--accent-red); font-weight:700; margin-bottom:10px;">When asked at sentencing if he wanted to apologize</div>
+        <p style="font-family:'DM Sans',sans-serif; font-size:clamp(20px,2.6vw,24px); line-height:1.4; color:var(--text-primary); font-weight:800; letter-spacing:-0.01em; margin:0 0 8px; font-style:italic;">&ldquo;I didn't do anything to be sorry for. I'm not a &lsquo;sorry&rsquo; person.&rdquo;</p>
+        <div style="font-family:'Source Code Pro',monospace; font-size:9.5px; letter-spacing:1.6px; text-transform:uppercase; color:var(--text-muted);">DeSean Brasser Jr. &middot; sentencing hearing &middot; April 2026</div>
+      </div>
+
+      <!-- Optional: SacBee quote screenshot -->
+      <div style="width:100%; max-width:680px; margin:0 auto 22px; border:1px solid var(--border); background:#12121a">
+        <a class="img-link" href="https://amp.sacbee.com/news/local/crime/article315371391.html" target="_blank" rel="noopener" title="Read the Sacramento Bee article — Brasser's full sentencing quote" style="display:block">
+        <img src="brasser-quote-screenshot.png" alt="Sacramento Bee article excerpt: Brasser interrupted his attorney. 'I didn't do anything to be sorry for,' Brasser said. 'I'm not a sorry person.'" style="width:100%; height:auto; display:block" onerror="this.outerHTML='<div style=&quot;padding:30px 14px; text-align:center; font-family:Source Code Pro,monospace; font-size:10px; letter-spacing:1.5px; color:var(--text-muted); text-transform:uppercase; line-height:1.7&quot;>image slot &middot; brasser-quote-screenshot.png<br>[Sac Bee quote screenshot]</div>'">
+        </a>
+        <div style="padding:8px 12px; font-family:'Source Code Pro',monospace; font-size:9.5px; letter-spacing:1.5px; text-transform:uppercase; color:var(--text-muted); text-align:center; border-top:1px solid var(--border)">Sacramento Bee &middot; April 2026</div>
+      </div>
+
+      <!-- The asymmetric response · the punch -->
+      <div style="margin:0; padding:20px 22px; background:rgba(230,57,70,0.08); border-left:4px solid var(--accent-red); border-radius:3px;">
+        <p style="font-family:'DM Sans',sans-serif; font-size:17px; line-height:1.65; color:var(--text-primary); margin:0 0 12px; font-weight:700;">No one marched. No one keyed cars in Meadowview. No one shut down a freeway. No one blocked a Kings game. No clergy got zip-tied.</p>
+        <p style="font-family:'DM Sans',sans-serif; font-size:15px; line-height:1.65; color:var(--text-secondary); margin:0;">In Sacramento, Black-on-White homicide outnumbers White-on-Black <strong style="color:var(--accent-red)">40 to 7</strong> &mdash; and the only White-on-Black case on record was a wheelchair-bound veteran shooting in self-defense after a neighbor ran him over with a car. <strong style="color:var(--text-primary)">A Black officer killed Stephon Clark. The protests targeted a white neighborhood. A Black man murdered Charles Starzynski. The protests never came. The asymmetric response is the point.</strong></p>
+      </div>
+
+      <div style="margin-top:14px; padding-top:14px; border-top:1px solid var(--border); font-family:'Source Code Pro',monospace; font-size:9.5px; letter-spacing:1.4px; text-transform:uppercase; color:var(--text-muted);">
+        Sources: <a href="https://www.sacda.org/2026/03/defendant-convicted-of-murder-during-armed-robbery/" target="_blank">Sacramento DA</a> &middot; <a href="https://www.capradio.org/articles/2026/03/06/man-convicted-in-2022-shooting-of-former-capradio-program-director/" target="_blank">CapRadio</a> &middot; <a href="https://www.abc10.com/article/news/crime/man-found-guilty-armed-robbery/103-842ef8e3-1b06-4752-b93b-985665247d07" target="_blank">ABC10</a> &middot; <a href="https://www.cbsnews.com/sacramento/news/east-sacramento-sutter-lawn-tennis-club-deadly-shooting-conviction/" target="_blank">CBS Sacramento</a> &middot; <a href="https://amp.sacbee.com/news/local/crime/article315371391.html" target="_blank">Sacramento Bee</a>
+      </div>
     </div>
   </div>
   <div class="section-nav-arrow"><a onclick="document.getElementById('cross-cities').scrollIntoView({behavior:'smooth'})" aria-label="Check the other cities"><svg viewBox="0 0 24 24"><path d="M12 5v14M19 12l-7 7-7-7"/></svg></a></div>
@@ -2767,35 +3025,27 @@ footer a { color: var(--accent-red); text-decoration: none; }
     <!-- What prompted it &mdash; short, hard origin callout (moved from Stage 1) -->
     <div style="margin:18px auto 22px; max-width:820px; padding:24px 26px; border:1px solid rgba(230,57,70,0.45); background:linear-gradient(180deg, rgba(230,57,70,0.05), rgba(230,57,70,0.01)); border-radius:6px;">
       <div style="font-family:'Source Code Pro',monospace; font-size:10px; letter-spacing:2.8px; text-transform:uppercase; color:var(--accent-red); font-weight:700; margin-bottom:12px; text-align:center">What prompted it</div>
-      <p style="font-family:'DM Sans',sans-serif; font-size:clamp(18px,2.4vw,22px); line-height:1.4; color:var(--text-primary); margin:0 0 18px; font-weight:800; letter-spacing:-0.01em; text-align:center">A white woman went missing. Black activists sociopathically made it about themselves.</p>
-      <p style="font-family:'DM Sans',sans-serif; font-size:15px; line-height:1.7; color:var(--text-secondary); margin:0 0 14px"><a href="https://abcnews.go.com/GMA/News/gabby-petito-case-missing-white-woman-syndrome-experts/story?id=80144611" target="_blank" style="color:var(--text-secondary); text-decoration:underline; text-decoration-color:rgba(230,57,70,0.5)">Gabby Petito</a> disappeared in September 2021. She and her fianc&eacute; <strong>Brian Laundrie</strong> were van-life YouTube streamers who built a brand around their perfect relationship. Behind the camera, there was obvious turmoil. He killed her. <strong style="color:var(--text-primary)">The story was the mismatch &mdash; not her race.</strong></p>
-      <p style="font-family:'DM Sans',sans-serif; font-size:15px; line-height:1.7; color:var(--text-secondary); margin:0 0 18px">Of course, within days, <a href="https://www.deseret.com/2021/9/21/22686285/gabby-petito-news-coverage-brian-laundrie-missing-white-woman-syndrome/" target="_blank" style="color:var(--text-secondary); text-decoration:underline; text-decoration-color:rgba(230,57,70,0.5)">MSNBC&rsquo;s Joy Reid</a> reframed it as &ldquo;missing white woman syndrome.&rdquo; <a href="https://leginfo.legislature.ca.gov/faces/billNavClient.xhtml?bill_id=202320240SB673" target="_blank" style="color:var(--text-secondary); text-decoration:underline; text-decoration-color:rgba(230,57,70,0.5)">Sen. Steven Bradford</a>, the author of the bill that became California&rsquo;s Ebony Alert, then <a href="https://blackandmissinginc.com/californias-ebony-alert-what-to-know-about-the-alert-system-for-missing-black-youth/" target="_blank" style="color:var(--text-secondary); text-decoration:underline; text-decoration-color:rgba(230,57,70,0.5)">cited Petito by name as the pretext</a> &mdash; telling <em>People</em> magazine: <strong style="color:var(--text-primary)">&ldquo;She was a prime example [of] what this country can do when they really want to find you. But the media attention that her disappearance garnered across this country, you very rarely, if ever, see that for an African American.&rdquo;</strong></p>
+      <p style="font-family:'DM Sans',sans-serif; font-size:clamp(18px,2.4vw,22px); line-height:1.4; color:var(--text-primary); margin:0 0 22px; font-weight:800; letter-spacing:-0.01em; text-align:center">A white woman went missing. Black activists sociopathically made it about themselves.</p>
 
-      <!-- ACT 1: The pundit — Joy Reid coining "missing white woman syndrome" -->
-      <div style="text-align:center; margin:8px 0 6px;">
-        <div style="display:inline-block; font-family:'Source Code Pro',monospace; font-size:10px; font-weight:700; letter-spacing:2.8px; text-transform:uppercase; color:var(--text-muted); border-top:1px solid var(--border); border-bottom:1px solid var(--border); padding:6px 18px;">The pundit</div>
-      </div>
-      <p style="text-align:center; margin:6px auto 14px; max-width:600px; font-family:'DM Sans',sans-serif; font-size:15px; color:var(--text-secondary); line-height:1.5;">Here&rsquo;s MSNBC&rsquo;s Joy Reid coining the phrase <em>&ldquo;missing white woman syndrome&rdquo;</em> &mdash; days after Petito disappeared, before her body was even found:</p>
+      <!-- Tee-up for Joy Reid -->
+      <p style="text-align:center; margin:0 auto 14px; max-width:680px; font-family:'DM Sans',sans-serif; font-size:16px; color:var(--text-secondary); line-height:1.6;">Here&rsquo;s <a href="https://www.deseret.com/2021/9/21/22686285/gabby-petito-news-coverage-brian-laundrie-missing-white-woman-syndrome/" target="_blank" style="color:var(--text-secondary); text-decoration:underline; text-decoration-color:rgba(230,57,70,0.5)">MSNBC&rsquo;s Joy Reid</a> reframing <a href="https://abcnews.go.com/GMA/News/gabby-petito-case-missing-white-woman-syndrome-experts/story?id=80144611" target="_blank" style="color:var(--text-secondary); text-decoration:underline; text-decoration-color:rgba(230,57,70,0.5)">Gabby Petito</a> as &ldquo;missing white woman syndrome&rdquo; &mdash; what prompted the lawmaker below to enact the Ebony Alert.</p>
 
       <!-- Joy Reid "missing white woman syndrome" video tweet — embedded so the video plays inline -->
-      <div style="margin:0 auto 26px; max-width:560px;">
+      <div style="margin:0 auto 28px; max-width:560px;">
         <blockquote class="twitter-tweet" data-theme="dark" data-conversation="none" data-media-max-width="560">
           <p lang="en" dir="ltr">Joy Reid: &ldquo;missing white woman syndrome&rdquo;</p>
           &mdash; Mike Sington (@MikeSington) <a href="https://twitter.com/MikeSington/status/1440125733821583360">September 21, 2021</a>
         </blockquote>
       </div>
 
-      <!-- ACT 2: The senator — Bradford invoking Petito by name on TMZ Live -->
-      <div style="text-align:center; margin:8px 0 6px;">
-        <div style="display:inline-block; font-family:'Source Code Pro',monospace; font-size:10px; font-weight:700; letter-spacing:2.8px; text-transform:uppercase; color:var(--accent-red); border-top:1px solid rgba(230,57,70,0.5); border-bottom:1px solid rgba(230,57,70,0.5); padding:6px 18px;">The senator</div>
+      <!-- Big declarative transition: "And here's the bill's author" -->
+      <div style="text-align:center; margin:30px auto 18px; padding:20px 0 16px; border-top:1px solid rgba(230,57,70,0.35); border-bottom:1px solid rgba(230,57,70,0.35);">
+        <div style="font-family:'DM Sans',sans-serif; font-size:clamp(24px,3.6vw,34px); font-weight:800; letter-spacing:-0.015em; line-height:1.2; color:var(--text-primary);">And here&rsquo;s <span style="color:var(--accent-red)">the bill&rsquo;s author</span></div>
+        <div style="font-family:'Source Code Pro',monospace; font-size:10px; letter-spacing:2.8px; text-transform:uppercase; color:var(--text-muted); font-weight:700; margin-top:10px;">Sen. Steven Bradford &middot; on TMZ Live &middot; two days after Newsom signed the bill</div>
       </div>
-      <p style="text-align:center; margin:6px auto 12px; max-width:620px; font-family:'DM Sans',sans-serif; font-size:15px; color:var(--text-secondary); line-height:1.5;">And here&rsquo;s the bill&rsquo;s author, Sen. Steven Bradford, invoking <strong>Gabby Petito by name</strong> on TMZ Live as the rationale for the alert &mdash; two days after Newsom signed it into law:</p>
 
       <!-- Bradford on TMZ Live invoking Gabby Petito by name — two days after Newsom signed the bill -->
-      <div style="text-align:center; margin:6px 0 12px;">
-        <div style="display:inline-block; font-family:'Source Code Pro',monospace; font-size:10.5px; font-weight:700; letter-spacing:3.2px; text-transform:uppercase; color:var(--accent-red); background:transparent; border:2px solid rgba(230,57,70,0.6); padding:8px 18px; transform:rotate(-2deg); text-shadow:0 0 20px rgba(230,57,70,0.4); box-shadow:0 0 30px rgba(230,57,70,0.15), inset 0 0 20px rgba(230,57,70,0.05);">See for yourself</div>
-      </div>
-      <div style="margin:10px auto 18px; max-width:560px;">
+      <div style="margin:14px auto 18px; max-width:560px;">
         <div style="position:relative; padding-bottom:56.25%; height:0; overflow:hidden; background:#000; border:1px solid var(--border);">
           <iframe
             src="https://www.youtube.com/embed/hq49qORExbE"
@@ -2805,7 +3055,7 @@ footer a { color: var(--accent-red); text-decoration: none; }
             title="Sen. Steven Bradford on TMZ Live: Ebony Alert and Gabby Petito reference"></iframe>
         </div>
         <div style="font-family:'Source Code Pro',monospace; font-size:10px; letter-spacing:1.5px; text-transform:uppercase; color:var(--text-muted); text-align:center; margin-top:10px;">
-          Sen. Steven Bradford &middot; <a href="https://www.tmz.com/2023/10/10/californias-new-ebony-alert-missing-black-children-women-causing-outrage/" target="_blank">TMZ Live</a> &middot; October 10, 2023 &middot; two days after the signing
+          Sen. Steven Bradford &middot; <a href="https://www.tmz.com/2023/10/10/californias-new-ebony-alert-missing-black-children-women-causing-outrage/" target="_blank">TMZ Live</a> &middot; October 10, 2023
         </div>
       </div>
 
@@ -3142,7 +3392,7 @@ footer a { color: var(--accent-red); text-decoration: none; }
 <section class="section" id="k-street">
   <div class="wrap">
     <div class="section-kicker">K Street &middot; Sacramento &middot; April 3, 2022</div>
-    <h2 class="section-title">The deadliest shooting in Sacramento&rsquo;s history. Six dead. Three Black men charged. <em>The Sacramento Bee, of course, made Black people the victims.</em></h2>
+    <h2 class="section-title">The deadliest shooting in Sacramento&rsquo;s history. Six dead. Three Black men charged. <em>The Sacramento Bee made it all about how Blacks are shot in Sacramento &mdash; leaving out who shoots them.</em></h2>
 
     <!-- Victims + suspects photo block · top of section -->
     <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:18px; max-width:880px; margin:18px auto 28px;">

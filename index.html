@@ -613,6 +613,8 @@ iframe {
 }
 .label-black { color: #c084fc; font-weight: 700; }
 .label-white { color: #60a5fa; font-weight: 700; }
+.label-hispanic { color: #e8853a; font-weight: 700; }
+.label-other { color: #e8d44d; font-weight: 700; }
 
 /* Chinese Exclusion counter-test table */
 .ce-kicker {
@@ -2130,9 +2132,11 @@ footer a { color: var(--accent-red); text-decoration: none; }
     <h2 class="section-title">In the capital of California, the county government issued this statement <em>about its own residents</em></h2>
 
     <div class="intro-media">
-      <div class="img-frame">
-        <img src="sacramento-public-health.png" alt="CNN headline: Sacramento County declares racism a public health crisis" style="display:block; max-width:100%; height:auto;" onerror="this.outerHTML='<div class=&quot;img-placeholder&quot;>image slot &middot; sacramento-public-health.png<br>[CNN headline screenshot &middot; drop in repo]</div>'">
-      </div>
+      <a class="img-link" href="https://www.cnn.com/2020/11/18/us/sacramento-county-public-health-racism-trnd" target="_blank" rel="noopener" title="Read the CNN article">
+        <div class="img-frame">
+          <img src="sacramento-public-health.png" alt="CNN headline: Sacramento County declares racism a public health crisis" style="display:block; max-width:100%; height:auto;" onerror="this.outerHTML='<div class=&quot;img-placeholder&quot;>image slot &middot; sacramento-public-health.png<br>[CNN headline screenshot &middot; drop in repo]</div>'">
+        </div>
+      </a>
     </div>
 
     <div class="img-caption">
@@ -2152,7 +2156,7 @@ footer a { color: var(--accent-red); text-decoration: none; }
       <div class="case-body vertical">
         <!-- Real Racelighting tweet — screenshot slot, middle-size centered with text below -->
         <div style="width:100%; max-width:500px; margin:0 auto 22px; border:1px solid var(--border); background:#0d0d14;">
-          <a href="https://x.com/DrLukeWood/status/1351184732420272129" target="_blank" style="display:block; line-height:0;">
+          <a class="img-link" href="https://x.com/DrLukeWood/status/1351184732420272129" target="_blank" rel="noopener" title="Open the original tweet on X">
             <img src="racelighting-tweet.jpg" alt="Dr. Luke Wood tweet: Racelighting occurs when those with White people make people of color second guess their own sanity by distorting truth and reality. It is a mechanism for control over communities of color." style="width:100%; height:auto; display:block;" onerror="this.outerHTML='<div style=&quot;padding:60px 20px; text-align:center; font-family:Source Code Pro,monospace; font-size:11px; letter-spacing:2px; color:var(--text-muted); text-transform:uppercase&quot;>image slot &middot; racelighting-tweet.jpg<br>[Dr. Luke Wood &middot; Racelighting tweet &middot; Jan 18, 2021]</div>'">
           </a>
         </div>
@@ -2261,8 +2265,8 @@ footer a { color: var(--accent-red); text-decoration: none; }
 <!-- ============ STEPHON CLARK · STAGE 1 NARRATIVE (the story as told) ============ -->
 <section class="section" id="clark-narrative">
   <div class="wrap">
-    <div class="section-kicker">Stephon Clark &middot; Sacramento &middot; March 2018</div>
-    <h2 class="section-title">A Black man was shot by Sacramento police in his own backyard. <em>Every major news outlet ran the same headline.</em></h2>
+    <div class="section-kicker">Sacramento &middot; 2018</div>
+    <h2 class="section-title">Stephon Clark was shot by Sacramento police in his own backyard. <em>Every major news outlet ran the same headline.</em></h2>
 
     <!-- Stephon Clark portrait · awaiting upload -->
     <div style="width:100%; max-width:260px; margin:0 auto 28px; border:1px solid var(--border); background:#12121a">
@@ -2406,6 +2410,12 @@ footer a { color: var(--accent-red); text-decoration: none; }
       </div>
     </div>
 
+    <!-- Summation: the entire Stephon Clark sequence in one breath -->
+    <div style="margin:32px auto 28px; max-width:760px; padding:24px 26px; border:1px solid rgba(230,57,70,0.5); background:linear-gradient(180deg, rgba(230,57,70,0.06), rgba(230,57,70,0.01)); border-radius:4px;">
+      <div style="font-family:'Source Code Pro',monospace; font-size:10px; letter-spacing:2.8px; text-transform:uppercase; color:var(--accent-red); font-weight:700; margin-bottom:12px; text-align:center;">In one breath</div>
+      <p style="font-family:'DM Sans',sans-serif; font-size:clamp(16px,2vw,18px); line-height:1.7; color:var(--text-primary); margin:0; text-align:center;">A Black guy breaks into <strong>three cars and a house</strong>. Officers tell him to stop. He runs into <strong>his own backyard</strong>. He <strong>points his phone at them at night</strong>. They yell <em>&ldquo;get down, gun.&rdquo;</em> A <span style="color:var(--accent-red); font-weight:700">Black officer</span> and a White officer stop the threat by killing him. <strong>Sacramento riots and protests in a white neighborhood.</strong></p>
+    </div>
+
     <div class="case-card">
       <div class="case-body text-only">
         <ul style="line-height:1.75; font-size:16px; color:var(--text-primary); padding-left:22px; margin:0 0 18px">
@@ -2476,10 +2486,19 @@ footer a { color: var(--accent-red); text-decoration: none; }
     </div>
 
     <!-- Divider + headline — three months later, same city, the inverse case -->
-    <div style="text-align:center; margin:36px 0 28px; padding:22px 18px; border-top:1px solid var(--border); border-bottom:1px solid var(--border); background:rgba(18,18,26,0.4)">
+    <!-- Now contains the four officers tribute directly underneath, with the "no movie" line as caption -->
+    <div style="text-align:center; margin:36px 0 28px; padding:22px 18px 26px; border-top:1px solid var(--border); border-bottom:1px solid var(--border); background:rgba(18,18,26,0.4)">
       <div style="font-family:'Source Code Pro',monospace; font-size:10px; letter-spacing:2.8px; text-transform:uppercase; color:var(--text-muted); margin-bottom:10px">Three months later &middot; same city</div>
       <div style="font-family:'DM Sans',sans-serif; font-size:clamp(20px,3vw,28px); font-weight:800; line-height:1.25; letter-spacing:-0.02em; color:var(--text-primary); max-width:680px; margin:0 auto 10px">Four <span style="color:var(--accent-red)">white cops</span> killed by a Black man in a single day.</div>
-      <div style="font-family:'DM Sans',sans-serif; font-size:clamp(15px,2vw,18px); font-weight:500; font-style:italic; color:var(--text-secondary); max-width:620px; margin:0 auto 14px">You have never heard of this story.</div>
+      <div style="font-family:'DM Sans',sans-serif; font-size:clamp(15px,2vw,18px); font-weight:500; font-style:italic; color:var(--text-secondary); max-width:620px; margin:0 auto 22px">You have never heard of this story.</div>
+
+      <!-- Four officers tribute graphic · moved up here, directly under the headline -->
+      <div style="width:100%; max-width:600px; margin:0 auto 14px; border:1px solid var(--border); background:#12121a">
+        <img src="four-officers.png" alt="We Honor and Remember: four Oakland police officers killed on March 21, 2009" style="width:100%; height:auto; display:block" onerror="this.outerHTML='<div style=&quot;padding:60px 20px; text-align:center; font-family:Source Code Pro,monospace; font-size:11px; letter-spacing:2px; color:var(--text-muted); text-transform:uppercase&quot;>image slot &middot; four-officers.png<br>[We Honor And Remember &middot; 4 OPD officers killed March 21, 2009]</div>'">
+        <div style="padding:10px 14px; font-family:'Source Code Pro',monospace; font-size:10px; letter-spacing:1.8px; text-transform:uppercase; color:var(--text-muted); text-align:center; border-top:1px solid var(--border)">Officer John Hege &middot; Sgt. Mark Dunakin &middot; Sgt. Ervin Romans &middot; Sgt. Daniel Sakai</div>
+      </div>
+      <div style="font-family:'DM Sans',sans-serif; font-size:clamp(16px,2.2vw,20px); font-weight:700; font-style:italic; color:var(--accent-red); margin:8px auto 18px;">No movie made about these cops.</div>
+
       <a onclick="document.getElementById('rally-block').scrollIntoView({behavior:'smooth', block:'start'})" style="display:inline-block; cursor:pointer; color:var(--accent-red); font-size:32px; line-height:1; padding:6px 14px; transition:transform 0.2s; animation:arrowBob 1.8s ease-in-out infinite" onmouseover="this.style.transform='translateY(2px)'" onmouseout="this.style.transform='translateY(0)'" aria-label="Jump to the rally for the cop killer">&darr;</a>
     </div>
 
@@ -2490,30 +2509,22 @@ footer a { color: var(--accent-red); text-decoration: none; }
         <div style="font-family:'Source Code Pro',monospace; font-size:10px; letter-spacing:2.8px; text-transform:uppercase; color:var(--accent-red); font-weight:700; margin-bottom:12px">And then &mdash; wait for it</div>
         <div style="font-family:'DM Sans',sans-serif; font-size:clamp(22px,3.4vw,32px); font-weight:800; line-height:1.2; letter-spacing:-0.02em; color:var(--text-primary);">Oaklanders held a <span style="color:var(--accent-red); text-decoration:underline; text-underline-offset:6px; text-decoration-thickness:3px">rally for the cop killer</span>.</div>
       </div>
-      <!-- Rally photo · awaiting upload from Vincent -->
-      <div style="background:#12121a; border-top:1px solid rgba(230,57,70,0.25); border-bottom:1px solid rgba(230,57,70,0.25);">
-        <img src="oakland-rally.png" alt="~60 people rallied in East Oakland in support of Lovelle Mixon, March 2009" style="width:100%; height:auto; display:block" onerror="this.outerHTML='<div style=&quot;padding:60px 20px; text-align:center; font-family:Source Code Pro,monospace; font-size:11px; letter-spacing:2px; color:var(--text-muted); text-transform:uppercase; line-height:1.8&quot;>image slot &middot; oakland-rally.png<br>[Rally in support of the cop killer &middot; East Oakland &middot; March 2009]</div>'">
-        <div style="padding:10px 14px; font-family:'Source Code Pro',monospace; font-size:10px; letter-spacing:1.8px; text-transform:uppercase; color:var(--text-muted); text-align:center;">The rally in support of the cop killer &middot; East Oakland &middot; March 2009</div>
-      </div>
+      <!-- Rally photo · clickable to SFGate coverage of the rally -->
+      <a class="img-link" href="https://www.sfgate.com/news/article/dozens-march-for-mixon-against-police-3166848.php" target="_blank" rel="noopener" title="SFGate — Dozens march for Mixon against police, March 2009" style="display:block;">
+        <div style="background:#12121a; border-top:1px solid rgba(230,57,70,0.25); border-bottom:1px solid rgba(230,57,70,0.25);">
+          <img src="oakland-rally.png" alt="~60 people rallied in East Oakland in support of Lovelle Mixon, March 2009" style="width:100%; height:auto; display:block" onerror="this.outerHTML='<div style=&quot;padding:60px 20px; text-align:center; font-family:Source Code Pro,monospace; font-size:11px; letter-spacing:2px; color:var(--text-muted); text-transform:uppercase; line-height:1.8&quot;>image slot &middot; oakland-rally.png<br>[Rally in support of the cop killer &middot; East Oakland &middot; March 2009]</div>'">
+          <div style="padding:10px 14px; font-family:'Source Code Pro',monospace; font-size:10px; letter-spacing:1.8px; text-transform:uppercase; color:var(--text-muted); text-align:center;">The rally in support of the cop killer &middot; East Oakland &middot; March 2009</div>
+        </div>
+      </a>
       <!-- Explanation paragraph -->
       <div style="padding:22px 26px 24px; font-family:'DM Sans',sans-serif; font-size:clamp(15px,2vw,17px); font-weight:500; color:var(--text-secondary); line-height:1.6; text-align:center;">
         Four days after the killings, activists rallied in East Oakland in support of the cop killer. Signs read <strong style="color:var(--accent-red)">&ldquo;genocide.&rdquo;</strong> A self-described National Black Newspaper called the four officers&rsquo; deaths a <strong style="color:var(--accent-red)">victory for &ldquo;the people&rdquo;</strong> and called Mixon&rsquo;s death a <strong style="color:var(--accent-red)">murder</strong>.
       </div>
     </div>
 
-    <!-- Mixon — the buried counter-case, with photo slots -->
+    <!-- Mixon — the buried counter-case · bullet details (the four-officers photo block has moved up to under the divider headline) -->
     <div class="case-card">
       <div class="case-body vertical">
-        <!-- Headline above the four officers tribute -->
-        <div style="text-align:center; margin:0 auto 18px; max-width:640px;">
-          <div style="font-family:'DM Sans',sans-serif; font-size:clamp(20px,2.8vw,26px); font-weight:800; letter-spacing:-0.015em; line-height:1.25; color:var(--text-primary); margin-bottom:6px;">Here are the four cops <span style="color:var(--accent-red)">murdered</span>.</div>
-          <div style="font-family:'DM Sans',sans-serif; font-size:clamp(16px,2vw,18px); font-weight:600; color:var(--text-secondary); font-style:italic;">No movie made about them.</div>
-        </div>
-        <!-- Four officers tribute graphic -->
-        <div style="width:100%; max-width:600px; margin:0 auto 22px; border:1px solid var(--border); background:#12121a">
-          <img src="four-officers.png" alt="We Honor and Remember: four Oakland police officers killed on March 21, 2009" style="width:100%; height:auto; display:block" onerror="this.outerHTML='<div style=&quot;padding:60px 20px; text-align:center; font-family:Source Code Pro,monospace; font-size:11px; letter-spacing:2px; color:var(--text-muted); text-transform:uppercase&quot;>image slot &middot; four-officers.png<br>[We Honor And Remember &middot; 4 OPD officers killed March 21, 2009]</div>'">
-          <div style="padding:10px 14px; font-family:'Source Code Pro',monospace; font-size:10px; letter-spacing:1.8px; text-transform:uppercase; color:var(--text-muted); text-align:center; border-top:1px solid var(--border)">Officer John Hege &middot; Sgt. Mark Dunakin &middot; Sgt. Ervin Romans &middot; Sgt. Daniel Sakai</div>
-        </div>
         <div class="case-text" style="max-width:720px; margin:0 auto;">
           <div style="display:flex; align-items:baseline; gap:14px; flex-wrap:wrap; margin-bottom:12px">
             <div style="font-family:'Source Code Pro',monospace; font-size:10.5px; letter-spacing:2.8px; text-transform:uppercase; color:var(--accent-red); font-weight:700">March 21, 2009 &middot; East Oakland</div>
@@ -4712,14 +4723,67 @@ function renderCityCrime() {
     cityChart.options.scales.x.ticks.color = C.text;
     cityChart.update();
     ribbonEl.style.display = '';
-    const bowCount = c.data[2];
-    const wobCount = c.data[4];
-    ribBoW.textContent = bowCount.toLocaleString();
-    ribWoB.textContent = wobCount.toLocaleString();
-    if (wobCount > 0) {
-      const ratio = bowCount / wobCount;
+
+    // Dynamically compute the biggest interracial pair from the matrix, per city/crime,
+    // instead of always showing Black-on-White / White-on-Black. The ribbon should reflect
+    // whatever the actual top off-diagonal pair is — Hispanic-on-White, Asian-on-Hispanic, etc.
+    // Race order in the matrix: rows = suspect (Black, White, Hispanic, Asian/Other),
+    //                           cols = victim (Black, Hispanic, White, Asian/Other)
+    const RACE_ROW = ['Black','White','Hispanic','Asian/Other'];
+    const RACE_COL = ['Black','Hispanic','White','Asian/Other'];
+    // Same-race (intra-racial) indices in the flat 16-cell array — exclude these from "interracial"
+    const SAME_RACE_INDICES = new Set([0, 5, 10, 15].map(i => {
+      // We need the index where RACE_ROW[r] === RACE_COL[c] for each row
+      return -1;
+    }));
+    // Build correctly: for each row r and each col c, if RACE_ROW[r] === RACE_COL[c], that's intra-racial
+    const intraSet = new Set();
+    for (let r = 0; r < 4; r++) {
+      for (let c = 0; c < 4; c++) {
+        if (RACE_ROW[r] === RACE_COL[c]) intraSet.add(r * 4 + c);
+      }
+    }
+    // Find the largest interracial cell
+    let topIdx = -1, topVal = -1;
+    for (let i = 0; i < 16; i++) {
+      if (intraSet.has(i)) continue;
+      if (c.data[i] > topVal) { topVal = c.data[i]; topIdx = i; }
+    }
+    if (topIdx === -1) { topIdx = 0; topVal = 0; }
+    const topRow = Math.floor(topIdx / 4);
+    const topCol = topIdx % 4;
+    const topSuspect = RACE_ROW[topRow];
+    const topVictim  = RACE_COL[topCol];
+    // The reverse pair: swap suspect and victim
+    const reverseSuspect = topVictim;
+    const reverseVictim  = topSuspect;
+    // Find the reverse cell index
+    const reverseRow = RACE_ROW.indexOf(reverseSuspect);
+    const reverseCol = RACE_COL.indexOf(reverseVictim);
+    const reverseVal = (reverseRow >= 0 && reverseCol >= 0) ? c.data[reverseRow * 4 + reverseCol] : 0;
+    // Color helper for race labels in the ribbon
+    const RACE_LABEL_CLASS = {
+      'Black':       'label-black',
+      'White':       'label-white',
+      'Hispanic':    'label-hispanic',
+      'Asian/Other': 'label-other'
+    };
+    const labelHtml = (susp, vict) =>
+      '<span class="' + RACE_LABEL_CLASS[susp] + '">' + susp.toUpperCase() + '</span> on '
+    + '<span class="' + RACE_LABEL_CLASS[vict] + '">' + vict.toUpperCase() + '</span>';
+    // Update the ribbon cell labels (suspect→victim labels) and values
+    ribBoW.textContent = topVal.toLocaleString();
+    ribWoB.textContent = reverseVal.toLocaleString();
+    // Update the cell-label sub-text to show the actual pair
+    const bowLabelEl = ribBoW.parentElement.querySelector('.cell-label');
+    const wobLabelEl = ribWoB.parentElement.querySelector('.cell-label');
+    if (bowLabelEl) bowLabelEl.innerHTML = labelHtml(topSuspect, topVictim);
+    if (wobLabelEl) wobLabelEl.innerHTML = labelHtml(reverseSuspect, reverseVictim);
+    // Compute ratio (top / reverse), handle edge cases
+    if (reverseVal > 0) {
+      const ratio = topVal / reverseVal;
       ribRatio.innerHTML = ratio.toFixed(1) + '<span style="font-size:0.6em; font-weight:600; opacity:0.85">&times;</span>';
-    } else if (bowCount > 0) {
+    } else if (topVal > 0) {
       ribRatio.innerHTML = '&infin;<span style="font-size:0.6em; font-weight:600; opacity:0.85">&times;</span>';
     } else {
       ribRatio.innerHTML = '&mdash;';

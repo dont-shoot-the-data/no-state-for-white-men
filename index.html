@@ -1927,6 +1927,93 @@ footer a { color: var(--accent-red); text-decoration: none; }
   }
 }
 
+
+/* ============================================================
+   EXPAND/COLLAPSE — reusable accordion. grid-template-rows
+   trick = smooth height transition with no JS measurement.
+   ============================================================ */
+/* Kill the bottom margin on any element directly followed by a toggle.
+   This makes the toggle butt up flush against the preceding image/card. */
+*:has(+ .expand-toggle) {
+  margin-bottom: 0 !important;
+}
+.expand-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  width: 100%;
+  max-width: 360px;
+  margin: 0 auto 22px;
+  padding: 13px 18px;
+  background: rgba(230, 57, 70, 0.04);
+  border: 1px solid rgba(230, 57, 70, 0.4);
+  border-left: 3px solid var(--accent-red);
+  color: var(--text-primary);
+  font-family: 'Source Code Pro', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+.expand-toggle:hover {
+  background: rgba(230, 57, 70, 0.1);
+  border-color: var(--accent-red);
+}
+.expand-toggle:focus-visible {
+  outline: 2px solid var(--accent-red);
+  outline-offset: 2px;
+}
+.expand-toggle .label-show { display: inline; }
+.expand-toggle .label-hide { display: none; }
+.expand-toggle[aria-expanded="true"] .label-show { display: none; }
+.expand-toggle[aria-expanded="true"] .label-hide { display: inline; }
+.expand-toggle-chevron {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  stroke: var(--accent-red);
+  fill: none;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.expand-toggle[aria-expanded="true"] .expand-toggle-chevron {
+  transform: rotate(180deg);
+}
+.expand-content {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.35s ease;
+  opacity: 0;
+}
+.expand-content > .expand-content-inner {
+  min-height: 0;
+  overflow: hidden;
+}
+.expand-content[data-open="true"] {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+.expand-teaser {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 16px;
+  line-height: 1.55;
+  color: var(--text-secondary);
+  font-style: italic;
+  text-align: center;
+  margin: 22px auto 0;
+  max-width: 600px;
+  padding: 0 16px;
+}
+@media (max-width: 520px) {
+  .expand-toggle { font-size: 10px; letter-spacing: 2px; padding: 12px 14px; }
+}
+
 </style>
 </head>
 <body>
@@ -2094,12 +2181,12 @@ footer a { color: var(--accent-red); text-decoration: none; }
             <text text-anchor="middle" y="32" font-family="DM Sans" font-size="14" font-weight="700" fill="#e8e8ec">or else</text>
           </g>
 
-          <!-- Node 4 LEFT · Punish dissent -->
+          <!-- Node 4 LEFT · Indoctrinate / Punish dissent -->
           <g transform="translate(100, 280)">
             <circle r="62" fill="#12121a" stroke="#4ade80" stroke-width="3" filter="url(#glow-top)"/>
             <text text-anchor="middle" y="-14" font-family="DM Sans" font-size="32" font-weight="800" fill="#4ade80">4</text>
-            <text text-anchor="middle" y="14" font-family="DM Sans" font-size="14" font-weight="700" fill="#e8e8ec">Punish</text>
-            <text text-anchor="middle" y="32" font-family="DM Sans" font-size="14" font-weight="700" fill="#e8e8ec">dissent</text>
+            <text text-anchor="middle" y="14" font-family="DM Sans" font-size="13" font-weight="700" fill="#e8e8ec">Indoctrinate /</text>
+            <text text-anchor="middle" y="32" font-family="DM Sans" font-size="13" font-weight="700" fill="#e8e8ec">Punish dissent</text>
           </g>
 
           <!-- Connecting arrows 1→2→3→4→1 -->
@@ -2169,6 +2256,12 @@ footer a { color: var(--accent-red); text-decoration: none; }
       </div>
     </div>
 
+    <button class="expand-toggle" type="button" aria-expanded="false" aria-controls="racelight-more">
+      <span><span class="label-show">Learn more ▼</span><span class="label-hide">Close ▲</span></span>
+      <svg class="expand-toggle-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+    </button>
+    <div class="expand-content" id="racelight-more">
+      <div class="expand-content-inner">
     <!-- Wood video: "racism causes cancer" — same pattern as Prop 36 / Griff embeds -->
     <div class="section-body" style="margin-top:34px">
       <p>Here is the president of Sac State claiming racism causes cancer.</p>
@@ -2190,6 +2283,8 @@ footer a { color: var(--accent-red); text-decoration: none; }
         Dr. J. Luke Wood &middot; Sacramento State &middot; CSUS Juneteenth Symposium 2024
       </div>
     </div>
+      </div>
+    </div>
   </div>
   <div class="section-nav-arrow"><a onclick="smoothScrollTo('ebony-alert')" aria-label="Next section"><svg viewBox="0 0 24 24"><path d="M12 5v14M19 12l-7 7-7-7"/></svg></a></div>
 </section>
@@ -2206,6 +2301,12 @@ footer a { color: var(--accent-red); text-decoration: none; }
       <div style="padding:8px 12px; font-family:'Source Code Pro',monospace; font-size:9.5px; letter-spacing:1.5px; text-transform:uppercase; color:var(--text-muted); text-align:center; border-top:1px solid var(--border)">Community advocacy graphic &middot; produced after SB 673 was signed</div>
     </div>
 
+    <button class="expand-toggle" type="button" aria-expanded="false" aria-controls="ebony-more">
+      <span><span class="label-show">Learn more ▼</span><span class="label-hide">Close ▲</span></span>
+      <svg class="expand-toggle-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+    </button>
+    <div class="expand-content" id="ebony-more">
+      <div class="expand-content-inner">
     <div class="case-card">
       <div class="case-body text-only">
         <ul style="line-height:1.75; font-size:16px; color:var(--text-primary); padding-left:22px; margin:0 0 18px">
@@ -2225,6 +2326,8 @@ footer a { color: var(--accent-red); text-decoration: none; }
       "Black and brown, our indigenous brothers and sisters, when they go missing there&rsquo;s very rarely the type of media attention, let alone Amber alerts and police resources that we see..."
       <cite>&mdash; Sen. Steven Bradford, at the Ebony Alert signing &middot; October 2023</cite>
     </div>
+      </div>
+    </div>
   </div>
   <div class="section-nav-arrow"><a onclick="smoothScrollTo('mural')" aria-label="Next section"><svg viewBox="0 0 24 24"><path d="M12 5v14M19 12l-7 7-7-7"/></svg></a></div>
 </section>
@@ -2233,23 +2336,19 @@ footer a { color: var(--accent-red); text-decoration: none; }
 <section class="section" id="mural">
   <div class="wrap">
     <div class="section-kicker">Sacramento Mural &middot; 2013 Neighbors Alley</div>
-    <h2 class="section-title">In 2017, Chyna Gibson was murdered. <em>This is the mural Sacramento painted for her.</em></h2>
+    <h2 class="section-title">In 2017, a trans woman was murdered. <em>This mural in Sacramento is painted for her.</em></h2>
 
     <div class="case-card">
       <div class="case-header">
         <div class="case-kicker">Mural on Neighbors Alley &middot; Sacramento, CA</div>
-        <div class="case-headline">"Protect Our Trans Daughters." &nbsp;/&nbsp; "White Silence = Violence."</div>
+        <div class="case-headline">Written on the left side of the mural: "White Silence = Violence."</div>
       </div>
       <div class="case-body mural">
         <div class="mural-image-slot">
           <a href="https://maps.app.goo.gl/rCzDuW66hT3wrFDX7" target="_blank" style="display:block; line-height:0;" aria-label="View the mural on Google Maps">
-            <img src="chyna-gibson-mural.jpg" alt="Mural on 2013 Neighbors Alley, Sacramento: Protect Our Trans Daughters / White Silence = Violence — tap to view on Google Maps"
+            <img src="chyna-gibson-mural.jpg" alt="Mural on 2013 Neighbors Alley, Sacramento: White Silence = Violence — tap to view on Google Maps"
                  onerror="this.outerHTML='&lt;div class=\'fallback\'&gt;image slot &middot; chyna-gibson-mural.jpg&lt;br&gt;[Google Street View &middot; 2013 Neighbors Alley, Sacramento &middot; Feb 2025]&lt;/div&gt;'">
           </a>
-        </div>
-        <div class="case-text">
-          <p>On a building at <strong>2013 Neighbors Alley in Midtown Sacramento</strong>, a public mural memorializes Chyna Gibson, a Black transgender performer shot ten times in a New Orleans parking lot in 2017.</p>
-          <p>The left panel reads <strong>"White Silence = Violence."</strong></p>
         </div>
       </div>
       <div class="case-source">
@@ -2289,8 +2388,12 @@ footer a { color: var(--accent-red); text-decoration: none; }
       </a>
     </div>
 
-    <p style="font-family:'DM Sans',sans-serif; font-size:15px; color:var(--text-secondary); margin:0 0 26px; line-height:1.6;">Both stories are accurate. Both headlines are also carefully curated. What the headlines leave out is everything that happened <em>before</em> police arrived.</p>
-
+    <button class="expand-toggle" type="button" aria-expanded="false" aria-controls="clark-narrative-more">
+      <span><span class="label-show">Learn more ▼</span><span class="label-hide">Close ▲</span></span>
+      <svg class="expand-toggle-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+    </button>
+    <div class="expand-content" id="clark-narrative-more">
+      <div class="expand-content-inner">
     <div class="case-card">
       <div class="case-body text-only">
         <ul style="line-height:1.75; font-size:16px; color:var(--text-primary); padding-left:22px; margin:0">
@@ -2307,6 +2410,8 @@ footer a { color: var(--accent-red); text-decoration: none; }
     <div class="pullquote">
       "Racist policing is a systemic problem, not a series of isolated incidents."
       <cite>&mdash; <a href="https://www.aclunorcal.org/press-releases/aclu-northern-california-statement-sacramento-pd-fatal-shooting-stephon-clark/" target="_blank">ACLU of Northern California</a>, official statement on the Clark shooting, March 2018</cite>
+    </div>
+      </div>
     </div>
   </div>
   <div class="section-nav-arrow"><a onclick="smoothScrollTo('stage-2')" aria-label="Next section"><svg viewBox="0 0 24 24"><path d="M12 5v14M19 12l-7 7-7-7"/></svg></a></div>
@@ -2378,15 +2483,15 @@ footer a { color: var(--accent-red); text-decoration: none; }
       <div style="font-family:'DM Sans',sans-serif; font-size:clamp(15px,1.8vw,17px); font-weight:600; letter-spacing:-0.005em; color:var(--text-secondary); margin-top:10px;">See for yourself.</div>
     </div>
 
-    <!-- Mercadal video · embedded YouTube clip from Donut Operator (3:16-4:53) -->
+    <!-- Mercadal video · re-uploaded clip of Donut Operator analysis (Mercadal yells Gun) -->
     <div style="margin:0 auto 48px; max-width:680px;">
       <div style="position:relative; padding-bottom:56.25%; height:0; overflow:hidden; background:#000; border:1px solid var(--border);">
         <iframe
-          src="https://www.youtube.com/embed/_IN-YmosRME?start=196&end=293"
+          src="https://www.youtube.com/embed/q2nLpQIikWA"
           style="position:absolute; top:0; left:0; width:100%; height:100%; border:0;"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
           allowfullscreen
-          title="Donut Operator breakdown of the Stephon Clark shooting — Mercadal yells Gun, both officers fire"></iframe>
+          title="Stephon Clark shooting — Mercadal yells Gun, both officers fire"></iframe>
       </div>
       <div style="padding:8px 14px 0; font-family:'Source Code Pro',monospace; font-size:9.5px; letter-spacing:1.4px; text-transform:uppercase; color:var(--text-muted); text-align:left;">
         Source: <a href="https://www.youtube.com/watch?v=_IN-YmosRME" target="_blank">Donut Operator on YouTube</a> &middot; <a href="https://oag.ca.gov/system/files/attachments/press-docs/report-attorney-general-regarding-criminal-investigation-death-stephon-clark.pdf" target="_blank">CA Attorney General Report, March 2019</a>
@@ -3749,8 +3854,8 @@ footer a { color: var(--accent-red); text-decoration: none; }
   <div class="section-nav-arrow"><a onclick="smoothScrollTo('post-stage-4')" aria-label="Next section"><svg viewBox="0 0 24 24"><path d="M12 5v14M19 12l-7 7-7-7"/></svg></a></div>
   <div class="wrap">
     <div class="stage-num">Stage 4 of 4</div>
-    <div class="stage-label">Punish dissent</div>
-    <div class="stage-sub">The data is unambiguous. So the state trains the officer, won’t enforce the law, and labels anyone who points at the numbers.</div>
+    <div class="stage-label">Indoctrinate&nbsp;/<br>Punish dissent</div>
+    <div class="stage-sub">The data is unambiguous. So the state trains the officer, schools the child, certifies the doctor, and labels anyone who points at the numbers.</div>
   </div>
 </section>
 
@@ -3822,6 +3927,95 @@ footer a { color: var(--accent-red); text-decoration: none; }
 
     <div class="highlight">
       Substitute the demographic. If white supremacists were the plurality of arrests for twenty-four years running and the Attorney General responded by training the police for anti-white-supremacist bias, you would call her insane. The variable did not move because the variable was never the one being trained.
+    </div>
+  </div>
+  <div class="section-nav-arrow"><a onclick="smoothScrollTo('ethnic-studies')" aria-label="Next section"><svg viewBox="0 0 24 24"><path d="M12 5v14M19 12l-7 7-7-7"/></svg></a></div>
+</section>
+
+<!-- ============ ETHNIC STUDIES · SCHOOLS THE CHILD ============ -->
+<section class="section" id="ethnic-studies">
+  <div class="wrap">
+    <div class="section-kicker">Ethnic Studies · AB 1460 (2020) · AB 101 (2021)</div>
+    <h2 class="section-title">California made <em>&ldquo;critique white supremacy&rdquo;</em> a graduation requirement.</h2>
+
+    <!-- LESMCC principles screenshot · awaiting upload -->
+    <div style="width:100%; max-width:560px; margin:14px auto 28px; border:1px solid var(--border); background:#12121a">
+      <img src="lesmc-principles.png" alt="Liberated Ethnic Studies Model Curriculum Consortium primary source page listing critique of empire, white supremacy, anti-Blackness, anti-Indigeneity, racism, patriarchy, cisheteropatriarchy, capitalism, ableism, and anthropocentrism as the first principle" style="width:100%; height:auto; display:block" onerror="this.outerHTML='<div style=&quot;padding:60px 16px; text-align:center; font-family:Source Code Pro,monospace; font-size:10px; letter-spacing:1.6px; color:var(--text-muted); text-transform:uppercase; line-height:1.7&quot;>image slot &middot; lesmc-principles.png<br>[Liberated Ethnic Studies Model Curriculum Consortium &middot; principles page]</div>'">
+      <div style="padding:8px 12px; font-family:'Source Code Pro',monospace; font-size:9.5px; letter-spacing:1.5px; text-transform:uppercase; color:var(--text-muted); text-align:center; border-top:1px solid var(--border)">Liberated Ethnic Studies Model Curriculum Consortium · principles page</div>
+    </div>
+
+    <div class="case-card">
+      <div class="case-body text-only">
+        <ul style="line-height:1.75; font-size:16px; color:var(--text-primary); padding-left:22px; margin:0">
+          <li><strong>2020:</strong> Newsom signed <a href="https://leginfo.legislature.ca.gov/faces/billNavClient.xhtml?bill_id=201920200AB1460" target="_blank">AB 1460</a>. Every student at every California State University campus must complete an ethnic studies course to graduate. Twenty-three campuses. Roughly half a million students.</li>
+          <li><strong>2021:</strong> Newsom signed <a href="https://leginfo.legislature.ca.gov/faces/billTextClient.xhtml?bill_id=202120220AB101" target="_blank">AB 101</a>. California became <a href="https://calmatters.org/education/k-12-education/2021/10/ethnic-studies-requirement/" target="_blank">the first state in the nation</a> to require ethnic studies for high school graduation. Class of 2030 onward. Schools must offer the course starting 2025-26.</li>
+          <li>Newsom had vetoed the previous version (AB 331) in 2020 after the original Model Curriculum draft was condemned as ideologically extreme. <strong>The same authors regrouped, rebranded their draft as the Liberated Ethnic Studies Model Curriculum Consortium, and now sell it back to school districts as paid consulting</strong> (<a href="https://defendinged.org/resources/liberated-ethnic-studies-model-curriculum-consortium/" target="_blank">Defending Education breakdown</a>).</li>
+          <li>Districts that have adopted the Liberated curriculum or hired its consultants include <strong>Hayward Unified, Salinas Union, Jefferson Union HSD, Santa Ana Unified, and Castro Valley Unified</strong> (<a href="https://edsource.org/2025/what-is-happening-to-ethnic-studies-in-california/743329" target="_blank">EdSource, 2025</a>).</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="pullquote">
+      Critique empire, white supremacy, anti-Blackness, anti-Indigeneity, racism, patriarchy, cisheteropatriarchy, capitalism…
+      <cite>LESMCC · &ldquo;Principles&rdquo; · first listed principle of the model curriculum</cite>
+    </div>
+
+    <div class="case-card">
+      <div class="case-source">
+        Sources: <a href="https://www.liberatedethnicstudies.org/principles.html" target="_blank">LESMCC Principles (primary source)</a> · <a href="https://leginfo.legislature.ca.gov/faces/billNavClient.xhtml?bill_id=201920200AB1460" target="_blank">AB 1460</a> · <a href="https://leginfo.legislature.ca.gov/faces/billTextClient.xhtml?bill_id=202120220AB101" target="_blank">AB 101</a> · <a href="https://edsource.org/2025/what-is-happening-to-ethnic-studies-in-california/743329" target="_blank">EdSource</a> · <a href="https://calmatters.org/education/k-12-education/2021/10/ethnic-studies-requirement/" target="_blank">CalMatters</a> · <a href="https://defendinged.org/resources/liberated-ethnic-studies-model-curriculum-consortium/" target="_blank">Defending Education</a> · <a href="https://www.calethstudies.org/liberated-ethnic-studies-model-curriculum-overview" target="_blank">Alliance for Constructive Ethnic Studies</a>
+      </div>
+    </div>
+
+    <div class="highlight">
+      Every chart on this page says the same thing. The state read the same charts and made <strong>&ldquo;critique white supremacy&rdquo;</strong> the first principle of the curriculum it now requires every California high school graduate and every CSU graduate to sit through. The data did not change. The curriculum did.
+    </div>
+  </div>
+  <div class="section-nav-arrow"><a onclick="smoothScrollTo('ucsf')" aria-label="Next section"><svg viewBox="0 0 24 24"><path d="M12 5v14M19 12l-7 7-7-7"/></svg></a></div>
+</section>
+
+<!-- ============ UCSF · CERTIFIES THE DOCTOR ============ -->
+<section class="section" id="ucsf">
+  <div class="wrap">
+    <div class="section-kicker">UCSF School of Medicine · First-year curriculum · 2024-2025</div>
+    <h2 class="section-title">Six weeks on white supremacy. <em>More than they spend on anatomy.</em></h2>
+
+    <!-- UCSF slide screenshots · provided by Vincent -->
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:14px; max-width:920px; margin:14px auto 28px">
+      <div style="border:1px solid var(--border); background:#12121a">
+        <img src="ucsf-white-supremacy-bottles.png" alt="UCSF lecture slide titled White Supremacy is, listing it as a project of conditioning, a project of colonization, and a culture teaching that whiteness is value, alongside a graphic depicting traits like Objectivity, Individualism, Perfectionism, and Sense of Urgency as bottles of poison" style="width:100%; height:auto; display:block" onerror="this.outerHTML='<div style=&quot;padding:60px 16px; text-align:center; font-family:Source Code Pro,monospace; font-size:10px; letter-spacing:1.6px; color:var(--text-muted); text-transform:uppercase; line-height:1.7&quot;>image slot &middot; ucsf-white-supremacy-bottles.png<br>[UCSF lecture slide &middot; white supremacy culture &middot; bottles of poison]</div>'">
+        <div style="padding:8px 12px; font-family:'Source Code Pro',monospace; font-size:9.5px; letter-spacing:1.5px; text-transform:uppercase; color:var(--text-muted); text-align:center; border-top:1px solid var(--border)">UCSF lecture slide · &ldquo;White Supremacy is&hellip;&rdquo;</div>
+      </div>
+      <div style="border:1px solid var(--border); background:#12121a">
+        <img src="ucsf-reporting-slide.png" alt="UCSF lecture slide titled White Supremacy Culture asking students three questions: have they experienced one of these characteristics in medicine, do they remember their reaction, and did they consider reporting it" style="width:100%; height:auto; display:block" onerror="this.outerHTML='<div style=&quot;padding:60px 16px; text-align:center; font-family:Source Code Pro,monospace; font-size:10px; letter-spacing:1.6px; color:var(--text-muted); text-transform:uppercase; line-height:1.7&quot;>image slot &middot; ucsf-reporting-slide.png<br>[UCSF lecture slide &middot; have you experienced &middot; did you consider reporting it]</div>'">
+        <div style="padding:8px 12px; font-family:'Source Code Pro',monospace; font-size:9.5px; letter-spacing:1.5px; text-transform:uppercase; color:var(--text-muted); text-align:center; border-top:1px solid var(--border)">UCSF lecture slide · &ldquo;Did you consider reporting it?&rdquo;</div>
+      </div>
+    </div>
+
+    <div class="case-card">
+      <div class="case-body text-only">
+        <ul style="line-height:1.75; font-size:16px; color:var(--text-primary); padding-left:22px; margin:0">
+          <li>Every UCSF first-year medical student sits through a mandatory six-week unit titled <strong>&ldquo;Justice and Advocacy in Medicine.&rdquo;</strong></li>
+          <li>Per UCSF&rsquo;s own first-year curriculum summary, <strong>that is more time than students spend on basic anatomy or on cardiovascular health</strong> (<a href="https://freebeacon.com/campus/advocacy-workshops-anti-racist-audits-inside-a-top-medical-schools-radical-curriculum-overhaul/" target="_blank">Free Beacon, 2024</a>).</li>
+          <li>The unit teaches that <strong>objectivity, urgency, individualism, and perfectionism</strong> are characteristics of <strong>&ldquo;white supremacy culture.&rdquo;</strong> The slides depict each trait as a bottle of poison.</li>
+          <li>One slide asks students whether they have experienced these characteristics in medicine. The next slide asks whether they <strong>considered reporting it.</strong></li>
+          <li>UCSF&rsquo;s own Department of Obstetrics, Gynecology, and Reproductive Sciences hosts a Grand Rounds series on <a href="https://meded.ucsf.edu/news/white-fragility-academic-medicine" target="_blank">&ldquo;White Fragility in Academic Medicine,&rdquo;</a> framed around Robin DiAngelo&rsquo;s thesis. Published on UCSF&rsquo;s medical-education domain.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="pullquote">
+      Have you experienced one of these characteristics in medicine? Did you consider reporting it?
+      <cite>UCSF lecture slide · &ldquo;White Supremacy Culture&rdquo; · first-year curriculum</cite>
+    </div>
+
+    <div class="case-card">
+      <div class="case-source">
+        Sources: <a href="https://freebeacon.com/campus/advocacy-workshops-anti-racist-audits-inside-a-top-medical-schools-radical-curriculum-overhaul/" target="_blank">Washington Free Beacon · Aaron Sibarium</a> · <a href="https://meded.ucsf.edu/news/white-fragility-academic-medicine" target="_blank">UCSF Medical Education (primary source)</a> · <a href="https://x.com/aaronsibarium/status/1858567041760018781" target="_blank">Sibarium thread (slide imagery)</a>
+      </div>
+    </div>
+
+    <div class="highlight">
+      Substitute the framing. If a top medical school told incoming doctors that <strong>punctuality and precision</strong> were ideologically suspect, taught them to recognize those traits as oppression, and asked whether they had <strong>considered reporting</strong> colleagues who exhibited them, you would call it parody. UCSF spends six weeks on it. New doctors graduate from there.
     </div>
   </div>
   <div class="section-nav-arrow"><a onclick="smoothScrollTo('local-mirror')" aria-label="Next section"><svg viewBox="0 0 24 24"><path d="M12 5v14M19 12l-7 7-7-7"/></svg></a></div>
@@ -4037,12 +4231,12 @@ footer a { color: var(--accent-red); text-decoration: none; }
             <text text-anchor="middle" y="32" font-family="DM Sans" font-size="14" font-weight="700" fill="#e8e8ec">or else</text>
           </g>
 
-          <!-- Node 4 LEFT · Punish dissent — matches Stage 4 banner color -->
+          <!-- Node 4 LEFT · Indoctrinate / Punish dissent — matches Stage 4 banner color -->
           <g transform="translate(100, 280)">
             <circle r="62" fill="#12121a" stroke="#4ade80" stroke-width="3" filter="url(#glow)"/>
             <text text-anchor="middle" y="-14" font-family="DM Sans" font-size="32" font-weight="800" fill="#4ade80">4</text>
-            <text text-anchor="middle" y="14" font-family="DM Sans" font-size="14" font-weight="700" fill="#e8e8ec">Punish</text>
-            <text text-anchor="middle" y="32" font-family="DM Sans" font-size="14" font-weight="700" fill="#e8e8ec">dissent</text>
+            <text text-anchor="middle" y="14" font-family="DM Sans" font-size="13" font-weight="700" fill="#e8e8ec">Indoctrinate /</text>
+            <text text-anchor="middle" y="32" font-family="DM Sans" font-size="13" font-weight="700" fill="#e8e8ec">Punish dissent</text>
           </g>
 
           <!-- Connecting arrows 1→2→3→4→1 (clockwise spiral) -->
@@ -4215,6 +4409,23 @@ window.smoothScrollTo = function(id) {
   const top = el.getBoundingClientRect().top + window.pageYOffset;
   window.scrollTo({ top: top, behavior: 'smooth' });
 };
+
+// ============================================================
+// EXPAND/COLLAPSE — wires up .expand-toggle buttons.
+// ============================================================
+window.toggleExpand = function(btn) {
+  const expanded = btn.getAttribute('aria-expanded') === 'true';
+  const targetId = btn.getAttribute('aria-controls');
+  const content = targetId ? document.getElementById(targetId) : null;
+  if (!content) return;
+  btn.setAttribute('aria-expanded', String(!expanded));
+  content.setAttribute('data-open', String(!expanded));
+};
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.expand-toggle').forEach(function(btn) {
+    btn.addEventListener('click', function() { window.toggleExpand(btn); });
+  });
+});
 
 Chart.defaults.font.family = "'Source Code Pro', monospace";
 Chart.defaults.color = '#8a8a9a';
